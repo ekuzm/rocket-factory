@@ -1,0 +1,59 @@
+type: object
+required:
+  - order_uuid
+  - user_uuid
+  - part_uuids
+  - total_price
+  - transaction_uuid
+  - payment_method
+  - status
+properties:
+  order_uuid:
+    type: string
+    format: uuid
+    description: Order UUID
+    example: "80205bfe-1052-4d6d-ab83-7c68c14b87b1"
+  user_uuid:
+    type: string
+    format: uuid
+    description: User UUID
+    example: "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
+  part_uuids:
+    type: array
+    description: Part UUIDs
+    items:
+      type: string
+      format: uuid
+    example:
+      - "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
+      - "80205bfe-1052-4d6d-ab85-7c68c14b87b2"
+  total_price:
+    type: number
+    format: float
+    description: Total price for order
+    example: 123.45
+  transaction_uuid:
+    type: string
+    format: uuid
+    description: Transaction UUID
+    example: "80205bfe-1052-4d6d-ab83-7c68c14b87b1"
+  payment_method:
+    type: string
+    description: Payment method
+    enum:
+      - UNKNOWN
+      - CARD
+      - SBP
+      - CREDIT_CARD
+      - INVESTOR_MONEY
+    default: UNKNOWN
+    example: "CARD"
+  status:
+    type: string
+    description: Status of order
+    enum:
+      - PENDING_PAYMENT
+      - PAID
+      - CANCELED
+    default: PENDING_PAYMENT
+    example: "PAID"
