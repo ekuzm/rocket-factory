@@ -1,3 +1,5 @@
+parameters:
+  - $ref: ../params/order_uuid.yaml
 post:
   summary: Canceled order
   operationId: CancelOrder

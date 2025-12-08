@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API for working with orders
 x-ogen:
-  target: ./shared/pkg/openapi/order/v1
+  target: ./shared/pkg/openapi/order/v1/
   package: order_v1
   clean: true
 
@@ -14,10 +14,10 @@ tags:
 
 paths:
   /api/v1/orders:
-    $ref: ./paths/create_order.yaml
+    $ref: ./path/create_order.yaml
   /api/v1/orders/{order_uuid}/pay:
-    $ref: ./paths/pay_for_order.yaml
+    $ref: ./path/pay_for_order.yaml
   /api/v1/orders/{order_uuid}:
-    $ref: ./paths/order_by_uuid.yaml
+    $ref: ./path/order_by_uuid.yaml
   /api/v1/orders/{order_uuid}/cancel:
-    $ref: ./paths/cancel_order.yaml
+    $ref: ./path/cancel_order.yaml

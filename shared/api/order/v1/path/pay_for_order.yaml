@@ -10,14 +10,14 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/pay_for_order/request.yaml
+          $ref: ../components/pay_for_order/pay_order_request.yaml
   responses:
     "200":
       description: Successfully paid for order 
       content:
         application/json:
           schema:
-            $ref: ../components/pay_for_order/response.yaml
+            $ref: ../components/pay_for_order/pay_order_response.yaml
     "404":
       description: Order UUID was not found
       content:

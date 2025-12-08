@@ -1,17 +1,17 @@
 parameters:
   - $ref: ../params/order_uuid.yaml
-post:
+get:
   summary: Returns information about the order.
   operationId: GetOrderByUUID
   tags:
     - Order
   responses:
     "200":
-      description: Successfully get order by UUID 
+      description: Successfully get order by UUID
       content:
         application/json:
           schema:
-            $ref: ../components/pay_for_order/response.yaml
+            $ref: ../components/order_by_uuid/get_order_response.yaml
     "404":
       description: Order UUID was not found
       content:
