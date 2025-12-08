@@ -40,12 +40,12 @@ func (UnimplementedHandler) GetOrderByUUID(ctx context.Context, params GetOrderB
 	return r, ht.ErrNotImplemented
 }
 
-// PayForOrder implements PayForOrder operation.
+// PayOrder implements PayOrder operation.
 //
 // Performs payment for a previously created order.
 //
 // POST /api/v1/orders/{order_uuid}/pay
-func (UnimplementedHandler) PayForOrder(ctx context.Context, req *PayOrderRequest, params PayForOrderParams) (r PayForOrderRes, _ error) {
+func (UnimplementedHandler) PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (r PayOrderRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -379,7 +379,7 @@ func decodeGetOrderByUUIDResponse(resp *http.Response) (res GetOrderByUUIDRes, _
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response GetOrderResponse
+			var response Order
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -560,7 +560,7 @@ func decodeGetOrderByUUIDResponse(resp *http.Response) (res GetOrderByUUIDRes, _
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodePayForOrderResponse(resp *http.Response) (res PayForOrderRes, _ error) {
+func decodePayOrderResponse(resp *http.Response) (res PayOrderRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.

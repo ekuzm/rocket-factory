@@ -489,22 +489,22 @@ func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w
 	}
 }
 
-// handlePayForOrderRequest handles PayForOrder operation.
+// handlePayOrderRequest handles PayOrder operation.
 //
 // Performs payment for a previously created order.
 //
 // POST /api/v1/orders/{order_uuid}/pay
-func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handlePayOrderRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("PayForOrder"),
+		otelogen.OperationID("PayOrder"),
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}/pay"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), PayForOrderOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), PayOrderOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -559,11 +559,11 @@ func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w ht
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: PayForOrderOperation,
-			ID:   "PayForOrder",
+			Name: PayOrderOperation,
+			ID:   "PayOrder",
 		}
 	)
-	params, err := decodePayForOrderParams(args, argsEscaped, r)
+	params, err := decodePayOrderParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -575,7 +575,7 @@ func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w ht
 	}
 
 	var rawBody []byte
-	request, rawBody, close, err := s.decodePayForOrderRequest(r)
+	request, rawBody, close, err := s.decodePayOrderRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -591,13 +591,13 @@ func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w ht
 		}
 	}()
 
-	var response PayForOrderRes
+	var response PayOrderRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    PayForOrderOperation,
+			OperationName:    PayOrderOperation,
 			OperationSummary: "Performs payment for a previously created order",
-			OperationID:      "PayForOrder",
+			OperationID:      "PayOrder",
 			Body:             request,
 			RawBody:          rawBody,
 			Params: middleware.Parameters{
@@ -611,8 +611,8 @@ func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w ht
 
 		type (
 			Request  = *PayOrderRequest
-			Params   = PayForOrderParams
-			Response = PayForOrderRes
+			Params   = PayOrderParams
+			Response = PayOrderRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -621,14 +621,14 @@ func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w ht
 		](
 			m,
 			mreq,
-			unpackPayForOrderParams,
+			unpackPayOrderParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.PayForOrder(ctx, request, params)
+				response, err = s.h.PayOrder(ctx, request, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.PayForOrder(ctx, request, params)
+		response, err = s.h.PayOrder(ctx, request, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*GenericErrorStatusCode](err); ok {
@@ -647,7 +647,7 @@ func (s *Server) handlePayForOrderRequest(args [1]string, argsEscaped bool, w ht
 		return
 	}
 
-	if err := encodePayForOrderResponse(response, w, span); err != nil {
+	if err := encodePayOrderResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

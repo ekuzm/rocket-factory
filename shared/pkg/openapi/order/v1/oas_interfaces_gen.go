@@ -13,6 +13,6 @@ type GetOrderByUUIDRes interface {
 	getOrderByUUIDRes()
 }
 
-type PayForOrderRes interface {
-	payForOrderRes()
+type PayOrderRes interface {
+	payOrderRes()
 }

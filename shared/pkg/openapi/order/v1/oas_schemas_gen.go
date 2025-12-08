@@ -44,7 +44,7 @@ func (s *BadRequestError) SetMessage(val string) {
 func (*BadRequestError) cancelOrderRes()    {}
 func (*BadRequestError) createOrderRes()    {}
 func (*BadRequestError) getOrderByUUIDRes() {}
-func (*BadRequestError) payForOrderRes()    {}
+func (*BadRequestError) payOrderRes()       {}
 
 // Ref: #
 type CreateOrderRequest struct {
@@ -159,208 +159,6 @@ func (s *GenericErrorStatusCode) SetResponse(val GenericError) {
 }
 
 // Ref: #
-type GetOrderResponse struct {
-	// Order UUID.
-	OrderUUID uuid.UUID `json:"order_uuid"`
-	// User UUID.
-	UserUUID uuid.UUID `json:"user_uuid"`
-	// Part UUIDs.
-	PartUuids []uuid.UUID `json:"part_uuids"`
-	// Total price for order.
-	TotalPrice float32 `json:"total_price"`
-	// Transaction UUID.
-	TransactionUUID uuid.UUID `json:"transaction_uuid"`
-	// Payment method.
-	PaymentMethod GetOrderResponsePaymentMethod `json:"payment_method"`
-	// Status of order.
-	Status GetOrderResponseStatus `json:"status"`
-}
-
-// GetOrderUUID returns the value of OrderUUID.
-func (s *GetOrderResponse) GetOrderUUID() uuid.UUID {
-	return s.OrderUUID
-}
-
-// GetUserUUID returns the value of UserUUID.
-func (s *GetOrderResponse) GetUserUUID() uuid.UUID {
-	return s.UserUUID
-}
-
-// GetPartUuids returns the value of PartUuids.
-func (s *GetOrderResponse) GetPartUuids() []uuid.UUID {
-	return s.PartUuids
-}
-
-// GetTotalPrice returns the value of TotalPrice.
-func (s *GetOrderResponse) GetTotalPrice() float32 {
-	return s.TotalPrice
-}
-
-// GetTransactionUUID returns the value of TransactionUUID.
-func (s *GetOrderResponse) GetTransactionUUID() uuid.UUID {
-	return s.TransactionUUID
-}
-
-// GetPaymentMethod returns the value of PaymentMethod.
-func (s *GetOrderResponse) GetPaymentMethod() GetOrderResponsePaymentMethod {
-	return s.PaymentMethod
-}
-
-// GetStatus returns the value of Status.
-func (s *GetOrderResponse) GetStatus() GetOrderResponseStatus {
-	return s.Status
-}
-
-// SetOrderUUID sets the value of OrderUUID.
-func (s *GetOrderResponse) SetOrderUUID(val uuid.UUID) {
-	s.OrderUUID = val
-}
-
-// SetUserUUID sets the value of UserUUID.
-func (s *GetOrderResponse) SetUserUUID(val uuid.UUID) {
-	s.UserUUID = val
-}
-
-// SetPartUuids sets the value of PartUuids.
-func (s *GetOrderResponse) SetPartUuids(val []uuid.UUID) {
-	s.PartUuids = val
-}
-
-// SetTotalPrice sets the value of TotalPrice.
-func (s *GetOrderResponse) SetTotalPrice(val float32) {
-	s.TotalPrice = val
-}
-
-// SetTransactionUUID sets the value of TransactionUUID.
-func (s *GetOrderResponse) SetTransactionUUID(val uuid.UUID) {
-	s.TransactionUUID = val
-}
-
-// SetPaymentMethod sets the value of PaymentMethod.
-func (s *GetOrderResponse) SetPaymentMethod(val GetOrderResponsePaymentMethod) {
-	s.PaymentMethod = val
-}
-
-// SetStatus sets the value of Status.
-func (s *GetOrderResponse) SetStatus(val GetOrderResponseStatus) {
-	s.Status = val
-}
-
-func (*GetOrderResponse) getOrderByUUIDRes() {}
-
-// Payment method.
-type GetOrderResponsePaymentMethod string
-
-const (
-	GetOrderResponsePaymentMethodUNKNOWN       GetOrderResponsePaymentMethod = "UNKNOWN"
-	GetOrderResponsePaymentMethodCARD          GetOrderResponsePaymentMethod = "CARD"
-	GetOrderResponsePaymentMethodSBP           GetOrderResponsePaymentMethod = "SBP"
-	GetOrderResponsePaymentMethodCREDITCARD    GetOrderResponsePaymentMethod = "CREDIT_CARD"
-	GetOrderResponsePaymentMethodINVESTORMONEY GetOrderResponsePaymentMethod = "INVESTOR_MONEY"
-)
-
-// AllValues returns all GetOrderResponsePaymentMethod values.
-func (GetOrderResponsePaymentMethod) AllValues() []GetOrderResponsePaymentMethod {
-	return []GetOrderResponsePaymentMethod{
-		GetOrderResponsePaymentMethodUNKNOWN,
-		GetOrderResponsePaymentMethodCARD,
-		GetOrderResponsePaymentMethodSBP,
-		GetOrderResponsePaymentMethodCREDITCARD,
-		GetOrderResponsePaymentMethodINVESTORMONEY,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s GetOrderResponsePaymentMethod) MarshalText() ([]byte, error) {
-	switch s {
-	case GetOrderResponsePaymentMethodUNKNOWN:
-		return []byte(s), nil
-	case GetOrderResponsePaymentMethodCARD:
-		return []byte(s), nil
-	case GetOrderResponsePaymentMethodSBP:
-		return []byte(s), nil
-	case GetOrderResponsePaymentMethodCREDITCARD:
-		return []byte(s), nil
-	case GetOrderResponsePaymentMethodINVESTORMONEY:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *GetOrderResponsePaymentMethod) UnmarshalText(data []byte) error {
-	switch GetOrderResponsePaymentMethod(data) {
-	case GetOrderResponsePaymentMethodUNKNOWN:
-		*s = GetOrderResponsePaymentMethodUNKNOWN
-		return nil
-	case GetOrderResponsePaymentMethodCARD:
-		*s = GetOrderResponsePaymentMethodCARD
-		return nil
-	case GetOrderResponsePaymentMethodSBP:
-		*s = GetOrderResponsePaymentMethodSBP
-		return nil
-	case GetOrderResponsePaymentMethodCREDITCARD:
-		*s = GetOrderResponsePaymentMethodCREDITCARD
-		return nil
-	case GetOrderResponsePaymentMethodINVESTORMONEY:
-		*s = GetOrderResponsePaymentMethodINVESTORMONEY
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// Status of order.
-type GetOrderResponseStatus string
-
-const (
-	GetOrderResponseStatusPENDINGPAYMENT GetOrderResponseStatus = "PENDING_PAYMENT"
-	GetOrderResponseStatusPAID           GetOrderResponseStatus = "PAID"
-	GetOrderResponseStatusCANCELED       GetOrderResponseStatus = "CANCELED"
-)
-
-// AllValues returns all GetOrderResponseStatus values.
-func (GetOrderResponseStatus) AllValues() []GetOrderResponseStatus {
-	return []GetOrderResponseStatus{
-		GetOrderResponseStatusPENDINGPAYMENT,
-		GetOrderResponseStatusPAID,
-		GetOrderResponseStatusCANCELED,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s GetOrderResponseStatus) MarshalText() ([]byte, error) {
-	switch s {
-	case GetOrderResponseStatusPENDINGPAYMENT:
-		return []byte(s), nil
-	case GetOrderResponseStatusPAID:
-		return []byte(s), nil
-	case GetOrderResponseStatusCANCELED:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *GetOrderResponseStatus) UnmarshalText(data []byte) error {
-	switch GetOrderResponseStatus(data) {
-	case GetOrderResponseStatusPENDINGPAYMENT:
-		*s = GetOrderResponseStatusPENDINGPAYMENT
-		return nil
-	case GetOrderResponseStatusPAID:
-		*s = GetOrderResponseStatusPAID
-		return nil
-	case GetOrderResponseStatusCANCELED:
-		*s = GetOrderResponseStatusCANCELED
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// Ref: #
 type InternalServerError struct {
 	// HTTP-code error.
 	Code int `json:"code"`
@@ -391,7 +189,7 @@ func (s *InternalServerError) SetMessage(val string) {
 func (*InternalServerError) cancelOrderRes()    {}
 func (*InternalServerError) createOrderRes()    {}
 func (*InternalServerError) getOrderByUUIDRes() {}
-func (*InternalServerError) payForOrderRes()    {}
+func (*InternalServerError) payOrderRes()       {}
 
 // Ref: #
 type NoContentError struct {
@@ -453,7 +251,209 @@ func (s *NotFoundError) SetMessage(val string) {
 
 func (*NotFoundError) cancelOrderRes()    {}
 func (*NotFoundError) getOrderByUUIDRes() {}
-func (*NotFoundError) payForOrderRes()    {}
+func (*NotFoundError) payOrderRes()       {}
+
+// Ref: #
+type Order struct {
+	// Order UUID.
+	OrderUUID uuid.UUID `json:"order_uuid"`
+	// User UUID.
+	UserUUID uuid.UUID `json:"user_uuid"`
+	// Part UUIDs.
+	PartUuids []uuid.UUID `json:"part_uuids"`
+	// Total price for order.
+	TotalPrice float32 `json:"total_price"`
+	// Transaction UUID.
+	TransactionUUID uuid.UUID `json:"transaction_uuid"`
+	// Payment method.
+	PaymentMethod OrderPaymentMethod `json:"payment_method"`
+	// Status of order.
+	Status OrderStatus `json:"status"`
+}
+
+// GetOrderUUID returns the value of OrderUUID.
+func (s *Order) GetOrderUUID() uuid.UUID {
+	return s.OrderUUID
+}
+
+// GetUserUUID returns the value of UserUUID.
+func (s *Order) GetUserUUID() uuid.UUID {
+	return s.UserUUID
+}
+
+// GetPartUuids returns the value of PartUuids.
+func (s *Order) GetPartUuids() []uuid.UUID {
+	return s.PartUuids
+}
+
+// GetTotalPrice returns the value of TotalPrice.
+func (s *Order) GetTotalPrice() float32 {
+	return s.TotalPrice
+}
+
+// GetTransactionUUID returns the value of TransactionUUID.
+func (s *Order) GetTransactionUUID() uuid.UUID {
+	return s.TransactionUUID
+}
+
+// GetPaymentMethod returns the value of PaymentMethod.
+func (s *Order) GetPaymentMethod() OrderPaymentMethod {
+	return s.PaymentMethod
+}
+
+// GetStatus returns the value of Status.
+func (s *Order) GetStatus() OrderStatus {
+	return s.Status
+}
+
+// SetOrderUUID sets the value of OrderUUID.
+func (s *Order) SetOrderUUID(val uuid.UUID) {
+	s.OrderUUID = val
+}
+
+// SetUserUUID sets the value of UserUUID.
+func (s *Order) SetUserUUID(val uuid.UUID) {
+	s.UserUUID = val
+}
+
+// SetPartUuids sets the value of PartUuids.
+func (s *Order) SetPartUuids(val []uuid.UUID) {
+	s.PartUuids = val
+}
+
+// SetTotalPrice sets the value of TotalPrice.
+func (s *Order) SetTotalPrice(val float32) {
+	s.TotalPrice = val
+}
+
+// SetTransactionUUID sets the value of TransactionUUID.
+func (s *Order) SetTransactionUUID(val uuid.UUID) {
+	s.TransactionUUID = val
+}
+
+// SetPaymentMethod sets the value of PaymentMethod.
+func (s *Order) SetPaymentMethod(val OrderPaymentMethod) {
+	s.PaymentMethod = val
+}
+
+// SetStatus sets the value of Status.
+func (s *Order) SetStatus(val OrderStatus) {
+	s.Status = val
+}
+
+func (*Order) getOrderByUUIDRes() {}
+
+// Payment method.
+type OrderPaymentMethod string
+
+const (
+	OrderPaymentMethodUNKNOWN       OrderPaymentMethod = "UNKNOWN"
+	OrderPaymentMethodCARD          OrderPaymentMethod = "CARD"
+	OrderPaymentMethodSBP           OrderPaymentMethod = "SBP"
+	OrderPaymentMethodCREDITCARD    OrderPaymentMethod = "CREDIT_CARD"
+	OrderPaymentMethodINVESTORMONEY OrderPaymentMethod = "INVESTOR_MONEY"
+)
+
+// AllValues returns all OrderPaymentMethod values.
+func (OrderPaymentMethod) AllValues() []OrderPaymentMethod {
+	return []OrderPaymentMethod{
+		OrderPaymentMethodUNKNOWN,
+		OrderPaymentMethodCARD,
+		OrderPaymentMethodSBP,
+		OrderPaymentMethodCREDITCARD,
+		OrderPaymentMethodINVESTORMONEY,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s OrderPaymentMethod) MarshalText() ([]byte, error) {
+	switch s {
+	case OrderPaymentMethodUNKNOWN:
+		return []byte(s), nil
+	case OrderPaymentMethodCARD:
+		return []byte(s), nil
+	case OrderPaymentMethodSBP:
+		return []byte(s), nil
+	case OrderPaymentMethodCREDITCARD:
+		return []byte(s), nil
+	case OrderPaymentMethodINVESTORMONEY:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *OrderPaymentMethod) UnmarshalText(data []byte) error {
+	switch OrderPaymentMethod(data) {
+	case OrderPaymentMethodUNKNOWN:
+		*s = OrderPaymentMethodUNKNOWN
+		return nil
+	case OrderPaymentMethodCARD:
+		*s = OrderPaymentMethodCARD
+		return nil
+	case OrderPaymentMethodSBP:
+		*s = OrderPaymentMethodSBP
+		return nil
+	case OrderPaymentMethodCREDITCARD:
+		*s = OrderPaymentMethodCREDITCARD
+		return nil
+	case OrderPaymentMethodINVESTORMONEY:
+		*s = OrderPaymentMethodINVESTORMONEY
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Status of order.
+type OrderStatus string
+
+const (
+	OrderStatusPENDINGPAYMENT OrderStatus = "PENDING_PAYMENT"
+	OrderStatusPAID           OrderStatus = "PAID"
+	OrderStatusCANCELED       OrderStatus = "CANCELED"
+)
+
+// AllValues returns all OrderStatus values.
+func (OrderStatus) AllValues() []OrderStatus {
+	return []OrderStatus{
+		OrderStatusPENDINGPAYMENT,
+		OrderStatusPAID,
+		OrderStatusCANCELED,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s OrderStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case OrderStatusPENDINGPAYMENT:
+		return []byte(s), nil
+	case OrderStatusPAID:
+		return []byte(s), nil
+	case OrderStatusCANCELED:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *OrderStatus) UnmarshalText(data []byte) error {
+	switch OrderStatus(data) {
+	case OrderStatusPENDINGPAYMENT:
+		*s = OrderStatusPENDINGPAYMENT
+		return nil
+	case OrderStatusPAID:
+		*s = OrderStatusPAID
+		return nil
+	case OrderStatusCANCELED:
+		*s = OrderStatusCANCELED
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
 
 // Ref: #
 type PayOrderRequest struct {
@@ -550,4 +550,4 @@ func (s *PayOrderResponse) SetTransactionUUID(val uuid.UUID) {
 	s.TransactionUUID = val
 }
 
-func (*PayOrderResponse) payForOrderRes() {}
+func (*PayOrderResponse) payOrderRes() {}

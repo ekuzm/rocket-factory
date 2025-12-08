@@ -147,13 +147,13 @@ func decodeGetOrderByUUIDParams(args [1]string, argsEscaped bool, r *http.Reques
 	return params, nil
 }
 
-// PayForOrderParams is parameters of PayForOrder operation.
-type PayForOrderParams struct {
+// PayOrderParams is parameters of PayOrder operation.
+type PayOrderParams struct {
 	// Order UUID.
 	OrderUUID uuid.UUID
 }
 
-func unpackPayForOrderParams(packed middleware.Parameters) (params PayForOrderParams) {
+func unpackPayOrderParams(packed middleware.Parameters) (params PayOrderParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "order_uuid",
@@ -164,7 +164,7 @@ func unpackPayForOrderParams(packed middleware.Parameters) (params PayForOrderPa
 	return params
 }
 
-func decodePayForOrderParams(args [1]string, argsEscaped bool, r *http.Request) (params PayForOrderParams, _ error) {
+func decodePayOrderParams(args [1]string, argsEscaped bool, r *http.Request) (params PayOrderParams, _ error) {
 	// Decode path: order_uuid.
 	if err := func() error {
 		param := args[0]

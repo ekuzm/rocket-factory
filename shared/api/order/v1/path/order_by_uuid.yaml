@@ -11,7 +11,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: ../components/order_by_uuid/get_order_response.yaml
+            $ref: ../components/order_by_uuid/order.yaml
     "404":
       description: Order UUID was not found
       content:

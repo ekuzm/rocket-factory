@@ -24,7 +24,7 @@ func encodeCreateOrderRequest(
 	return nil
 }
 
-func encodePayForOrderRequest(
+func encodePayOrderRequest(
 	req *PayOrderRequest,
 	r *http.Request,
 ) error {

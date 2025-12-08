@@ -45,12 +45,12 @@ type Invoker interface {
 	//
 	// GET /api/v1/orders/{order_uuid}
 	GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (GetOrderByUUIDRes, error)
-	// PayForOrder invokes PayForOrder operation.
+	// PayOrder invokes PayOrder operation.
 	//
 	// Performs payment for a previously created order.
 	//
 	// POST /api/v1/orders/{order_uuid}/pay
-	PayForOrder(ctx context.Context, request *PayOrderRequest, params PayForOrderParams) (PayForOrderRes, error)
+	PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (PayOrderRes, error)
 }
 
 // Client implements OAS client.
@@ -359,19 +359,19 @@ func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDPa
 	return result, nil
 }
 
-// PayForOrder invokes PayForOrder operation.
+// PayOrder invokes PayOrder operation.
 //
 // Performs payment for a previously created order.
 //
 // POST /api/v1/orders/{order_uuid}/pay
-func (c *Client) PayForOrder(ctx context.Context, request *PayOrderRequest, params PayForOrderParams) (PayForOrderRes, error) {
-	res, err := c.sendPayForOrder(ctx, request, params)
+func (c *Client) PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (PayOrderRes, error) {
+	res, err := c.sendPayOrder(ctx, request, params)
 	return res, err
 }
 
-func (c *Client) sendPayForOrder(ctx context.Context, request *PayOrderRequest, params PayForOrderParams) (res PayForOrderRes, err error) {
+func (c *Client) sendPayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (res PayOrderRes, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("PayForOrder"),
+		otelogen.OperationID("PayOrder"),
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.URLTemplateKey.String("/api/v1/orders/{order_uuid}/pay"),
 	}
@@ -389,7 +389,7 @@ func (c *Client) sendPayForOrder(ctx context.Context, request *PayOrderRequest, 
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, PayForOrderOperation,
+	ctx, span := c.cfg.Tracer.Start(ctx, PayOrderOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -434,7 +434,7 @@ func (c *Client) sendPayForOrder(ctx context.Context, request *PayOrderRequest, 
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}
-	if err := encodePayForOrderRequest(request, r); err != nil {
+	if err := encodePayOrderRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
 	}
 
@@ -446,7 +446,7 @@ func (c *Client) sendPayForOrder(ctx context.Context, request *PayOrderRequest, 
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodePayForOrderResponse(resp)
+	result, err := decodePayOrderResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

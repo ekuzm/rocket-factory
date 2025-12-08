@@ -26,12 +26,12 @@ type Handler interface {
 	//
 	// GET /api/v1/orders/{order_uuid}
 	GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (GetOrderByUUIDRes, error)
-	// PayForOrder implements PayForOrder operation.
+	// PayOrder implements PayOrder operation.
 	//
 	// Performs payment for a previously created order.
 	//
 	// POST /api/v1/orders/{order_uuid}/pay
-	PayForOrder(ctx context.Context, req *PayOrderRequest, params PayForOrderParams) (PayForOrderRes, error)
+	PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (PayOrderRes, error)
 	// NewError creates *GenericErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

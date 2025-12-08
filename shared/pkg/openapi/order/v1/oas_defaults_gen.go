@@ -3,13 +3,13 @@
 package order_v1
 
 // setDefaults set default value of fields.
-func (s *GetOrderResponse) setDefaults() {
+func (s *Order) setDefaults() {
 	{
-		val := GetOrderResponsePaymentMethod("UNKNOWN")
+		val := OrderPaymentMethod("UNKNOWN")
 		s.PaymentMethod = val
 	}
 	{
-		val := GetOrderResponseStatus("PENDING_PAYMENT")
+		val := OrderStatus("PENDING_PAYMENT")
 		s.Status = val
 	}
 }

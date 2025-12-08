@@ -93,7 +93,7 @@ func (s *Server) decodeCreateOrderRequest(r *http.Request) (
 	}
 }
 
-func (s *Server) decodePayForOrderRequest(r *http.Request) (
+func (s *Server) decodePayOrderRequest(r *http.Request) (
 	req *PayOrderRequest,
 	rawBody []byte,
 	close func() error,

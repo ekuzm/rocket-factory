@@ -119,7 +119,7 @@ func encodeCreateOrderResponse(response CreateOrderRes, w http.ResponseWriter, s
 
 func encodeGetOrderByUUIDResponse(response GetOrderByUUIDRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *GetOrderResponse:
+	case *Order:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -176,7 +176,7 @@ func encodeGetOrderByUUIDResponse(response GetOrderByUUIDRes, w http.ResponseWri
 	}
 }
 
-func encodePayForOrderResponse(response PayForOrderRes, w http.ResponseWriter, span trace.Span) error {
+func encodePayOrderResponse(response PayOrderRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *PayOrderResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

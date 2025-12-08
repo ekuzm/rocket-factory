@@ -9,5 +9,5 @@ const (
 	CancelOrderOperation    OperationName = "CancelOrder"
 	CreateOrderOperation    OperationName = "CreateOrder"
 	GetOrderByUUIDOperation OperationName = "GetOrderByUUID"
-	PayForOrderOperation    OperationName = "PayForOrder"
+	PayOrderOperation       OperationName = "PayOrder"
 )

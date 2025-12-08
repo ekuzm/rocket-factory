@@ -144,7 +144,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							// Leaf node.
 							switch r.Method {
 							case "POST":
-								s.handlePayForOrderRequest([1]string{
+								s.handlePayOrderRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
 							default:
@@ -352,9 +352,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							// Leaf node.
 							switch method {
 							case "POST":
-								r.name = PayForOrderOperation
+								r.name = PayOrderOperation
 								r.summary = "Performs payment for a previously created order"
-								r.operationID = "PayForOrder"
+								r.operationID = "PayOrder"
 								r.operationGroup = ""
 								r.pathPattern = "/api/v1/orders/{order_uuid}/pay"
 								r.args = args

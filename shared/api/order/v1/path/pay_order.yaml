@@ -2,7 +2,7 @@ parameters:
   - $ref: ../params/order_uuid.yaml
 post:
   summary: Performs payment for a previously created order
-  operationId: PayForOrder
+  operationId: PayOrder
   tags:
     - Order
   requestBody:
