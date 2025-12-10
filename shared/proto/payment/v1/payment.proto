@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package payment.v1;
+
+option go_package = "github.com/ekuzm/rocket-factory/shared/pkg/payment/v1;payment_v1";
+
+service PaymentV1Service {
+    rpc PayOrder(PayOrderRequest) returns (PayOrderResponse);
+}
+
+// PayOrderRequest contains data required to perform a payment.
+message PayOrderRequest {
+    string order_uuid = 1;
+    string user_uuid = 2;
+    PaymentMethod payment_method = 3;
+}
+
+// PayOrderResponse contains the result of the payment attempt.
+message PayOrderResponse {
+    string transaction_uuid = 1;
+}
+
+// PaymentMethod represents available payment types.
+enum PaymentMethod{
+    PAYMENT_METHOD_UNSPECIFIED = 0;
+    PAYMENT_METHOD_CARD = 1;
+    PAYMENT_METHOD_SPB = 2;
+    PAYMENT_METHOD_CREDIT_CARD = 3;
+    PAYMENT_METHOD_INVESTOR_MONEY = 4;
+}
