@@ -48,13 +48,13 @@ tasks:
     cmds:
       - |
         for module in {{.MODULES}}; do
-          if [ -d '$module' ]; then
+          if [ -d "$module" ]; then
             find $module -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GOFUMPT}} -extra -w {} +
           fi
         done
       - |
         for module in {{.MODULES}}; do
-          if [ -d '$module' ]; then
+          if [ -d "$module" ]; then
             find $module -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GCI}} write -s standard -s default -s 'prefix(github.com/ekuzm/rocket-factory)' {} +
           fi
         done
@@ -78,7 +78,7 @@ tasks:
         set -e
         ERR=0
         for mod in {{.MODULES}}; do
-          if [ -d '$mod' ]; then
+          if [ -d "$mod" ]; then
             {{.GOLANGCI_LINT}} run $mod/... --config=.golangci.yml || ERR=1
           fi
         done
