@@ -29,7 +29,7 @@ properties:
       - "80205bfe-1052-4d6d-ab85-7c68c14b87b2"
   total_price:
     type: number
-    format: float
+    format: double
     description: Total price for order
     example: 123.45
   transaction_uuid:

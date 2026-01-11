@@ -843,7 +843,7 @@ func (s *Order) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("total_price")
-		e.Float32(s.TotalPrice)
+		e.Float64(s.TotalPrice)
 	}
 	{
 		e.FieldStart("transaction_uuid")
@@ -926,8 +926,8 @@ func (s *Order) Decode(d *jx.Decoder) error {
 		case "total_price":
 			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				v, err := d.Float32()
-				s.TotalPrice = float32(v)
+				v, err := d.Float64()
+				s.TotalPrice = float64(v)
 				if err != nil {
 					return err
 				}
