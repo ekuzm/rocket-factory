@@ -41,10 +41,39 @@ func (s *BadRequestError) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*BadRequestError) cancelOrderRes()    {}
 func (*BadRequestError) createOrderRes()    {}
 func (*BadRequestError) getOrderByUUIDRes() {}
 func (*BadRequestError) payOrderRes()       {}
+
+// Ref: #
+type ConflictError struct {
+	// HTTP-code error.
+	Code int `json:"code"`
+	// Error description.
+	Message string `json:"message"`
+}
+
+// GetCode returns the value of Code.
+func (s *ConflictError) GetCode() int {
+	return s.Code
+}
+
+// GetMessage returns the value of Message.
+func (s *ConflictError) GetMessage() string {
+	return s.Message
+}
+
+// SetCode sets the value of Code.
+func (s *ConflictError) SetCode(val int) {
+	s.Code = val
+}
+
+// SetMessage sets the value of Message.
+func (s *ConflictError) SetMessage(val string) {
+	s.Message = val
+}
+
+func (*ConflictError) cancelOrderRes() {}
 
 // Ref: #
 type CreateOrderRequest struct {

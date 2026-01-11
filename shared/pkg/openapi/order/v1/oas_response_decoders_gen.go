@@ -99,7 +99,7 @@ func decodeCancelOrderResponse(resp *http.Response) (res CancelOrderRes, _ error
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response BadRequestError
+			var response ConflictError
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

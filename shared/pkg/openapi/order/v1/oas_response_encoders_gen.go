@@ -40,7 +40,7 @@ func encodeCancelOrderResponse(response CancelOrderRes, w http.ResponseWriter, s
 
 		return nil
 
-	case *BadRequestError:
+	case *ConflictError:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(409)
 		span.SetStatus(codes.Error, http.StatusText(409))

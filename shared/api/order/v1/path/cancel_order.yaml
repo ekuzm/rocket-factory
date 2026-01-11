@@ -23,7 +23,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/errors/bad_request_error.yaml
+            $ref: ../components/errors/conflict_error.yaml
     "500":
       description: Internal server error
       content:
