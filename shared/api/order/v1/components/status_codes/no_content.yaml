@@ -5,9 +5,9 @@ required:
 properties:
   code:
     type: integer
-    description: HTTP-code error
+    description: HTTP-code
     example: 204
   message:
     type: string
-    description: Error description
+    description: HTTP-code description
     example: "No content"

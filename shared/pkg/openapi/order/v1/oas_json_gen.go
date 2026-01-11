@@ -591,14 +591,14 @@ func (s *InternalServerError) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *NoContentError) Encode(e *jx.Encoder) {
+func (s *NoContent) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *NoContentError) encodeFields(e *jx.Encoder) {
+func (s *NoContent) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("code")
 		e.Int(s.Code)
@@ -609,15 +609,15 @@ func (s *NoContentError) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfNoContentError = [2]string{
+var jsonFieldsNameOfNoContent = [2]string{
 	0: "code",
 	1: "message",
 }
 
-// Decode decodes NoContentError from json.
-func (s *NoContentError) Decode(d *jx.Decoder) error {
+// Decode decodes NoContent from json.
+func (s *NoContent) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode NoContentError to nil")
+		return errors.New("invalid: unable to decode NoContent to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -652,7 +652,7 @@ func (s *NoContentError) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode NoContentError")
+		return errors.Wrap(err, "decode NoContent")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -669,8 +669,8 @@ func (s *NoContentError) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfNoContentError) {
-					name = jsonFieldsNameOfNoContentError[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfNoContent) {
+					name = jsonFieldsNameOfNoContent[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -691,14 +691,14 @@ func (s *NoContentError) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *NoContentError) MarshalJSON() ([]byte, error) {
+func (s *NoContent) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *NoContentError) UnmarshalJSON(data []byte) error {
+func (s *NoContent) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

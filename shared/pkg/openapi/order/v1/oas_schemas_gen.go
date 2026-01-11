@@ -192,34 +192,34 @@ func (*InternalServerError) getOrderByUUIDRes() {}
 func (*InternalServerError) payOrderRes()       {}
 
 // Ref: #
-type NoContentError struct {
-	// HTTP-code error.
+type NoContent struct {
+	// HTTP-code.
 	Code int `json:"code"`
-	// Error description.
+	// HTTP-code description.
 	Message string `json:"message"`
 }
 
 // GetCode returns the value of Code.
-func (s *NoContentError) GetCode() int {
+func (s *NoContent) GetCode() int {
 	return s.Code
 }
 
 // GetMessage returns the value of Message.
-func (s *NoContentError) GetMessage() string {
+func (s *NoContent) GetMessage() string {
 	return s.Message
 }
 
 // SetCode sets the value of Code.
-func (s *NoContentError) SetCode(val int) {
+func (s *NoContent) SetCode(val int) {
 	s.Code = val
 }
 
 // SetMessage sets the value of Message.
-func (s *NoContentError) SetMessage(val string) {
+func (s *NoContent) SetMessage(val string) {
 	s.Message = val
 }
 
-func (*NoContentError) cancelOrderRes() {}
+func (*NoContent) cancelOrderRes() {}
 
 // Ref: #
 type NotFoundError struct {

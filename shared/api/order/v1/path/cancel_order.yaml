@@ -11,7 +11,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/errors/no_content_error.yaml
+            $ref: ../components/status_codes/no_content.yaml
     "404":
       description: Order UUID was not found
       content:
