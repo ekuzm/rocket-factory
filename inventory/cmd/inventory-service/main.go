@@ -239,10 +239,6 @@ func main() {
 	}()
 
 	server := grpc.NewServer()
-	if err != nil {
-		log.Printf("failed to create gRPC server: %v\n", err)
-		return
-	}
 
 	inventoryV1.RegisterInventoryV1ServiceServer(server, service)
 	reflection.Register(server)
