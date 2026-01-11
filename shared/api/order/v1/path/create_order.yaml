@@ -22,6 +22,12 @@ post:
         application/json:
           schema:
             $ref: ../components/errors/bad_request_error.yaml
+    "404":
+      description: Not found error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/errors/not_found_error.yaml
     "500":
       description: Internal server error
       content:

@@ -250,6 +250,7 @@ func (s *NotFoundError) SetMessage(val string) {
 }
 
 func (*NotFoundError) cancelOrderRes()    {}
+func (*NotFoundError) createOrderRes()    {}
 func (*NotFoundError) getOrderByUUIDRes() {}
 func (*NotFoundError) payOrderRes()       {}
 

@@ -107,7 +107,7 @@ tasks:
         package=$({{.YQ}} e '.'x-ogen'.package' {{.OPEN_API_ORDER_V1}})
         echo 'target=$target'
         echo 'package=$package'
-        {{.OGEN}} --config {{.OGEN_CONFIG}} --target '$target' --package '$package'  --clean {{.OPEN_API_ORDER_V1}}
+        {{.OGEN}} --config {{.OGEN_CONFIG}} --target "$target" --package "$package"  --clean {{.OPEN_API_ORDER_V1}}
 
   install-buf:
     desc: "Installing Buf in bin directory"
