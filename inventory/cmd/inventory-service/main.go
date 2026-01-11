@@ -30,6 +30,29 @@ type InventoryStorage struct {
 	mtx   sync.RWMutex
 }
 
+func initTestStorage() (*InventoryStorage, error) {
+	storage := InventoryStorage{
+		parts: make(map[string]*inventoryV1.Part),
+		mtx:   sync.RWMutex{},
+	}
+
+	file, err := os.OpenFile(dataFileName, os.O_RDONLY|os.O_CREATE, 0o644)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer func() {
+		cerr := file.Close()
+		if cerr != nil {
+			log.Printf("Failed to close file: %v", cerr)
+		}
+	}()
+	if err := json.NewDecoder(file).Decode(&storage.parts); err != nil {
+		return nil, fmt.Errorf("failed to decode test data: %w", err)
+	}
+
+	return &storage, nil
+}
+
 func (i *InventoryStorage) GetPart(uuid string) *inventoryV1.Part {
 	i.mtx.RLock()
 	defer i.mtx.RUnlock()
@@ -64,9 +87,9 @@ func filterParts(inParts []*inventoryV1.Part, preds []PartPredicate) []*inventor
 	return outParts
 }
 
-func matchesAll(inPart *inventoryV1.Part, preds []PartPredicate) bool {
+func matchesAll(part *inventoryV1.Part, preds []PartPredicate) bool {
 	for _, pred := range preds {
-		if !pred(inPart) {
+		if !pred(part) {
 			return false
 		}
 	}
@@ -75,9 +98,9 @@ func matchesAll(inPart *inventoryV1.Part, preds []PartPredicate) bool {
 }
 
 func byUUIDs(uuids []string) PartPredicate {
-	return func(inPart *inventoryV1.Part) bool {
+	return func(part *inventoryV1.Part) bool {
 		for _, uuid := range uuids {
-			if strings.Contains(strings.ToLower(inPart.Uuid), strings.ToLower(uuid)) {
+			if strings.EqualFold(strings.ToLower(part.Uuid), strings.ToLower(uuid)) {
 				return true
 			}
 		}
@@ -87,9 +110,9 @@ func byUUIDs(uuids []string) PartPredicate {
 }
 
 func byNames(names []string) PartPredicate {
-	return func(inPart *inventoryV1.Part) bool {
+	return func(part *inventoryV1.Part) bool {
 		for _, name := range names {
-			if strings.Contains(strings.ToLower(inPart.Name), strings.ToLower(name)) {
+			if strings.EqualFold(strings.ToLower(part.Name), strings.ToLower(name)) {
 				return true
 			}
 		}
@@ -99,9 +122,9 @@ func byNames(names []string) PartPredicate {
 }
 
 func byCategories(categories []inventoryV1.Category) PartPredicate {
-	return func(inPart *inventoryV1.Part) bool {
+	return func(part *inventoryV1.Part) bool {
 		for _, category := range categories {
-			if inPart.Category == category {
+			if part.Category == category {
 				return true
 			}
 		}
@@ -111,9 +134,9 @@ func byCategories(categories []inventoryV1.Category) PartPredicate {
 }
 
 func byManufacturerCountries(countries []string) PartPredicate {
-	return func(inPart *inventoryV1.Part) bool {
+	return func(part *inventoryV1.Part) bool {
 		for _, country := range countries {
-			if strings.Contains(strings.ToLower(inPart.Manufacturer.Country), strings.ToLower(country)) {
+			if strings.EqualFold(strings.ToLower(part.Manufacturer.Country), strings.ToLower(country)) {
 				return true
 			}
 		}
@@ -123,10 +146,10 @@ func byManufacturerCountries(countries []string) PartPredicate {
 }
 
 func byTags(tags []string) PartPredicate {
-	return func(inPart *inventoryV1.Part) bool {
+	return func(part *inventoryV1.Part) bool {
 		var counter int
 
-		for _, partTag := range inPart.Tags {
+		for _, partTag := range part.Tags {
 			for _, tag := range tags {
 				if strings.EqualFold(strings.ToLower(partTag), strings.ToLower(tag)) {
 					counter++
@@ -136,30 +159,6 @@ func byTags(tags []string) PartPredicate {
 
 		return counter == len(tags)
 	}
-}
-
-func initTestStorage() (*InventoryStorage, error) {
-	storage := InventoryStorage{
-		parts: make(map[string]*inventoryV1.Part),
-		mtx:   sync.RWMutex{},
-	}
-
-	file, err := os.OpenFile(dataFileName, os.O_RDONLY|os.O_CREATE, 0o600)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %w", err)
-	}
-	defer func() {
-		cerr := file.Close()
-		if cerr != nil {
-			log.Printf("failed to close file: %v", cerr)
-			return
-		}
-	}()
-	if err := json.NewDecoder(file).Decode(&storage.parts); err != nil {
-		return nil, fmt.Errorf("failed to decode test data: %w", err)
-	}
-
-	return &storage, nil
 }
 
 type InventoryService struct {
@@ -194,23 +193,27 @@ func (i *InventoryService) ListParts(_ context.Context, req *inventoryV1.ListPar
 		partPredicates = append(partPredicates, byUUIDs(req.Filter.Uuids))
 	}
 
-	if req.Filter.Names != nil {
+	if len(req.Filter.Names) > 0 {
 		partPredicates = append(partPredicates, byNames(req.Filter.Names))
 	}
 
-	if req.Filter.Categories != nil {
+	if len(req.Filter.Categories) > 0 {
 		partPredicates = append(partPredicates, byCategories(req.Filter.Categories))
 	}
 
-	if req.Filter.ManufacturerCountries != nil {
+	if len(req.Filter.ManufacturerCountries) > 0 {
 		partPredicates = append(partPredicates, byManufacturerCountries(req.Filter.ManufacturerCountries))
 	}
 
-	if req.Filter.Tags != nil {
+	if len(req.Filter.Tags) > 0 {
 		partPredicates = append(partPredicates, byTags(req.Filter.Tags))
 	}
 
 	parts = filterParts(parts, partPredicates)
+
+	if len(parts) != len(req.Filter.Uuids) {
+		return nil, status.Errorf(codes.NotFound, "some parts not found")
+	}
 
 	return &inventoryV1.ListPartsResponse{Parts: parts}, nil
 }
@@ -218,8 +221,7 @@ func (i *InventoryService) ListParts(_ context.Context, req *inventoryV1.ListPar
 func main() {
 	storage, err := initTestStorage()
 	if err != nil {
-		log.Printf("failed to init test storage: %v", err)
-		return
+		log.Fatalf("Failed to init test storage: %v", err)
 	}
 
 	service := NewInventaryService(storage)
@@ -233,7 +235,6 @@ func main() {
 		cerr := lis.Close()
 		if cerr != nil {
 			log.Printf("failed to close the listener: %v\n", cerr)
-			return
 		}
 	}()
 
@@ -251,7 +252,6 @@ func main() {
 
 		if err = server.Serve(lis); err != nil {
 			log.Printf("failed to serve gRPC server: %v\n", err)
-			return
 		}
 	}()
 
