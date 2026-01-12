@@ -109,23 +109,6 @@ func (s *Order) Validate() error {
 	return nil
 }
 
-func (s OrderPaymentMethod) Validate() error {
-	switch s {
-	case "UNKNOWN":
-		return nil
-	case "CARD":
-		return nil
-	case "SBP":
-		return nil
-	case "CREDIT_CARD":
-		return nil
-	case "INVESTOR_MONEY":
-		return nil
-	default:
-		return errors.Errorf("invalid value: %v", s)
-	}
-}
-
 func (s OrderStatus) Validate() error {
 	switch s {
 	case "PENDING_PAYMENT":
@@ -162,7 +145,7 @@ func (s *PayOrderRequest) Validate() error {
 	return nil
 }
 
-func (s PayOrderRequestPaymentMethod) Validate() error {
+func (s PaymentMethod) Validate() error {
 	switch s {
 	case "UNKNOWN":
 		return nil

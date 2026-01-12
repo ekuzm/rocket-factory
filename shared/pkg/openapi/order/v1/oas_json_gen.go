@@ -1136,52 +1136,6 @@ func (s *Order) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes OrderPaymentMethod as json.
-func (s OrderPaymentMethod) Encode(e *jx.Encoder) {
-	e.Str(string(s))
-}
-
-// Decode decodes OrderPaymentMethod from json.
-func (s *OrderPaymentMethod) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode OrderPaymentMethod to nil")
-	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
-	}
-	// Try to use constant string.
-	switch OrderPaymentMethod(v) {
-	case OrderPaymentMethodUNKNOWN:
-		*s = OrderPaymentMethodUNKNOWN
-	case OrderPaymentMethodCARD:
-		*s = OrderPaymentMethodCARD
-	case OrderPaymentMethodSBP:
-		*s = OrderPaymentMethodSBP
-	case OrderPaymentMethodCREDITCARD:
-		*s = OrderPaymentMethodCREDITCARD
-	case OrderPaymentMethodINVESTORMONEY:
-		*s = OrderPaymentMethodINVESTORMONEY
-	default:
-		*s = OrderPaymentMethod(v)
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OrderPaymentMethod) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OrderPaymentMethod) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes OrderStatus as json.
 func (s OrderStatus) Encode(e *jx.Encoder) {
 	e.Str(string(s))
@@ -1319,52 +1273,6 @@ func (s *PayOrderRequest) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes PayOrderRequestPaymentMethod as json.
-func (s PayOrderRequestPaymentMethod) Encode(e *jx.Encoder) {
-	e.Str(string(s))
-}
-
-// Decode decodes PayOrderRequestPaymentMethod from json.
-func (s *PayOrderRequestPaymentMethod) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode PayOrderRequestPaymentMethod to nil")
-	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
-	}
-	// Try to use constant string.
-	switch PayOrderRequestPaymentMethod(v) {
-	case PayOrderRequestPaymentMethodUNKNOWN:
-		*s = PayOrderRequestPaymentMethodUNKNOWN
-	case PayOrderRequestPaymentMethodCARD:
-		*s = PayOrderRequestPaymentMethodCARD
-	case PayOrderRequestPaymentMethodSBP:
-		*s = PayOrderRequestPaymentMethodSBP
-	case PayOrderRequestPaymentMethodCREDITCARD:
-		*s = PayOrderRequestPaymentMethodCREDITCARD
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
-		*s = PayOrderRequestPaymentMethodINVESTORMONEY
-	default:
-		*s = PayOrderRequestPaymentMethod(v)
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s PayOrderRequestPaymentMethod) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *PayOrderRequestPaymentMethod) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode implements json.Marshaler.
 func (s *PayOrderResponse) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -1457,6 +1365,52 @@ func (s *PayOrderResponse) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *PayOrderResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PaymentMethod as json.
+func (s PaymentMethod) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes PaymentMethod from json.
+func (s *PaymentMethod) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PaymentMethod to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch PaymentMethod(v) {
+	case PaymentMethodUNKNOWN:
+		*s = PaymentMethodUNKNOWN
+	case PaymentMethodCARD:
+		*s = PaymentMethodCARD
+	case PaymentMethodSBP:
+		*s = PaymentMethodSBP
+	case PaymentMethodCREDITCARD:
+		*s = PaymentMethodCREDITCARD
+	case PaymentMethodINVESTORMONEY:
+		*s = PaymentMethodINVESTORMONEY
+	default:
+		*s = PaymentMethod(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s PaymentMethod) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PaymentMethod) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

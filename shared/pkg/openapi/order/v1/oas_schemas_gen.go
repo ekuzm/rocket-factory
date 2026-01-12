@@ -294,11 +294,9 @@ type Order struct {
 	// Total price for order.
 	TotalPrice float64 `json:"total_price"`
 	// Transaction UUID.
-	TransactionUUID uuid.UUID `json:"transaction_uuid"`
-	// Payment method.
-	PaymentMethod OrderPaymentMethod `json:"payment_method"`
-	// Status of order.
-	Status OrderStatus `json:"status"`
+	TransactionUUID uuid.UUID     `json:"transaction_uuid"`
+	PaymentMethod   PaymentMethod `json:"payment_method"`
+	Status          OrderStatus   `json:"status"`
 }
 
 // GetOrderUUID returns the value of OrderUUID.
@@ -327,7 +325,7 @@ func (s *Order) GetTransactionUUID() uuid.UUID {
 }
 
 // GetPaymentMethod returns the value of PaymentMethod.
-func (s *Order) GetPaymentMethod() OrderPaymentMethod {
+func (s *Order) GetPaymentMethod() PaymentMethod {
 	return s.PaymentMethod
 }
 
@@ -362,7 +360,7 @@ func (s *Order) SetTransactionUUID(val uuid.UUID) {
 }
 
 // SetPaymentMethod sets the value of PaymentMethod.
-func (s *Order) SetPaymentMethod(val OrderPaymentMethod) {
+func (s *Order) SetPaymentMethod(val PaymentMethod) {
 	s.PaymentMethod = val
 }
 
@@ -373,70 +371,8 @@ func (s *Order) SetStatus(val OrderStatus) {
 
 func (*Order) getOrderByUUIDRes() {}
 
-// Payment method.
-type OrderPaymentMethod string
-
-const (
-	OrderPaymentMethodUNKNOWN       OrderPaymentMethod = "UNKNOWN"
-	OrderPaymentMethodCARD          OrderPaymentMethod = "CARD"
-	OrderPaymentMethodSBP           OrderPaymentMethod = "SBP"
-	OrderPaymentMethodCREDITCARD    OrderPaymentMethod = "CREDIT_CARD"
-	OrderPaymentMethodINVESTORMONEY OrderPaymentMethod = "INVESTOR_MONEY"
-)
-
-// AllValues returns all OrderPaymentMethod values.
-func (OrderPaymentMethod) AllValues() []OrderPaymentMethod {
-	return []OrderPaymentMethod{
-		OrderPaymentMethodUNKNOWN,
-		OrderPaymentMethodCARD,
-		OrderPaymentMethodSBP,
-		OrderPaymentMethodCREDITCARD,
-		OrderPaymentMethodINVESTORMONEY,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s OrderPaymentMethod) MarshalText() ([]byte, error) {
-	switch s {
-	case OrderPaymentMethodUNKNOWN:
-		return []byte(s), nil
-	case OrderPaymentMethodCARD:
-		return []byte(s), nil
-	case OrderPaymentMethodSBP:
-		return []byte(s), nil
-	case OrderPaymentMethodCREDITCARD:
-		return []byte(s), nil
-	case OrderPaymentMethodINVESTORMONEY:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *OrderPaymentMethod) UnmarshalText(data []byte) error {
-	switch OrderPaymentMethod(data) {
-	case OrderPaymentMethodUNKNOWN:
-		*s = OrderPaymentMethodUNKNOWN
-		return nil
-	case OrderPaymentMethodCARD:
-		*s = OrderPaymentMethodCARD
-		return nil
-	case OrderPaymentMethodSBP:
-		*s = OrderPaymentMethodSBP
-		return nil
-	case OrderPaymentMethodCREDITCARD:
-		*s = OrderPaymentMethodCREDITCARD
-		return nil
-	case OrderPaymentMethodINVESTORMONEY:
-		*s = OrderPaymentMethodINVESTORMONEY
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
 // Status of order.
+// Ref: #
 type OrderStatus string
 
 const (
@@ -487,81 +423,17 @@ func (s *OrderStatus) UnmarshalText(data []byte) error {
 
 // Ref: #
 type PayOrderRequest struct {
-	// Payment method.
-	PaymentMethod PayOrderRequestPaymentMethod `json:"payment_method"`
+	PaymentMethod PaymentMethod `json:"payment_method"`
 }
 
 // GetPaymentMethod returns the value of PaymentMethod.
-func (s *PayOrderRequest) GetPaymentMethod() PayOrderRequestPaymentMethod {
+func (s *PayOrderRequest) GetPaymentMethod() PaymentMethod {
 	return s.PaymentMethod
 }
 
 // SetPaymentMethod sets the value of PaymentMethod.
-func (s *PayOrderRequest) SetPaymentMethod(val PayOrderRequestPaymentMethod) {
+func (s *PayOrderRequest) SetPaymentMethod(val PaymentMethod) {
 	s.PaymentMethod = val
-}
-
-// Payment method.
-type PayOrderRequestPaymentMethod string
-
-const (
-	PayOrderRequestPaymentMethodUNKNOWN       PayOrderRequestPaymentMethod = "UNKNOWN"
-	PayOrderRequestPaymentMethodCARD          PayOrderRequestPaymentMethod = "CARD"
-	PayOrderRequestPaymentMethodSBP           PayOrderRequestPaymentMethod = "SBP"
-	PayOrderRequestPaymentMethodCREDITCARD    PayOrderRequestPaymentMethod = "CREDIT_CARD"
-	PayOrderRequestPaymentMethodINVESTORMONEY PayOrderRequestPaymentMethod = "INVESTOR_MONEY"
-)
-
-// AllValues returns all PayOrderRequestPaymentMethod values.
-func (PayOrderRequestPaymentMethod) AllValues() []PayOrderRequestPaymentMethod {
-	return []PayOrderRequestPaymentMethod{
-		PayOrderRequestPaymentMethodUNKNOWN,
-		PayOrderRequestPaymentMethodCARD,
-		PayOrderRequestPaymentMethodSBP,
-		PayOrderRequestPaymentMethodCREDITCARD,
-		PayOrderRequestPaymentMethodINVESTORMONEY,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s PayOrderRequestPaymentMethod) MarshalText() ([]byte, error) {
-	switch s {
-	case PayOrderRequestPaymentMethodUNKNOWN:
-		return []byte(s), nil
-	case PayOrderRequestPaymentMethodCARD:
-		return []byte(s), nil
-	case PayOrderRequestPaymentMethodSBP:
-		return []byte(s), nil
-	case PayOrderRequestPaymentMethodCREDITCARD:
-		return []byte(s), nil
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *PayOrderRequestPaymentMethod) UnmarshalText(data []byte) error {
-	switch PayOrderRequestPaymentMethod(data) {
-	case PayOrderRequestPaymentMethodUNKNOWN:
-		*s = PayOrderRequestPaymentMethodUNKNOWN
-		return nil
-	case PayOrderRequestPaymentMethodCARD:
-		*s = PayOrderRequestPaymentMethodCARD
-		return nil
-	case PayOrderRequestPaymentMethodSBP:
-		*s = PayOrderRequestPaymentMethodSBP
-		return nil
-	case PayOrderRequestPaymentMethodCREDITCARD:
-		*s = PayOrderRequestPaymentMethodCREDITCARD
-		return nil
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
-		*s = PayOrderRequestPaymentMethodINVESTORMONEY
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
 }
 
 // Ref: #
@@ -581,3 +453,67 @@ func (s *PayOrderResponse) SetTransactionUUID(val uuid.UUID) {
 }
 
 func (*PayOrderResponse) payOrderRes() {}
+
+// Payment method.
+// Ref: #
+type PaymentMethod string
+
+const (
+	PaymentMethodUNKNOWN       PaymentMethod = "UNKNOWN"
+	PaymentMethodCARD          PaymentMethod = "CARD"
+	PaymentMethodSBP           PaymentMethod = "SBP"
+	PaymentMethodCREDITCARD    PaymentMethod = "CREDIT_CARD"
+	PaymentMethodINVESTORMONEY PaymentMethod = "INVESTOR_MONEY"
+)
+
+// AllValues returns all PaymentMethod values.
+func (PaymentMethod) AllValues() []PaymentMethod {
+	return []PaymentMethod{
+		PaymentMethodUNKNOWN,
+		PaymentMethodCARD,
+		PaymentMethodSBP,
+		PaymentMethodCREDITCARD,
+		PaymentMethodINVESTORMONEY,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s PaymentMethod) MarshalText() ([]byte, error) {
+	switch s {
+	case PaymentMethodUNKNOWN:
+		return []byte(s), nil
+	case PaymentMethodCARD:
+		return []byte(s), nil
+	case PaymentMethodSBP:
+		return []byte(s), nil
+	case PaymentMethodCREDITCARD:
+		return []byte(s), nil
+	case PaymentMethodINVESTORMONEY:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *PaymentMethod) UnmarshalText(data []byte) error {
+	switch PaymentMethod(data) {
+	case PaymentMethodUNKNOWN:
+		*s = PaymentMethodUNKNOWN
+		return nil
+	case PaymentMethodCARD:
+		*s = PaymentMethodCARD
+		return nil
+	case PaymentMethodSBP:
+		*s = PaymentMethodSBP
+		return nil
+	case PaymentMethodCREDITCARD:
+		*s = PaymentMethodCREDITCARD
+		return nil
+	case PaymentMethodINVESTORMONEY:
+		*s = PaymentMethodINVESTORMONEY
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}

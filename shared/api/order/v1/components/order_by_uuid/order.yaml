@@ -38,22 +38,8 @@ properties:
     description: Transaction UUID
     example: "80205bfe-1052-4d6d-ab83-7c68c14b87b1"
   payment_method:
-    type: string
-    description: Payment method
-    enum:
-      - UNKNOWN
-      - CARD
-      - SBP
-      - CREDIT_CARD
-      - INVESTOR_MONEY
-    default: UNKNOWN
-    example: "CARD"
+    $ref: "../enums/payment_method.yaml"
   status:
-    type: string
-    description: Status of order
-    enum:
-      - PENDING_PAYMENT
-      - PAID
-      - CANCELED
+    $ref: "../enums/order_status.yaml"
     default: PENDING_PAYMENT
     example: "PAID"

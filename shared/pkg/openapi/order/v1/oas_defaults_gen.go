@@ -5,7 +5,7 @@ package order_v1
 // setDefaults set default value of fields.
 func (s *Order) setDefaults() {
 	{
-		val := OrderPaymentMethod("UNKNOWN")
+		val := PaymentMethod("UNKNOWN")
 		s.PaymentMethod = val
 	}
 	{
@@ -17,7 +17,7 @@ func (s *Order) setDefaults() {
 // setDefaults set default value of fields.
 func (s *PayOrderRequest) setDefaults() {
 	{
-		val := PayOrderRequestPaymentMethod("UNKNOWN")
+		val := PaymentMethod("UNKNOWN")
 		s.PaymentMethod = val
 	}
 }
