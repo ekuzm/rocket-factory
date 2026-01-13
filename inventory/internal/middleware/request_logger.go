@@ -29,11 +29,11 @@ func RequestLogger() grpc.UnaryServerInterceptor {
 
 		if err != nil {
 			status := status.Convert(err)
-			log.Printf("Finished gRPC %v method with %v code and has worked for %v", method, status.Code(), duration)
+			log.Printf("Finished gRPC %v method with %v code and had worked for %v", method, status.Code(), duration)
 			return nil, err
 		}
 
-		log.Printf("Finished gRPC %v method and has worked for %v", method, duration)
+		log.Printf("Finished gRPC %v method and had worked for %v", method, duration)
 
 		return resp, nil
 	}
