@@ -41,6 +41,7 @@ func (s *BadRequestError) SetMessage(val string) {
 	s.Message = val
 }
 
+func (*BadRequestError) cancelOrderRes()    {}
 func (*BadRequestError) createOrderRes()    {}
 func (*BadRequestError) getOrderByUUIDRes() {}
 func (*BadRequestError) payOrderRes()       {}
@@ -136,28 +137,28 @@ func (*CreateOrderResponse) createOrderRes() {}
 // Ref: #
 type GenericError struct {
 	// HTTP-code error.
-	Code int `json:"code"`
+	Code OptInt `json:"code"`
 	// Error description.
-	Message string `json:"message"`
+	Message OptString `json:"message"`
 }
 
 // GetCode returns the value of Code.
-func (s *GenericError) GetCode() int {
+func (s *GenericError) GetCode() OptInt {
 	return s.Code
 }
 
 // GetMessage returns the value of Message.
-func (s *GenericError) GetMessage() string {
+func (s *GenericError) GetMessage() OptString {
 	return s.Message
 }
 
 // SetCode sets the value of Code.
-func (s *GenericError) SetCode(val int) {
+func (s *GenericError) SetCode(val OptInt) {
 	s.Code = val
 }
 
 // SetMessage sets the value of Message.
-func (s *GenericError) SetMessage(val string) {
+func (s *GenericError) SetMessage(val OptString) {
 	s.Message = val
 }
 
@@ -283,6 +284,190 @@ func (*NotFoundError) createOrderRes()    {}
 func (*NotFoundError) getOrderByUUIDRes() {}
 func (*NotFoundError) payOrderRes()       {}
 
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt is optional int.
+type OptInt struct {
+	Value int
+	Set   bool
+}
+
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt) SetTo(v int) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt) Get() (v int, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptPaymentMethod returns new OptPaymentMethod with value set to v.
+func NewOptPaymentMethod(v PaymentMethod) OptPaymentMethod {
+	return OptPaymentMethod{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptPaymentMethod is optional PaymentMethod.
+type OptPaymentMethod struct {
+	Value PaymentMethod
+	Set   bool
+}
+
+// IsSet returns true if OptPaymentMethod was set.
+func (o OptPaymentMethod) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptPaymentMethod) Reset() {
+	var v PaymentMethod
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptPaymentMethod) SetTo(v PaymentMethod) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptPaymentMethod) Get() (v PaymentMethod, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptPaymentMethod) Or(d PaymentMethod) PaymentMethod {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptUUID returns new OptUUID with value set to v.
+func NewOptUUID(v uuid.UUID) OptUUID {
+	return OptUUID{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptUUID is optional uuid.UUID.
+type OptUUID struct {
+	Value uuid.UUID
+	Set   bool
+}
+
+// IsSet returns true if OptUUID was set.
+func (o OptUUID) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptUUID) Reset() {
+	var v uuid.UUID
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptUUID) SetTo(v uuid.UUID) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptUUID) Get() (v uuid.UUID, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptUUID) Or(d uuid.UUID) uuid.UUID {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // Ref: #
 type Order struct {
 	// Order UUID.
@@ -294,9 +479,9 @@ type Order struct {
 	// Total price for order.
 	TotalPrice float64 `json:"total_price"`
 	// Transaction UUID.
-	TransactionUUID uuid.UUID     `json:"transaction_uuid"`
-	PaymentMethod   PaymentMethod `json:"payment_method"`
-	Status          OrderStatus   `json:"status"`
+	TransactionUUID OptUUID          `json:"transaction_uuid"`
+	PaymentMethod   OptPaymentMethod `json:"payment_method"`
+	Status          OrderStatus      `json:"status"`
 }
 
 // GetOrderUUID returns the value of OrderUUID.
@@ -320,12 +505,12 @@ func (s *Order) GetTotalPrice() float64 {
 }
 
 // GetTransactionUUID returns the value of TransactionUUID.
-func (s *Order) GetTransactionUUID() uuid.UUID {
+func (s *Order) GetTransactionUUID() OptUUID {
 	return s.TransactionUUID
 }
 
 // GetPaymentMethod returns the value of PaymentMethod.
-func (s *Order) GetPaymentMethod() PaymentMethod {
+func (s *Order) GetPaymentMethod() OptPaymentMethod {
 	return s.PaymentMethod
 }
 
@@ -355,12 +540,12 @@ func (s *Order) SetTotalPrice(val float64) {
 }
 
 // SetTransactionUUID sets the value of TransactionUUID.
-func (s *Order) SetTransactionUUID(val uuid.UUID) {
+func (s *Order) SetTransactionUUID(val OptUUID) {
 	s.TransactionUUID = val
 }
 
 // SetPaymentMethod sets the value of PaymentMethod.
-func (s *Order) SetPaymentMethod(val PaymentMethod) {
+func (s *Order) SetPaymentMethod(val OptPaymentMethod) {
 	s.PaymentMethod = val
 }
 

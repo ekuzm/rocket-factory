@@ -6,7 +6,7 @@ package order_v1
 func (s *Order) setDefaults() {
 	{
 		val := PaymentMethod("UNKNOWN")
-		s.PaymentMethod = val
+		s.PaymentMethod.SetTo(val)
 	}
 	{
 		val := OrderStatus("PENDING_PAYMENT")
