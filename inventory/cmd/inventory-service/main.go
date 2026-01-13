@@ -164,7 +164,7 @@ func byTags(tags []string) PartPredicate {
 
 type InventoryService struct {
 	storage *InventoryStorage
-	inventoryV1.UnimplementedInventoryV1ServiceServer
+	inventoryV1.UnimplementedInventoryServiceServer
 }
 
 func NewInventaryService(storage *InventoryStorage) *InventoryService {
@@ -224,7 +224,7 @@ func (i *InventoryService) ListParts(_ context.Context, req *inventoryV1.ListPar
 
 	parts = filterParts(parts, partPredicates)
 
-	if len(parts) != len(req.Filter.Uuids) {
+	if len(parts) != len(req.Filter.Uuids) && req.Filter.Uuids != nil {
 		return nil, status.Errorf(codes.NotFound, "some parts not found")
 	}
 
@@ -253,7 +253,7 @@ func main() {
 
 	server := grpc.NewServer()
 
-	inventoryV1.RegisterInventoryV1ServiceServer(server, service)
+	inventoryV1.RegisterInventoryServiceServer(server, service)
 	reflection.Register(server)
 
 	go func() {

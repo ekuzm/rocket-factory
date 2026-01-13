@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1;inventory_v1";
 
-service InventoryV1Service {
+service InventoryService {
     rpc GetPart(GetPartRequest) returns (GetPartResponse);
     rpc ListParts(ListPartsRequest) returns (ListPartsResponse);
 }

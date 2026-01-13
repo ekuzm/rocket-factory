@@ -18,7 +18,7 @@ import (
 )
 
 type PaymentService struct {
-	paymentV1.UnimplementedPaymentV1ServiceServer
+	paymentV1.UnimplementedPaymentServiceServer
 }
 
 func NewPaymentService() *PaymentService {
@@ -40,7 +40,7 @@ func (p *PaymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 }
 
 func (p *PaymentService) validatePayOrder(req *paymentV1.PayOrderRequest) error {
-	if _, err := uuid.Parse(req.OrderUuid); err != nil {
+	if _, err := uuid.Parse(req.Uuid); err != nil {
 		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -75,7 +75,7 @@ func main() {
 
 	server := grpc.NewServer()
 
-	paymentV1.RegisterPaymentV1ServiceServer(server, service)
+	paymentV1.RegisterPaymentServiceServer(server, service)
 	reflection.Register(server)
 
 	go func() {
