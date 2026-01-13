@@ -80,7 +80,7 @@ func (PaymentMethod) EnumDescriptor() ([]byte, []int) {
 // PayOrderRequest contains data required to perform a payment.
 type PayOrderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	OrderUuid     string                 `protobuf:"bytes,1,opt,name=order_uuid,json=orderUuid,proto3" json:"order_uuid,omitempty"`
+	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	UserUuid      string                 `protobuf:"bytes,2,opt,name=user_uuid,json=userUuid,proto3" json:"user_uuid,omitempty"`
 	PaymentMethod PaymentMethod          `protobuf:"varint,3,opt,name=payment_method,json=paymentMethod,proto3,enum=payment.v1.PaymentMethod" json:"payment_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -117,9 +117,9 @@ func (*PayOrderRequest) Descriptor() ([]byte, []int) {
 	return file_payment_v1_payment_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PayOrderRequest) GetOrderUuid() string {
+func (x *PayOrderRequest) GetUuid() string {
 	if x != nil {
-		return x.OrderUuid
+		return x.Uuid
 	}
 	return ""
 }
@@ -188,10 +188,9 @@ var File_payment_v1_payment_proto protoreflect.FileDescriptor
 const file_payment_v1_payment_proto_rawDesc = "" +
 	"\n" +
 	"\x18payment/v1/payment.proto\x12\n" +
-	"payment.v1\"\x8f\x01\n" +
-	"\x0fPayOrderRequest\x12\x1d\n" +
-	"\n" +
-	"order_uuid\x18\x01 \x01(\tR\torderUuid\x12\x1b\n" +
+	"payment.v1\"\x84\x01\n" +
+	"\x0fPayOrderRequest\x12\x12\n" +
+	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x1b\n" +
 	"\tuser_uuid\x18\x02 \x01(\tR\buserUuid\x12@\n" +
 	"\x0epayment_method\x18\x03 \x01(\x0e2\x19.payment.v1.PaymentMethodR\rpaymentMethod\"=\n" +
 	"\x10PayOrderResponse\x12)\n" +
@@ -201,8 +200,8 @@ const file_payment_v1_payment_proto_rawDesc = "" +
 	"\x13PAYMENT_METHOD_CARD\x10\x01\x12\x16\n" +
 	"\x12PAYMENT_METHOD_SPB\x10\x02\x12\x1e\n" +
 	"\x1aPAYMENT_METHOD_CREDIT_CARD\x10\x03\x12!\n" +
-	"\x1dPAYMENT_METHOD_INVESTOR_MONEY\x10\x042Y\n" +
-	"\x10PaymentV1Service\x12E\n" +
+	"\x1dPAYMENT_METHOD_INVESTOR_MONEY\x10\x042W\n" +
+	"\x0ePaymentService\x12E\n" +
 	"\bPayOrder\x12\x1b.payment.v1.PayOrderRequest\x1a\x1c.payment.v1.PayOrderResponseBBZ@github.com/ekuzm/rocket-factory/shared/pkg/payment/v1;payment_v1b\x06proto3"
 
 var (
@@ -226,8 +225,8 @@ var file_payment_v1_payment_proto_goTypes = []any{
 }
 var file_payment_v1_payment_proto_depIdxs = []int32{
 	0, // 0: payment.v1.PayOrderRequest.payment_method:type_name -> payment.v1.PaymentMethod
-	1, // 1: payment.v1.PaymentV1Service.PayOrder:input_type -> payment.v1.PayOrderRequest
-	2, // 2: payment.v1.PaymentV1Service.PayOrder:output_type -> payment.v1.PayOrderResponse
+	1, // 1: payment.v1.PaymentService.PayOrder:input_type -> payment.v1.PayOrderRequest
+	2, // 2: payment.v1.PaymentService.PayOrder:output_type -> payment.v1.PayOrderResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

@@ -107,14 +107,14 @@ func (s *CreateOrderRequest) SetPartUuids(val []uuid.UUID) {
 // Ref: #
 type CreateOrderResponse struct {
 	// Order UUID.
-	OrderUUID uuid.UUID `json:"order_uuid"`
+	UUID uuid.UUID `json:"uuid"`
 	// Total price for order.
 	TotalPrice float64 `json:"total_price"`
 }
 
-// GetOrderUUID returns the value of OrderUUID.
-func (s *CreateOrderResponse) GetOrderUUID() uuid.UUID {
-	return s.OrderUUID
+// GetUUID returns the value of UUID.
+func (s *CreateOrderResponse) GetUUID() uuid.UUID {
+	return s.UUID
 }
 
 // GetTotalPrice returns the value of TotalPrice.
@@ -122,9 +122,9 @@ func (s *CreateOrderResponse) GetTotalPrice() float64 {
 	return s.TotalPrice
 }
 
-// SetOrderUUID sets the value of OrderUUID.
-func (s *CreateOrderResponse) SetOrderUUID(val uuid.UUID) {
-	s.OrderUUID = val
+// SetUUID sets the value of UUID.
+func (s *CreateOrderResponse) SetUUID(val uuid.UUID) {
+	s.UUID = val
 }
 
 // SetTotalPrice sets the value of TotalPrice.
@@ -471,7 +471,7 @@ func (o OptUUID) Or(d uuid.UUID) uuid.UUID {
 // Ref: #
 type Order struct {
 	// Order UUID.
-	OrderUUID uuid.UUID `json:"order_uuid"`
+	UUID uuid.UUID `json:"uuid"`
 	// User UUID.
 	UserUUID uuid.UUID `json:"user_uuid"`
 	// Part UUIDs.
@@ -484,9 +484,9 @@ type Order struct {
 	Status          OrderStatus      `json:"status"`
 }
 
-// GetOrderUUID returns the value of OrderUUID.
-func (s *Order) GetOrderUUID() uuid.UUID {
-	return s.OrderUUID
+// GetUUID returns the value of UUID.
+func (s *Order) GetUUID() uuid.UUID {
+	return s.UUID
 }
 
 // GetUserUUID returns the value of UserUUID.
@@ -519,9 +519,9 @@ func (s *Order) GetStatus() OrderStatus {
 	return s.Status
 }
 
-// SetOrderUUID sets the value of OrderUUID.
-func (s *Order) SetOrderUUID(val uuid.UUID) {
-	s.OrderUUID = val
+// SetUUID sets the value of UUID.
+func (s *Order) SetUUID(val uuid.UUID) {
+	s.UUID = val
 }
 
 // SetUserUUID sets the value of UserUUID.
@@ -563,7 +563,7 @@ type OrderStatus string
 const (
 	OrderStatusPENDINGPAYMENT OrderStatus = "PENDING_PAYMENT"
 	OrderStatusPAID           OrderStatus = "PAID"
-	OrderStatusCANCELED       OrderStatus = "CANCELED"
+	OrderStatusCANCELLED      OrderStatus = "CANCELLED"
 )
 
 // AllValues returns all OrderStatus values.
@@ -571,7 +571,7 @@ func (OrderStatus) AllValues() []OrderStatus {
 	return []OrderStatus{
 		OrderStatusPENDINGPAYMENT,
 		OrderStatusPAID,
-		OrderStatusCANCELED,
+		OrderStatusCANCELLED,
 	}
 }
 
@@ -582,7 +582,7 @@ func (s OrderStatus) MarshalText() ([]byte, error) {
 		return []byte(s), nil
 	case OrderStatusPAID:
 		return []byte(s), nil
-	case OrderStatusCANCELED:
+	case OrderStatusCANCELLED:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -598,8 +598,8 @@ func (s *OrderStatus) UnmarshalText(data []byte) error {
 	case OrderStatusPAID:
 		*s = OrderStatusPAID
 		return nil
-	case OrderStatusCANCELED:
-		*s = OrderStatusCANCELED
+	case OrderStatusCANCELLED:
+		*s = OrderStatusCANCELLED
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

@@ -7,13 +7,12 @@
 package inventory_v1
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -770,8 +769,8 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\x0fCATEGORY_ENGINE\x10\x01\x12\x11\n" +
 	"\rCATEGORY_FUEL\x10\x02\x12\x15\n" +
 	"\x11CATEGORY_PORTHOLE\x10\x03\x12\x11\n" +
-	"\rCATEGORY_WING\x10\x042\xaa\x01\n" +
-	"\x12InventoryV1Service\x12F\n" +
+	"\rCATEGORY_WING\x10\x042\xa8\x01\n" +
+	"\x10InventoryService\x12F\n" +
 	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x1d.inventory.v1.GetPartResponse\x12L\n" +
 	"\tListParts\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponseBLZJgithub.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1;inventory_v1b\x06proto3"
 
@@ -815,10 +814,10 @@ var file_inventory_v1_inventory_proto_depIdxs = []int32{
 	3,  // 8: inventory.v1.ListPartsResponse.parts:type_name -> inventory.v1.Part
 	0,  // 9: inventory.v1.PartsFilter.categories:type_name -> inventory.v1.Category
 	6,  // 10: inventory.v1.Part.MetadataEntry.value:type_name -> inventory.v1.Value
-	1,  // 11: inventory.v1.InventoryV1Service.GetPart:input_type -> inventory.v1.GetPartRequest
-	7,  // 12: inventory.v1.InventoryV1Service.ListParts:input_type -> inventory.v1.ListPartsRequest
-	2,  // 13: inventory.v1.InventoryV1Service.GetPart:output_type -> inventory.v1.GetPartResponse
-	8,  // 14: inventory.v1.InventoryV1Service.ListParts:output_type -> inventory.v1.ListPartsResponse
+	1,  // 11: inventory.v1.InventoryService.GetPart:input_type -> inventory.v1.GetPartRequest
+	7,  // 12: inventory.v1.InventoryService.ListParts:input_type -> inventory.v1.ListPartsRequest
+	2,  // 13: inventory.v1.InventoryService.GetPart:output_type -> inventory.v1.GetPartResponse
+	8,  // 14: inventory.v1.InventoryService.ListParts:output_type -> inventory.v1.ListPartsResponse
 	13, // [13:15] is the sub-list for method output_type
 	11, // [11:13] is the sub-list for method input_type
 	11, // [11:11] is the sub-list for extension type_name

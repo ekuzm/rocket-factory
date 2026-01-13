@@ -3,4 +3,4 @@ description: Status of order
 enum:
   - PENDING_PAYMENT
   - PAID
-  - CANCELED
+  - CANCELLED

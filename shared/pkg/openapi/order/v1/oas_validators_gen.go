@@ -122,7 +122,7 @@ func (s OrderStatus) Validate() error {
 		return nil
 	case "PAID":
 		return nil
-	case "CANCELED":
+	case "CANCELLED":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)

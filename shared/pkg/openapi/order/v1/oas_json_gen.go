@@ -374,8 +374,8 @@ func (s *CreateOrderResponse) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *CreateOrderResponse) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("order_uuid")
-		json.EncodeUUID(e, s.OrderUUID)
+		e.FieldStart("uuid")
+		json.EncodeUUID(e, s.UUID)
 	}
 	{
 		e.FieldStart("total_price")
@@ -384,7 +384,7 @@ func (s *CreateOrderResponse) encodeFields(e *jx.Encoder) {
 }
 
 var jsonFieldsNameOfCreateOrderResponse = [2]string{
-	0: "order_uuid",
+	0: "uuid",
 	1: "total_price",
 }
 
@@ -397,17 +397,17 @@ func (s *CreateOrderResponse) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "order_uuid":
+		case "uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeUUID(d)
-				s.OrderUUID = v
+				s.UUID = v
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"order_uuid\"")
+				return errors.Wrap(err, "decode field \"uuid\"")
 			}
 		case "total_price":
 			requiredBitSet[0] |= 1 << 1
@@ -1044,8 +1044,8 @@ func (s *Order) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *Order) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("order_uuid")
-		json.EncodeUUID(e, s.OrderUUID)
+		e.FieldStart("uuid")
+		json.EncodeUUID(e, s.UUID)
 	}
 	{
 		e.FieldStart("user_uuid")
@@ -1082,7 +1082,7 @@ func (s *Order) encodeFields(e *jx.Encoder) {
 }
 
 var jsonFieldsNameOfOrder = [7]string{
-	0: "order_uuid",
+	0: "uuid",
 	1: "user_uuid",
 	2: "part_uuids",
 	3: "total_price",
@@ -1101,17 +1101,17 @@ func (s *Order) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "order_uuid":
+		case "uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeUUID(d)
-				s.OrderUUID = v
+				s.UUID = v
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"order_uuid\"")
+				return errors.Wrap(err, "decode field \"uuid\"")
 			}
 		case "user_uuid":
 			requiredBitSet[0] |= 1 << 1
@@ -1263,8 +1263,8 @@ func (s *OrderStatus) Decode(d *jx.Decoder) error {
 		*s = OrderStatusPENDINGPAYMENT
 	case OrderStatusPAID:
 		*s = OrderStatusPAID
-	case OrderStatusCANCELED:
-		*s = OrderStatusCANCELED
+	case OrderStatusCANCELLED:
+		*s = OrderStatusCANCELLED
 	default:
 		*s = OrderStatus(v)
 	}
