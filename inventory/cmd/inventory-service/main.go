@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
+	"github.com/google/uuid"
 )
 
 const (
@@ -173,6 +174,14 @@ func NewInventaryService(storage *InventoryStorage) *InventoryService {
 }
 
 func (i *InventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
+	if req.Uuid == "" {
+		return nil, status.Error(codes.InvalidArgument, "part uuid is required")
+	}
+
+	if _, err := uuid.Parse(req.Uuid); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	part := i.storage.GetPart(req.Uuid)
 	if part == nil {
 		return nil, status.Errorf(codes.NotFound, "the part with this uuid wasn't found")
@@ -182,6 +191,10 @@ func (i *InventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 }
 
 func (i *InventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
+	if req.Filter == nil {
+		return nil, status.Error(codes.InvalidArgument, "filter is required")
+	}
+
 	parts := i.storage.ListParts()
 	if parts == nil {
 		return nil, status.Errorf(codes.NotFound, "parts weren't found")
