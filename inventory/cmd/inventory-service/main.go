@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
+	customMiddleware "github.com/ekuzm/rocket-factory/inventory/internal/middleware"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
 
@@ -251,7 +252,7 @@ func main() {
 		}
 	}()
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(customMiddleware.RequestLogger()))
 
 	inventoryV1.RegisterInventoryServiceServer(server, service)
 	reflection.Register(server)
