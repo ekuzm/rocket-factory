@@ -8,10 +8,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
+
+	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
 type PaymentService struct {
@@ -23,6 +26,10 @@ func NewPaymentService() *PaymentService {
 }
 
 func (p *PaymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
+	if err := p.validatePayOrder(req); err != nil {
+		return nil, err
+	}
+
 	transactionUUID := uuid.New().String()
 
 	log.Printf("The payment was successful, transaction uuid: %s", transactionUUID)
@@ -30,6 +37,22 @@ func (p *PaymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 	return &paymentV1.PayOrderResponse{
 		TransactionUuid: transactionUUID,
 	}, nil
+}
+
+func (p *PaymentService) validatePayOrder(req *paymentV1.PayOrderRequest) error {
+	if _, err := uuid.Parse(req.OrderUuid); err != nil {
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	if _, err := uuid.Parse(req.UserUuid); err != nil {
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	if req.PaymentMethod == paymentV1.PaymentMethod_PAYMENT_METHOD_UNSPECIFIED {
+		return status.Error(codes.InvalidArgument, "payment method is unspecified")
+	}
+
+	return nil
 }
 
 const (
