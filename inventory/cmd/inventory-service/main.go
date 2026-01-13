@@ -12,13 +12,13 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
-	"github.com/google/uuid"
 )
 
 const (
@@ -37,7 +37,7 @@ func initTestStorage() (*InventoryStorage, error) {
 		mtx:   sync.RWMutex{},
 	}
 
-	file, err := os.OpenFile(dataFileName, os.O_RDONLY|os.O_CREATE, 0o644)
+	file, err := os.OpenFile(dataFileName, os.O_RDONLY|os.O_CREATE, 0o600)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}

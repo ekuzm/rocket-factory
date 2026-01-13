@@ -96,7 +96,7 @@ func (o *OrderService) ListParts(ctx context.Context, filter *inventoryV1.PartsF
 	return resp.Parts, nil
 }
 
-func (o *OrderService) CalculateTotalPrice(ctx context.Context, parts []*inventoryV1.Part) float64 {
+func (o *OrderService) CalculateTotalPrice(_ context.Context, parts []*inventoryV1.Part) float64 {
 	var totalPrice float64
 
 	for _, part := range parts {
@@ -106,11 +106,11 @@ func (o *OrderService) CalculateTotalPrice(ctx context.Context, parts []*invento
 	return totalPrice
 }
 
-func (o *OrderService) SaveOrder(ctx context.Context, order *orderV1.Order) {
+func (o *OrderService) SaveOrder(_ context.Context, order *orderV1.Order) {
 	o.storage.SaveOrder(order)
 }
 
-func (o *OrderService) GetOrder(ctx context.Context, uuid string) (*orderV1.Order, error) {
+func (o *OrderService) GetOrder(_ context.Context, uuid string) (*orderV1.Order, error) {
 	order := o.storage.GetOrder(uuid)
 	if order == nil {
 		return nil, fmt.Errorf("the order with %s uuid not found", uuid)
@@ -119,7 +119,7 @@ func (o *OrderService) GetOrder(ctx context.Context, uuid string) (*orderV1.Orde
 	return order, nil
 }
 
-func (o *OrderService) CancelOrder(ctx context.Context, order *orderV1.Order) error {
+func (o *OrderService) CancelOrder(_ context.Context, order *orderV1.Order) error {
 	if order.Status == orderV1.OrderStatusPAID {
 		return fmt.Errorf("the order has payed and can't be canceled")
 	}
@@ -134,7 +134,7 @@ func (o *OrderService) CancelOrder(ctx context.Context, order *orderV1.Order) er
 
 func (o *OrderService) PayOrder(ctx context.Context, order *orderV1.Order, paymentMethod orderV1.PaymentMethod) (uuid.UUID, error) {
 	resp, err := o.paymentClient.PayOrder(ctx, &paymentV1.PayOrderRequest{
-		Uuid:     order.UUID.String(),
+		Uuid:          order.UUID.String(),
 		UserUuid:      order.UserUUID.String(),
 		PaymentMethod: mapOrderToPaymentMethod(paymentMethod),
 	})
@@ -152,7 +152,7 @@ func (o *OrderService) PayOrder(ctx context.Context, order *orderV1.Order, payme
 
 	transactionUUID, err := uuid.Parse(resp.TransactionUuid)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("failed to parse transaction uuid: %v", err)
+		return uuid.Nil, fmt.Errorf("failed to parse transaction uuid: %w", err)
 	}
 
 	o.storage.PayOrder(order, transactionUUID, paymentMethod)
@@ -189,7 +189,7 @@ func (o *OrderHandler) CreateOrder(ctx context.Context, req *orderV1.CreateOrder
 		case codes.InvalidArgument:
 			return &orderV1.BadRequestError{
 				Code:    http.StatusBadRequest,
-				Message: "bad request",
+				Message: status.Message(),
 			}, nil
 		default:
 			return &orderV1.InternalServerError{
@@ -286,12 +286,12 @@ func (o *OrderHandler) PayOrder(ctx context.Context, req *orderV1.PayOrderReques
 		case codes.InvalidArgument:
 			return &orderV1.BadRequestError{
 				Code:    http.StatusBadRequest,
-				Message: err.Error(),
+				Message: status.Message(),
 			}, nil
 		default:
 			return &orderV1.InternalServerError{
 				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
+				Message: status.Message(),
 			}, nil
 		}
 	}
@@ -383,10 +383,8 @@ func main() {
 
 	orderServer, err := orderV1.NewServer(orderHandler)
 	if err != nil {
-		if err := inventoryConn.Close(); err != nil {
-			log.Printf("Failed to close connection to inventory service: %v", err)
-		}
-		log.Fatalf("Failed to intialize server: %v", err)
+		log.Printf("Failed to intialize server: %v", err)
+		return
 	}
 
 	router := chi.NewRouter()
