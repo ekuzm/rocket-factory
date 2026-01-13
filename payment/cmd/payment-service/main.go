@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
+	customMiddleware "github.com/ekuzm/rocket-factory/payment/internal/middleware"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
@@ -73,7 +74,7 @@ func main() {
 		}
 	}()
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.UnaryInterceptor(customMiddleware.RequestLogger()))
 
 	paymentV1.RegisterPaymentServiceServer(server, service)
 	reflection.Register(server)
