@@ -1,0 +1,13 @@
+type: object
+required:
+  - code
+  - message
+properties:
+  code:
+    type: integer
+    description: HTTP-code
+    example: 204
+  message:
+    type: string
+    description: HTTP-code description
+    example: "No content"

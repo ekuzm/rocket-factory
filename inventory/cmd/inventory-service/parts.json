@@ -1,0 +1,180 @@
+{
+  "111e4567-e89b-12d3-a456-426614174001": {
+    "uuid": "111e4567-e89b-12d3-a456-426614174001",
+    "name": "Main Engine Mk1",
+    "description": "Primary propulsion engine for mid-size spacecraft.",
+    "price": 129999.99,
+    "stock_quantity": 5,
+    "category": 1,
+    "dimensions": {
+      "length": 320.5,
+      "width": 140,
+      "height": 210,
+      "weight": 950
+    },
+    "manufacturer": {
+      "country": "Germany",
+      "website": "https://stellarworks.space"
+    },
+    "tags": ["engine", "mk1", "propulsion"],
+    "metadata": {
+      "max_temperature": { "int64_value": 2400 },
+      "serial_group": { "string_value": "A1" }
+    },
+    "created_at": { "seconds": 1704896580, "nanos": 0 },
+    "updated_at": { "seconds": 1735808400, "nanos": 0 }
+  },
+
+  "222e4567-e89b-12d3-a456-426614174002": {
+    "uuid": "222e4567-e89b-12d3-a456-426614174002",
+    "name": "HyperFuel X",
+    "description": "High-density plasma fuel for starship engines.",
+    "price": 4999.5,
+    "stock_quantity": 1200,
+    "category": 2,
+    "dimensions": {
+      "length": 40,
+      "width": 40,
+      "height": 80,
+      "weight": 12.3
+    },
+    "manufacturer": {
+      "country": "USA",
+      "website": "https://quantumfuel.io"
+    },
+    "tags": ["fuel", "plasma", "x-series"],
+    "metadata": {
+      "energy_density": { "double_value": 128.4 },
+      "flammability": { "bool_value": true }
+    },
+    "created_at": { "seconds": 1683796320, "nanos": 0 },
+    "updated_at": { "seconds": 1732096800, "nanos": 0 }
+  },
+
+  "333e4567-e89b-12d3-a456-426614174003": {
+    "uuid": "333e4567-e89b-12d3-a456-426614174003",
+    "name": "Crystal Porthole XL",
+    "description": "Extra-large reinforced crystal porthole.",
+    "price": 8999,
+    "stock_quantity": 25,
+    "category": 3,
+    "dimensions": {
+      "length": 140,
+      "width": 10,
+      "height": 140,
+      "weight": 45
+    },
+    "manufacturer": {
+      "country": "Japan",
+      "website": "https://orbitalglass.jp"
+    },
+    "tags": ["window", "crystal", "xl"],
+    "metadata": {
+      "transparency": { "double_value": 0.98 },
+      "is_radiation_protected": { "bool_value": true }
+    },
+    "created_at": { "seconds": 1709630400, "nanos": 0 },
+    "updated_at": { "seconds": 1733041800, "nanos": 0 }
+  },
+
+  "444e4567-e89b-12d3-a456-426614174004": {
+    "uuid": "444e4567-e89b-12d3-a456-426614174004",
+    "name": "Wing Panel A2",
+    "description": "Aerodynamic wing panel with carbon-fiber reinforcement.",
+    "price": 15999,
+    "stock_quantity": 40,
+    "category": 4,
+    "dimensions": {
+      "length": 500,
+      "width": 30,
+      "height": 200,
+      "weight": 120
+    },
+    "manufacturer": {
+      "country": "Brazil",
+      "website": "https://cosmofab.br"
+    },
+    "tags": ["wing", "panel", "carbon"],
+    "metadata": {
+      "lift_coefficient": { "double_value": 1.42 }
+    },
+    "created_at": { "seconds": 1697796000, "nanos": 0 },
+    "updated_at": { "seconds": 1736076720, "nanos": 0 }
+  },
+
+  "555e4567-e89b-12d3-a456-426614174005": {
+    "uuid": "555e4567-e89b-12d3-a456-426614174005",
+    "name": "Auxiliary Engine Mk2",
+    "description": "Secondary support engine for maneuver control.",
+    "price": 49999.99,
+    "stock_quantity": 10,
+    "category": 1,
+    "dimensions": {
+      "length": 210,
+      "width": 100,
+      "height": 160,
+      "weight": 450
+    },
+    "manufacturer": {
+      "country": "Germany",
+      "website": "https://stellarworks.space"
+    },
+    "tags": ["engine", "aux", "mk2"],
+    "metadata": {
+      "compatible_mk": { "string_value": "Mk1" },
+      "max_temperature": { "int64_value": 2000 }
+    },
+    "created_at": { "seconds": 1707985200, "nanos": 0 },
+    "updated_at": { "seconds": 1735882800, "nanos": 0 }
+  },
+
+  "666e4567-e89b-12d3-a456-426614174006": {
+    "uuid": "666e4567-e89b-12d3-a456-426614174006",
+    "name": "Quantum Navigation Core",
+    "description": "High-precision navigation module using quantum positional referencing.",
+    "price": 259999,
+    "stock_quantity": 8,
+    "category": 0,
+    "dimensions": {
+      "length": 60,
+      "width": 40,
+      "height": 25,
+      "weight": 15
+    },
+    "manufacturer": {
+      "country": "Canada",
+      "website": "https://quantnav.ca"
+    },
+    "tags": ["navigation", "quantum", "core"],
+    "metadata": {
+      "stability_grade": { "string_value": "S+" }
+    },
+    "created_at": { "seconds": 1718693100, "nanos": 0 },
+    "updated_at": { "seconds": 1734266520, "nanos": 0 }
+  },
+
+  "777e4567-e89b-12d3-a456-426614174007": {
+    "uuid": "777e4567-e89b-12d3-a456-426614174007",
+    "name": "Stellar Shield S3",
+    "description": "Electromagnetic defensive shield generator.",
+    "price": 780000,
+    "stock_quantity": 2,
+    "category": 0,
+    "dimensions": {
+      "length": 180,
+      "width": 160,
+      "height": 200,
+      "weight": 500
+    },
+    "manufacturer": {
+      "country": "Sweden",
+      "website": "https://shieldtech.se"
+    },
+    "tags": ["shield", "defense", "generator"],
+    "metadata": {
+      "power_draw": { "double_value": 5400.5 }
+    },
+    "created_at": { "seconds": 1701430200, "nanos": 0 },
+    "updated_at": { "seconds": 1739203500, "nanos": 0 }
+  }
+}

@@ -1,0 +1,13 @@
+type: object
+required:
+  - code
+  - message
+properties:
+  code:
+    type: integer
+    description: HTTP-code error
+    example: 409
+  message:
+    type: string
+    description: Error description
+    example: "Conflict"
