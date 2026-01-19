@@ -32,25 +32,25 @@ type Invoker interface {
 	// Canceled order.
 	//
 	// POST /api/v1/orders/{order_uuid}/cancel
-	CancelOrder(ctx context.Context, params CancelOrderParams) (CancelOrderRes, error)
+	CancelOrder(ctx context.Context, params CancelOrderParams) (*NoContent, error)
 	// CreateOrder invokes CreateOrder operation.
 	//
 	// Create a new order based on the parts selected by the user.
 	//
 	// POST /api/v1/orders
-	CreateOrder(ctx context.Context, request *CreateOrderRequest) (CreateOrderRes, error)
-	// GetOrderByUUID invokes GetOrderByUUID operation.
+	CreateOrder(ctx context.Context, request *CreateOrderRequest) (*CreateOrderResponse, error)
+	// GetOrder invokes GetOrder operation.
 	//
 	// Returns information about the order.
 	//
 	// GET /api/v1/orders/{order_uuid}
-	GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (GetOrderByUUIDRes, error)
+	GetOrder(ctx context.Context, params GetOrderParams) (*Order, error)
 	// PayOrder invokes PayOrder operation.
 	//
 	// Performs payment for a previously created order.
 	//
 	// POST /api/v1/orders/{order_uuid}/pay
-	PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (PayOrderRes, error)
+	PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (*PayOrderResponse, error)
 }
 
 // Client implements OAS client.
@@ -105,12 +105,12 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 // Canceled order.
 //
 // POST /api/v1/orders/{order_uuid}/cancel
-func (c *Client) CancelOrder(ctx context.Context, params CancelOrderParams) (CancelOrderRes, error) {
+func (c *Client) CancelOrder(ctx context.Context, params CancelOrderParams) (*NoContent, error) {
 	res, err := c.sendCancelOrder(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendCancelOrder(ctx context.Context, params CancelOrderParams) (res CancelOrderRes, err error) {
+func (c *Client) sendCancelOrder(ctx context.Context, params CancelOrderParams) (res *NoContent, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("CancelOrder"),
 		semconv.HTTPRequestMethodKey.String("POST"),
@@ -157,7 +157,7 @@ func (c *Client) sendCancelOrder(ctx context.Context, params CancelOrderParams) 
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.OrderUUID))
+			return e.EncodeValue(conv.StringToString(params.OrderUUID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -197,12 +197,12 @@ func (c *Client) sendCancelOrder(ctx context.Context, params CancelOrderParams) 
 // Create a new order based on the parts selected by the user.
 //
 // POST /api/v1/orders
-func (c *Client) CreateOrder(ctx context.Context, request *CreateOrderRequest) (CreateOrderRes, error) {
+func (c *Client) CreateOrder(ctx context.Context, request *CreateOrderRequest) (*CreateOrderResponse, error) {
 	res, err := c.sendCreateOrder(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendCreateOrder(ctx context.Context, request *CreateOrderRequest) (res CreateOrderRes, err error) {
+func (c *Client) sendCreateOrder(ctx context.Context, request *CreateOrderRequest) (res *CreateOrderResponse, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("CreateOrder"),
 		semconv.HTTPRequestMethodKey.String("POST"),
@@ -268,19 +268,19 @@ func (c *Client) sendCreateOrder(ctx context.Context, request *CreateOrderReques
 	return result, nil
 }
 
-// GetOrderByUUID invokes GetOrderByUUID operation.
+// GetOrder invokes GetOrder operation.
 //
 // Returns information about the order.
 //
 // GET /api/v1/orders/{order_uuid}
-func (c *Client) GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (GetOrderByUUIDRes, error) {
-	res, err := c.sendGetOrderByUUID(ctx, params)
+func (c *Client) GetOrder(ctx context.Context, params GetOrderParams) (*Order, error) {
+	res, err := c.sendGetOrder(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (res GetOrderByUUIDRes, err error) {
+func (c *Client) sendGetOrder(ctx context.Context, params GetOrderParams) (res *Order, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("GetOrderByUUID"),
+		otelogen.OperationID("GetOrder"),
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.URLTemplateKey.String("/api/v1/orders/{order_uuid}"),
 	}
@@ -298,7 +298,7 @@ func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDPa
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, GetOrderByUUIDOperation,
+	ctx, span := c.cfg.Tracer.Start(ctx, GetOrderOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -325,7 +325,7 @@ func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDPa
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.OrderUUID))
+			return e.EncodeValue(conv.StringToString(params.OrderUUID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
@@ -351,7 +351,7 @@ func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDPa
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeGetOrderByUUIDResponse(resp)
+	result, err := decodeGetOrderResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -364,12 +364,12 @@ func (c *Client) sendGetOrderByUUID(ctx context.Context, params GetOrderByUUIDPa
 // Performs payment for a previously created order.
 //
 // POST /api/v1/orders/{order_uuid}/pay
-func (c *Client) PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (PayOrderRes, error) {
+func (c *Client) PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (*PayOrderResponse, error) {
 	res, err := c.sendPayOrder(ctx, request, params)
 	return res, err
 }
 
-func (c *Client) sendPayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (res PayOrderRes, err error) {
+func (c *Client) sendPayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (res *PayOrderResponse, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("PayOrder"),
 		semconv.HTTPRequestMethodKey.String("POST"),
@@ -416,7 +416,7 @@ func (c *Client) sendPayOrder(ctx context.Context, request *PayOrderRequest, par
 			Explode: false,
 		})
 		if err := func() error {
-			return e.EncodeValue(conv.UUIDToString(params.OrderUUID))
+			return e.EncodeValue(conv.StringToString(params.OrderUUID))
 		}(); err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}

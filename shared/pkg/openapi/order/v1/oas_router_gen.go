@@ -88,7 +88,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if len(elem) == 0 {
 					switch r.Method {
 					case "GET":
-						s.handleGetOrderByUUIDRequest([1]string{
+						s.handleGetOrderRequest([1]string{
 							args[0],
 						}, elemIsEscaped, w, r)
 					default:
@@ -290,9 +290,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = GetOrderByUUIDOperation
+						r.name = GetOrderOperation
 						r.summary = "Returns information about the order."
-						r.operationID = "GetOrderByUUID"
+						r.operationID = "GetOrder"
 						r.operationGroup = ""
 						r.pathPattern = "/api/v1/orders/{order_uuid}"
 						r.args = args

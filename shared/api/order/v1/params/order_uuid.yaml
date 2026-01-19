@@ -4,5 +4,4 @@ required: true
 description: Order UUID
 schema:
   type: string
-  format: uuid
   example: "80205bfe-1052-4d6d-ab83-7c68c14b87b1"

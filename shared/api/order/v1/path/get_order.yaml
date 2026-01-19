@@ -1,17 +1,17 @@
 parameters:
   - $ref: ../params/order_uuid.yaml
-post:
-  summary: Canceled order
-  operationId: CancelOrder
+get:
+  summary: Returns information about the order.
+  operationId: GetOrder
   tags:
     - Order
   responses:
-    "204":
-      description: Order successfully canceled
+    "200":
+      description: Successfully get order by UUID
       content:
         application/json:
           schema:
-            $ref: ../components/status_codes/no_content.yaml
+            $ref: ../components/get_order/order.yaml
     default:
       description: Unexpected error
       content:

@@ -56,8 +56,9 @@ message Dimensions {
 
 // Manufacturer contains information about who produced the part.
 message Manufacturer {
-    string country = 1;
-    string website = 2;
+    string name = 1;
+    string country = 2;
+    string website = 3;
 }
 
 // Value describes the monetary value of the part.

@@ -8,12 +8,10 @@ required:
 properties:
   uuid:
     type: string
-    format: uuid
     description: Order UUID
     example: "80205bfe-1052-4d6d-ab83-7c68c14b87b1"
   user_uuid:
     type: string
-    format: uuid
     description: User UUID
     example: "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
   part_uuids:
@@ -21,7 +19,6 @@ properties:
     description: Part UUIDs
     items:
       type: string
-      format: uuid
     example:
       - "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
       - "80205bfe-1052-4d6d-ab85-7c68c14b87b2"
@@ -32,7 +29,6 @@ properties:
     example: 123.45
   transaction_uuid:
     type: string
-    format: uuid
     description: Transaction UUID
     example: "80205bfe-1052-4d6d-ab83-7c68c14b87b1"
   payment_method:

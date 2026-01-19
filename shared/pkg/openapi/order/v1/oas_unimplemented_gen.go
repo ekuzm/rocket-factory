@@ -18,7 +18,7 @@ var _ Handler = UnimplementedHandler{}
 // Canceled order.
 //
 // POST /api/v1/orders/{order_uuid}/cancel
-func (UnimplementedHandler) CancelOrder(ctx context.Context, params CancelOrderParams) (r CancelOrderRes, _ error) {
+func (UnimplementedHandler) CancelOrder(ctx context.Context, params CancelOrderParams) (r *NoContent, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -27,16 +27,16 @@ func (UnimplementedHandler) CancelOrder(ctx context.Context, params CancelOrderP
 // Create a new order based on the parts selected by the user.
 //
 // POST /api/v1/orders
-func (UnimplementedHandler) CreateOrder(ctx context.Context, req *CreateOrderRequest) (r CreateOrderRes, _ error) {
+func (UnimplementedHandler) CreateOrder(ctx context.Context, req *CreateOrderRequest) (r *CreateOrderResponse, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// GetOrderByUUID implements GetOrderByUUID operation.
+// GetOrder implements GetOrder operation.
 //
 // Returns information about the order.
 //
 // GET /api/v1/orders/{order_uuid}
-func (UnimplementedHandler) GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (r GetOrderByUUIDRes, _ error) {
+func (UnimplementedHandler) GetOrder(ctx context.Context, params GetOrderParams) (r *Order, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -45,7 +45,7 @@ func (UnimplementedHandler) GetOrderByUUID(ctx context.Context, params GetOrderB
 // Performs payment for a previously created order.
 //
 // POST /api/v1/orders/{order_uuid}/pay
-func (UnimplementedHandler) PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (r PayOrderRes, _ error) {
+func (UnimplementedHandler) PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (r *PayOrderResponse, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -120,7 +120,7 @@ func (s *Server) handleCancelOrderRequest(args [1]string, argsEscaped bool, w ht
 
 	var rawBody []byte
 
-	var response CancelOrderRes
+	var response *NoContent
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -141,7 +141,7 @@ func (s *Server) handleCancelOrderRequest(args [1]string, argsEscaped bool, w ht
 		type (
 			Request  = struct{}
 			Params   = CancelOrderParams
-			Response = CancelOrderRes
+			Response = *NoContent
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -277,7 +277,7 @@ func (s *Server) handleCreateOrderRequest(args [0]string, argsEscaped bool, w ht
 		}
 	}()
 
-	var response CreateOrderRes
+	var response *CreateOrderResponse
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -293,7 +293,7 @@ func (s *Server) handleCreateOrderRequest(args [0]string, argsEscaped bool, w ht
 		type (
 			Request  = *CreateOrderRequest
 			Params   = struct{}
-			Response = CreateOrderRes
+			Response = *CreateOrderResponse
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -337,22 +337,22 @@ func (s *Server) handleCreateOrderRequest(args [0]string, argsEscaped bool, w ht
 	}
 }
 
-// handleGetOrderByUUIDRequest handles GetOrderByUUID operation.
+// handleGetOrderRequest handles GetOrder operation.
 //
 // Returns information about the order.
 //
 // GET /api/v1/orders/{order_uuid}
-func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetOrderRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("GetOrderByUUID"),
+		otelogen.OperationID("GetOrder"),
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/api/v1/orders/{order_uuid}"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), GetOrderByUUIDOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), GetOrderOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -407,11 +407,11 @@ func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: GetOrderByUUIDOperation,
-			ID:   "GetOrderByUUID",
+			Name: GetOrderOperation,
+			ID:   "GetOrder",
 		}
 	)
-	params, err := decodeGetOrderByUUIDParams(args, argsEscaped, r)
+	params, err := decodeGetOrderParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -424,13 +424,13 @@ func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w
 
 	var rawBody []byte
 
-	var response GetOrderByUUIDRes
+	var response *Order
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    GetOrderByUUIDOperation,
+			OperationName:    GetOrderOperation,
 			OperationSummary: "Returns information about the order.",
-			OperationID:      "GetOrderByUUID",
+			OperationID:      "GetOrder",
 			Body:             nil,
 			RawBody:          rawBody,
 			Params: middleware.Parameters{
@@ -444,8 +444,8 @@ func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w
 
 		type (
 			Request  = struct{}
-			Params   = GetOrderByUUIDParams
-			Response = GetOrderByUUIDRes
+			Params   = GetOrderParams
+			Response = *Order
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -454,14 +454,14 @@ func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w
 		](
 			m,
 			mreq,
-			unpackGetOrderByUUIDParams,
+			unpackGetOrderParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetOrderByUUID(ctx, params)
+				response, err = s.h.GetOrder(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetOrderByUUID(ctx, params)
+		response, err = s.h.GetOrder(ctx, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*GenericErrorStatusCode](err); ok {
@@ -480,7 +480,7 @@ func (s *Server) handleGetOrderByUUIDRequest(args [1]string, argsEscaped bool, w
 		return
 	}
 
-	if err := encodeGetOrderByUUIDResponse(response, w, span); err != nil {
+	if err := encodeGetOrderResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
@@ -591,7 +591,7 @@ func (s *Server) handlePayOrderRequest(args [1]string, argsEscaped bool, w http.
 		}
 	}()
 
-	var response PayOrderRes
+	var response *PayOrderResponse
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -612,7 +612,7 @@ func (s *Server) handlePayOrderRequest(args [1]string, argsEscaped bool, w http.
 		type (
 			Request  = *PayOrderRequest
 			Params   = PayOrderParams
-			Response = PayOrderRes
+			Response = *PayOrderResponse
 		)
 		response, err = middleware.HookMiddleware[
 			Request,

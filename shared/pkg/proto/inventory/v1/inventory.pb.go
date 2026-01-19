@@ -373,8 +373,9 @@ func (x *Dimensions) GetWeight() float64 {
 // Manufacturer contains information about who produced the part.
 type Manufacturer struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Country       string                 `protobuf:"bytes,1,opt,name=country,proto3" json:"country,omitempty"`
-	Website       string                 `protobuf:"bytes,2,opt,name=website,proto3" json:"website,omitempty"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Country       string                 `protobuf:"bytes,2,opt,name=country,proto3" json:"country,omitempty"`
+	Website       string                 `protobuf:"bytes,3,opt,name=website,proto3" json:"website,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -407,6 +408,13 @@ func (x *Manufacturer) ProtoReflect() protoreflect.Message {
 // Deprecated: Use Manufacturer.ProtoReflect.Descriptor instead.
 func (*Manufacturer) Descriptor() ([]byte, []int) {
 	return file_inventory_v1_inventory_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Manufacturer) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
 }
 
 func (x *Manufacturer) GetCountry() string {
@@ -740,10 +748,11 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\x06length\x18\x01 \x01(\x01R\x06length\x12\x14\n" +
 	"\x05width\x18\x02 \x01(\x01R\x05width\x12\x16\n" +
 	"\x06height\x18\x03 \x01(\x01R\x06height\x12\x16\n" +
-	"\x06weight\x18\x04 \x01(\x01R\x06weight\"B\n" +
-	"\fManufacturer\x12\x18\n" +
-	"\acountry\x18\x01 \x01(\tR\acountry\x12\x18\n" +
-	"\awebsite\x18\x02 \x01(\tR\awebsite\"\x9e\x01\n" +
+	"\x06weight\x18\x04 \x01(\x01R\x06weight\"V\n" +
+	"\fManufacturer\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
+	"\acountry\x18\x02 \x01(\tR\acountry\x12\x18\n" +
+	"\awebsite\x18\x03 \x01(\tR\awebsite\"\x9e\x01\n" +
 	"\x05Value\x12#\n" +
 	"\fstring_value\x18\x01 \x01(\tH\x00R\vstringValue\x12!\n" +
 	"\vint64_value\x18\x02 \x01(\x03H\x00R\n" +

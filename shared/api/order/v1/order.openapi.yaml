@@ -18,6 +18,6 @@ paths:
   /api/v1/orders/{order_uuid}/pay:
     $ref: ./path/pay_order.yaml
   /api/v1/orders/{order_uuid}:
-    $ref: ./path/order_by_uuid.yaml
+    $ref: ./path/get_order.yaml
   /api/v1/orders/{order_uuid}/cancel:
     $ref: ./path/cancel_order.yaml

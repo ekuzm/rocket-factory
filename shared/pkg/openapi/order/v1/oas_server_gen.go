@@ -13,25 +13,25 @@ type Handler interface {
 	// Canceled order.
 	//
 	// POST /api/v1/orders/{order_uuid}/cancel
-	CancelOrder(ctx context.Context, params CancelOrderParams) (CancelOrderRes, error)
+	CancelOrder(ctx context.Context, params CancelOrderParams) (*NoContent, error)
 	// CreateOrder implements CreateOrder operation.
 	//
 	// Create a new order based on the parts selected by the user.
 	//
 	// POST /api/v1/orders
-	CreateOrder(ctx context.Context, req *CreateOrderRequest) (CreateOrderRes, error)
-	// GetOrderByUUID implements GetOrderByUUID operation.
+	CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error)
+	// GetOrder implements GetOrder operation.
 	//
 	// Returns information about the order.
 	//
 	// GET /api/v1/orders/{order_uuid}
-	GetOrderByUUID(ctx context.Context, params GetOrderByUUIDParams) (GetOrderByUUIDRes, error)
+	GetOrder(ctx context.Context, params GetOrderParams) (*Order, error)
 	// PayOrder implements PayOrder operation.
 	//
 	// Performs payment for a previously created order.
 	//
 	// POST /api/v1/orders/{order_uuid}/pay
-	PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (PayOrderRes, error)
+	PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (*PayOrderResponse, error)
 	// NewError creates *GenericErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

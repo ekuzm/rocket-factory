@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/go-faster/errors"
-	"github.com/google/uuid"
 )
 
 func (s *GenericErrorStatusCode) Error() string {
@@ -14,106 +13,43 @@ func (s *GenericErrorStatusCode) Error() string {
 }
 
 // Ref: #
-type BadRequestError struct {
-	// HTTP-code error.
-	Code int `json:"code"`
-	// Error description.
-	Message string `json:"message"`
-}
-
-// GetCode returns the value of Code.
-func (s *BadRequestError) GetCode() int {
-	return s.Code
-}
-
-// GetMessage returns the value of Message.
-func (s *BadRequestError) GetMessage() string {
-	return s.Message
-}
-
-// SetCode sets the value of Code.
-func (s *BadRequestError) SetCode(val int) {
-	s.Code = val
-}
-
-// SetMessage sets the value of Message.
-func (s *BadRequestError) SetMessage(val string) {
-	s.Message = val
-}
-
-func (*BadRequestError) cancelOrderRes()    {}
-func (*BadRequestError) createOrderRes()    {}
-func (*BadRequestError) getOrderByUUIDRes() {}
-func (*BadRequestError) payOrderRes()       {}
-
-// Ref: #
-type ConflictError struct {
-	// HTTP-code error.
-	Code int `json:"code"`
-	// Error description.
-	Message string `json:"message"`
-}
-
-// GetCode returns the value of Code.
-func (s *ConflictError) GetCode() int {
-	return s.Code
-}
-
-// GetMessage returns the value of Message.
-func (s *ConflictError) GetMessage() string {
-	return s.Message
-}
-
-// SetCode sets the value of Code.
-func (s *ConflictError) SetCode(val int) {
-	s.Code = val
-}
-
-// SetMessage sets the value of Message.
-func (s *ConflictError) SetMessage(val string) {
-	s.Message = val
-}
-
-func (*ConflictError) cancelOrderRes() {}
-
-// Ref: #
 type CreateOrderRequest struct {
 	// User UUID.
-	UserUUID uuid.UUID `json:"user_uuid"`
+	UserUUID string `json:"user_uuid"`
 	// Part UUIDs.
-	PartUuids []uuid.UUID `json:"part_uuids"`
+	PartUuids []string `json:"part_uuids"`
 }
 
 // GetUserUUID returns the value of UserUUID.
-func (s *CreateOrderRequest) GetUserUUID() uuid.UUID {
+func (s *CreateOrderRequest) GetUserUUID() string {
 	return s.UserUUID
 }
 
 // GetPartUuids returns the value of PartUuids.
-func (s *CreateOrderRequest) GetPartUuids() []uuid.UUID {
+func (s *CreateOrderRequest) GetPartUuids() []string {
 	return s.PartUuids
 }
 
 // SetUserUUID sets the value of UserUUID.
-func (s *CreateOrderRequest) SetUserUUID(val uuid.UUID) {
+func (s *CreateOrderRequest) SetUserUUID(val string) {
 	s.UserUUID = val
 }
 
 // SetPartUuids sets the value of PartUuids.
-func (s *CreateOrderRequest) SetPartUuids(val []uuid.UUID) {
+func (s *CreateOrderRequest) SetPartUuids(val []string) {
 	s.PartUuids = val
 }
 
 // Ref: #
 type CreateOrderResponse struct {
 	// Order UUID.
-	UUID uuid.UUID `json:"uuid"`
+	UUID string `json:"uuid"`
 	// Total price for order.
 	TotalPrice float64 `json:"total_price"`
 }
 
 // GetUUID returns the value of UUID.
-func (s *CreateOrderResponse) GetUUID() uuid.UUID {
+func (s *CreateOrderResponse) GetUUID() string {
 	return s.UUID
 }
 
@@ -123,7 +59,7 @@ func (s *CreateOrderResponse) GetTotalPrice() float64 {
 }
 
 // SetUUID sets the value of UUID.
-func (s *CreateOrderResponse) SetUUID(val uuid.UUID) {
+func (s *CreateOrderResponse) SetUUID(val string) {
 	s.UUID = val
 }
 
@@ -131,8 +67,6 @@ func (s *CreateOrderResponse) SetUUID(val uuid.UUID) {
 func (s *CreateOrderResponse) SetTotalPrice(val float64) {
 	s.TotalPrice = val
 }
-
-func (*CreateOrderResponse) createOrderRes() {}
 
 // Ref: #
 type GenericError struct {
@@ -189,39 +123,6 @@ func (s *GenericErrorStatusCode) SetResponse(val GenericError) {
 }
 
 // Ref: #
-type InternalServerError struct {
-	// HTTP-code error.
-	Code int `json:"code"`
-	// Error description.
-	Message string `json:"message"`
-}
-
-// GetCode returns the value of Code.
-func (s *InternalServerError) GetCode() int {
-	return s.Code
-}
-
-// GetMessage returns the value of Message.
-func (s *InternalServerError) GetMessage() string {
-	return s.Message
-}
-
-// SetCode sets the value of Code.
-func (s *InternalServerError) SetCode(val int) {
-	s.Code = val
-}
-
-// SetMessage sets the value of Message.
-func (s *InternalServerError) SetMessage(val string) {
-	s.Message = val
-}
-
-func (*InternalServerError) cancelOrderRes()    {}
-func (*InternalServerError) createOrderRes()    {}
-func (*InternalServerError) getOrderByUUIDRes() {}
-func (*InternalServerError) payOrderRes()       {}
-
-// Ref: #
 type NoContent struct {
 	// HTTP-code.
 	Code int `json:"code"`
@@ -248,41 +149,6 @@ func (s *NoContent) SetCode(val int) {
 func (s *NoContent) SetMessage(val string) {
 	s.Message = val
 }
-
-func (*NoContent) cancelOrderRes() {}
-
-// Ref: #
-type NotFoundError struct {
-	// HTTP-code error.
-	Code int `json:"code"`
-	// Error description.
-	Message string `json:"message"`
-}
-
-// GetCode returns the value of Code.
-func (s *NotFoundError) GetCode() int {
-	return s.Code
-}
-
-// GetMessage returns the value of Message.
-func (s *NotFoundError) GetMessage() string {
-	return s.Message
-}
-
-// SetCode sets the value of Code.
-func (s *NotFoundError) SetCode(val int) {
-	s.Code = val
-}
-
-// SetMessage sets the value of Message.
-func (s *NotFoundError) SetMessage(val string) {
-	s.Message = val
-}
-
-func (*NotFoundError) cancelOrderRes()    {}
-func (*NotFoundError) createOrderRes()    {}
-func (*NotFoundError) getOrderByUUIDRes() {}
-func (*NotFoundError) payOrderRes()       {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
@@ -422,80 +288,34 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// NewOptUUID returns new OptUUID with value set to v.
-func NewOptUUID(v uuid.UUID) OptUUID {
-	return OptUUID{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptUUID is optional uuid.UUID.
-type OptUUID struct {
-	Value uuid.UUID
-	Set   bool
-}
-
-// IsSet returns true if OptUUID was set.
-func (o OptUUID) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptUUID) Reset() {
-	var v uuid.UUID
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptUUID) SetTo(v uuid.UUID) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptUUID) Get() (v uuid.UUID, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptUUID) Or(d uuid.UUID) uuid.UUID {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // Ref: #
 type Order struct {
 	// Order UUID.
-	UUID uuid.UUID `json:"uuid"`
+	UUID string `json:"uuid"`
 	// User UUID.
-	UserUUID uuid.UUID `json:"user_uuid"`
+	UserUUID string `json:"user_uuid"`
 	// Part UUIDs.
-	PartUuids []uuid.UUID `json:"part_uuids"`
+	PartUuids []string `json:"part_uuids"`
 	// Total price for order.
 	TotalPrice float64 `json:"total_price"`
 	// Transaction UUID.
-	TransactionUUID OptUUID          `json:"transaction_uuid"`
+	TransactionUUID OptString        `json:"transaction_uuid"`
 	PaymentMethod   OptPaymentMethod `json:"payment_method"`
 	Status          OrderStatus      `json:"status"`
 }
 
 // GetUUID returns the value of UUID.
-func (s *Order) GetUUID() uuid.UUID {
+func (s *Order) GetUUID() string {
 	return s.UUID
 }
 
 // GetUserUUID returns the value of UserUUID.
-func (s *Order) GetUserUUID() uuid.UUID {
+func (s *Order) GetUserUUID() string {
 	return s.UserUUID
 }
 
 // GetPartUuids returns the value of PartUuids.
-func (s *Order) GetPartUuids() []uuid.UUID {
+func (s *Order) GetPartUuids() []string {
 	return s.PartUuids
 }
 
@@ -505,7 +325,7 @@ func (s *Order) GetTotalPrice() float64 {
 }
 
 // GetTransactionUUID returns the value of TransactionUUID.
-func (s *Order) GetTransactionUUID() OptUUID {
+func (s *Order) GetTransactionUUID() OptString {
 	return s.TransactionUUID
 }
 
@@ -520,17 +340,17 @@ func (s *Order) GetStatus() OrderStatus {
 }
 
 // SetUUID sets the value of UUID.
-func (s *Order) SetUUID(val uuid.UUID) {
+func (s *Order) SetUUID(val string) {
 	s.UUID = val
 }
 
 // SetUserUUID sets the value of UserUUID.
-func (s *Order) SetUserUUID(val uuid.UUID) {
+func (s *Order) SetUserUUID(val string) {
 	s.UserUUID = val
 }
 
 // SetPartUuids sets the value of PartUuids.
-func (s *Order) SetPartUuids(val []uuid.UUID) {
+func (s *Order) SetPartUuids(val []string) {
 	s.PartUuids = val
 }
 
@@ -540,7 +360,7 @@ func (s *Order) SetTotalPrice(val float64) {
 }
 
 // SetTransactionUUID sets the value of TransactionUUID.
-func (s *Order) SetTransactionUUID(val OptUUID) {
+func (s *Order) SetTransactionUUID(val OptString) {
 	s.TransactionUUID = val
 }
 
@@ -553,8 +373,6 @@ func (s *Order) SetPaymentMethod(val OptPaymentMethod) {
 func (s *Order) SetStatus(val OrderStatus) {
 	s.Status = val
 }
-
-func (*Order) getOrderByUUIDRes() {}
 
 // Status of order.
 // Ref: #
@@ -624,20 +442,18 @@ func (s *PayOrderRequest) SetPaymentMethod(val PaymentMethod) {
 // Ref: #
 type PayOrderResponse struct {
 	// Transaction UUID.
-	TransactionUUID uuid.UUID `json:"transaction_uuid"`
+	TransactionUUID string `json:"transaction_uuid"`
 }
 
 // GetTransactionUUID returns the value of TransactionUUID.
-func (s *PayOrderResponse) GetTransactionUUID() uuid.UUID {
+func (s *PayOrderResponse) GetTransactionUUID() string {
 	return s.TransactionUUID
 }
 
 // SetTransactionUUID sets the value of TransactionUUID.
-func (s *PayOrderResponse) SetTransactionUUID(val uuid.UUID) {
+func (s *PayOrderResponse) SetTransactionUUID(val string) {
 	s.TransactionUUID = val
 }
-
-func (*PayOrderResponse) payOrderRes() {}
 
 // Payment method.
 // Ref: #
