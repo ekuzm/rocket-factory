@@ -8,15 +8,12 @@ import (
 
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		startTime := time.Now()
+		log.Printf("Handler at %s with %s http method start", r.URL.Path, r.Method)
 
-		url := r.URL
-		method := r.Method
-
-		log.Printf("Handler at %v URL with %v Method run", url, method)
+		start := time.Now()
 
 		next.ServeHTTP(w, r)
 
-		log.Printf("Handler at %v URL with %v Method has worked for %v", url, method, time.Since(startTime))
+		log.Printf("Handler has worket for %s", time.Since(start))
 	})
 }

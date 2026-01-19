@@ -1,4 +1,4 @@
-package middleware
+package interceptor
 
 import (
 	"context"
@@ -17,11 +17,10 @@ func RequestLogger() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (any, error) {
+		timeStart := time.Now()
 		method := path.Base(info.FullMethod)
 
-		log.Printf("gRPC method %v running", method)
-
-		timeStart := time.Now()
+		log.Printf("Start gRPC %v method", method)
 
 		resp, err := handler(ctx, req)
 
@@ -29,11 +28,11 @@ func RequestLogger() grpc.UnaryServerInterceptor {
 
 		if err != nil {
 			status := status.Convert(err)
-			log.Printf("Finished gRPC %v method with %v code and had worked for %v", method, status.Code(), duration)
+			log.Printf("gRPC %v method finished with %v code and had worked for %v", method, status.Code(), duration)
 			return nil, err
 		}
 
-		log.Printf("Finished gRPC %v method and had worked for %v", method, duration)
+		log.Printf("gRPC %v method finished and had worked for %v", method, duration)
 
 		return resp, nil
 	}

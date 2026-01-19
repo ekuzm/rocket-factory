@@ -2,7 +2,7 @@ module github.com/ekuzm/rocket-factory/payment
 
 replace github.com/ekuzm/rocket-factory/shared => ../shared
 
-go 1.25.4
+go 1.25.6
 
 require (
 	github.com/ekuzm/rocket-factory/shared v0.0.0-00010101000000-000000000000

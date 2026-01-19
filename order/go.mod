@@ -1,15 +1,16 @@
 module github.com/ekuzm/rocket-factory/order
 
-go 1.25.4
+replace github.com/ekuzm/rocket-factory/shared => ../shared
+
+go 1.25.6
 
 require (
 	github.com/ekuzm/rocket-factory/shared v0.0.0-00010101000000-000000000000
-	github.com/go-chi/chi/v5 v5.2.3
+	github.com/go-chi/chi/v5 v5.2.4
 	github.com/google/uuid v1.6.0
-	google.golang.org/grpc v1.77.0
+	github.com/samber/lo v1.52.0
+	google.golang.org/grpc v1.78.0
 )
-
-replace github.com/ekuzm/rocket-factory/shared => ../shared
 
 require (
 	github.com/dlclark/regexp2 v1.11.5 // indirect
@@ -36,7 +37,7 @@ require (
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
