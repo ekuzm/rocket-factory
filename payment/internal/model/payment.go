@@ -30,12 +30,12 @@ func NewPayment(orderUUID, userUUID string, paymentMethod PaymentMethod) (Paymen
 	}, nil
 }
 
-type PaymentMethod string
+type PaymentMethod int
 
 const (
-	PaymentMethodUnknown       PaymentMethod = "UNKNOWN"
-	PaymentMethodCard          PaymentMethod = "CARD"
-	PaymentMethodSPB           PaymentMethod = "SPB"
-	PaymentMethodCreditCard    PaymentMethod = "CREDIT_CARD"
-	PaymentMethodInvestorMoney PaymentMethod = "INVESTOR_MONEY"
+	PaymentMethodUnknown = iota
+	PaymentMethodCard
+	PaymentMethodSPB
+	PaymentMethodCreditCard
+	PaymentMethodInvestorMoney
 )

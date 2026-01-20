@@ -10,20 +10,20 @@ type Order struct {
 	Status          Status
 }
 
-type PaymentMethod string
+type PaymentMethod int
 
 const (
-	PaymentMethodUnknown       = "UNKNOWN"
-	PaymentMethodCard          = "CARD"
-	PaymentMethodSPB           = "SPB"
-	PaymentMethodCreditCard    = "CREDIT_CARD"
-	PaymentMethodInvestorMoney = "INVESTOR_MONEY"
+	PaymentMethodUnknown = iota
+	PaymentMethodCard
+	PaymentMethodSPB
+	PaymentMethodCreditCard
+	PaymentMethodInvestorMoney
 )
 
-type Status string
+type Status int
 
 const (
-	StatusPendingPayment = "PENDING_PAYMENT"
-	StatusPaid           = "PAID"
-	StatusCancelled      = "CANCELLED"
+	StatusPendingPayment = iota
+	StatusPaid
+	StatusCancelled
 )

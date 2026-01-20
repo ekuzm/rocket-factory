@@ -17,14 +17,14 @@ type Part struct {
 	UpdatedAt     *time.Time
 }
 
-type Category string
+type Category int
 
 const (
-	CategoryUnspecified Category = "UNKNOWN"
-	CategoryEngine      Category = "ENGINE"
-	CategoryFuel        Category = "FUEL"
-	CategoryPorthole    Category = "PORTHOLE"
-	CategoryWing        Category = "WING"
+	CategoryUnspecified = iota
+	CategoryEngine
+	CategoryFuel
+	CategoryPorthole
+	CategoryWing
 )
 
 type Dimensions struct {
