@@ -1,20 +1,20 @@
 parameters:
-  - $ref: ../params/order_uuid.yaml
+    - $ref: ../params/order_uuid.yaml
 post:
-  summary: Canceled order
-  operationId: CancelOrder
-  tags:
-    - Order
-  responses:
-    "204":
-      description: Order successfully canceled
-      content:
-        application/json:
-          schema:
-            $ref: ../components/status_codes/no_content.yaml
-    default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: ../components/errors/generic_error.yaml
+    summary: Canceled order
+    operationId: CancelOrder
+    tags:
+        - Order
+    responses:
+        "204":
+            description: Order successfully canceled
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/status_codes/no_content.yaml
+        default:
+            description: Unexpected error
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/errors/generic_error.yaml

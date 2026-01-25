@@ -1,24 +1,24 @@
 post:
-  summary: Create a new order based on the parts selected by the user
-  operationId: CreateOrder
-  tags:
-    - Order
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: ../components/create_order/create_order_request.yaml
-  responses:
-    "201":
-      description: Order successfully created
-      content:
-        application/json:
-          schema:
-            $ref: ../components/create_order/create_order_response.yaml
-    default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: ../components/errors/generic_error.yaml
+    summary: Create a new order based on the parts selected by the user
+    operationId: CreateOrder
+    tags:
+        - Order
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: ../components/create_order/create_order_request.yaml
+    responses:
+        "201":
+            description: Order successfully created
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/create_order/create_order_response.yaml
+        default:
+            description: Unexpected error
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/errors/generic_error.yaml

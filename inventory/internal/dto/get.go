@@ -5,7 +5,7 @@ import (
 )
 
 type GetPartInput struct {
-	Uuid string
+	UUID string
 }
 
 type GetPartOutput struct {

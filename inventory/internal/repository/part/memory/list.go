@@ -3,6 +3,7 @@ package memory
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
@@ -96,13 +97,7 @@ func byNames(names []string) PartPredicate {
 
 func byCategories(categories []repoModel.Category) PartPredicate {
 	return func(part repoModel.Part) bool {
-		for _, category := range categories {
-			if part.Category == category {
-				return true
-			}
-		}
-
-		return false
+		return slices.Contains(categories, part.Category)
 	}
 }
 

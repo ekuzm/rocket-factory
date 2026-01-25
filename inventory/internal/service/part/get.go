@@ -13,11 +13,11 @@ import (
 func (s *service) GetPart(ctx context.Context, input dto.GetPartInput) (dto.GetPartOutput, error) {
 	var output dto.GetPartOutput
 
-	if _, err := uuid.Parse(input.Uuid); err != nil {
+	if _, err := uuid.Parse(input.UUID); err != nil {
 		return output, fmt.Errorf("part uuid: %w", model.ErrInvalidFormat)
 	}
 
-	part, err := s.inventoryRepository.GetPart(ctx, input.Uuid)
+	part, err := s.inventoryRepository.GetPart(ctx, input.UUID)
 	if err != nil {
 		return output, fmt.Errorf("get part: %w", err)
 	}

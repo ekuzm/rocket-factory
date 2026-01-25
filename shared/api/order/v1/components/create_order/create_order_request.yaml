@@ -1,17 +1,17 @@
 type: object
 required:
-  - user_uuid
-  - part_uuids
+    - user_uuid
+    - part_uuids
 properties:
-  user_uuid:
-    type: string
-    description: User UUID
-    example: "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
-  part_uuids:
-    type: array
-    description: Part UUIDs
-    items:
-      type: string
-    example:
-      - "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
-      - "80205bfe-1052-4d6d-ab85-7c68c14b87b2"
+    user_uuid:
+        type: string
+        description: User UUID
+        example: "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
+    part_uuids:
+        type: array
+        description: Part UUIDs
+        items:
+            type: string
+        example:
+            - "80205bfe-1052-4d6d-ab85-7c68c14b87b1"
+            - "80205bfe-1052-4d6d-ab85-7c68c14b87b2"

@@ -1,26 +1,26 @@
 parameters:
-  - $ref: ../params/order_uuid.yaml
+    - $ref: ../params/order_uuid.yaml
 post:
-  summary: Performs payment for a previously created order
-  operationId: PayOrder
-  tags:
-    - Order
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: ../components/pay_order/pay_order_request.yaml
-  responses:
-    "200":
-      description: Successfully paid for order 
-      content:
-        application/json:
-          schema:
-            $ref: ../components/pay_order/pay_order_response.yaml
-    default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: ../components/errors/generic_error.yaml
+    summary: Performs payment for a previously created order
+    operationId: PayOrder
+    tags:
+        - Order
+    requestBody:
+        required: true
+        content:
+            application/json:
+                schema:
+                    $ref: ../components/pay_order/pay_order_request.yaml
+    responses:
+        "200":
+            description: Successfully paid for order
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/pay_order/pay_order_response.yaml
+        default:
+            description: Unexpected error
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/errors/generic_error.yaml

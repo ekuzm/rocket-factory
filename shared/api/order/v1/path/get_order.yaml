@@ -1,20 +1,20 @@
 parameters:
-  - $ref: ../params/order_uuid.yaml
+    - $ref: ../params/order_uuid.yaml
 get:
-  summary: Returns information about the order.
-  operationId: GetOrder
-  tags:
-    - Order
-  responses:
-    "200":
-      description: Successfully get order by UUID
-      content:
-        application/json:
-          schema:
-            $ref: ../components/get_order/order.yaml
-    default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: ../components/errors/generic_error.yaml
+    summary: Returns information about the order.
+    operationId: GetOrder
+    tags:
+        - Order
+    responses:
+        "200":
+            description: Successfully get order by UUID
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/get_order/order.yaml
+        default:
+            description: Unexpected error
+            content:
+                application/json:
+                    schema:
+                        $ref: ../components/errors/generic_error.yaml

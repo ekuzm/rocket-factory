@@ -10,7 +10,7 @@ import (
 
 func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	input := dto.GetPartInput{
-		Uuid: req.GetUuid(),
+		UUID: req.GetUuid(),
 	}
 
 	output, err := a.service.GetPart(ctx, input)
