@@ -44,7 +44,7 @@ while IFS= read -r line; do
   if [[ "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# ]]; then
     continue
   fi
-  
+
   # Извлекаем имя и значение
   if [[ "$line" =~ ^[[:space:]]*([A-Z_0-9]+):\ *\'([^\']*)\' ]]; then
     var_name=${BASH_REMATCH[1]}
@@ -101,4 +101,4 @@ if [ -n "$GITHUB_OUTPUT" ]; then
     echo "MODULES=$MODULES" >> $GITHUB_OUTPUT
     echo "  MODULES -> GITHUB_OUTPUT"
   fi
-fi 
+fi

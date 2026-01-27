@@ -1,0 +1,28 @@
+# template: testify
+dir: "{{.InterfaceDir}}/mocks"
+filename: "mock_{{.InterfaceName | snakecase}}.go"
+pkgname: "mocks"
+structname: "{{.InterfaceName}}"
+
+packages:
+    github.com/ekuzm/rocket-factory/inventory/internal/service:
+        config:
+            include-interface-regex: ".*Service"
+    github.com/ekuzm/rocket-factory/inventory/internal/repository:
+        config:
+            include-interface-regex: ".*Repository"
+    github.com/ekuzm/rocket-factory/order/internal/service:
+        config:
+            include-interface-regex: ".*Service"
+    github.com/ekuzm/rocket-factory/order/internal/repository:
+        config:
+            include-interface-regex: ".*Repository"
+    github.com/ekuzm/rocket-factory/order/internal/client:
+        config:
+            include-interface-regex: ".*Client"
+    github.com/ekuzm/rocket-factory/payment/internal/service:
+        config:
+            include-interface-regex: ".*Service"
+    github.com/ekuzm/rocket-factory/payment/internal/repository:
+        config:
+            include-interface-regex: ".*Repository"
