@@ -1,0 +1,9 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    call-workflow-lint:
+        uses: ./.github/workflows/lint.yaml
