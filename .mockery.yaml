@@ -1,7 +1,7 @@
 # template: testify
-dir: "{{.InterfaceDir}}/mocks"
+dir: "{{.InterfaceDir}}/mock"
 filename: "mock_{{.InterfaceName | snakecase}}.go"
-pkgname: "mocks"
+pkgname: "mock"
 structname: "{{.InterfaceName}}"
 
 packages:
