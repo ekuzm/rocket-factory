@@ -13,10 +13,10 @@ type Payment struct {
 }
 
 func NewPayment(orderUUID, userUUID string, paymentMethod PaymentMethod) (Payment, error) {
-	if _, err := uuid.Parse(orderUUID); err != nil {
+	if err := uuid.Validate(orderUUID); err != nil {
 		return Payment{}, fmt.Errorf("order uuid: %w", ErrInvalidFormat)
 	}
-	if _, err := uuid.Parse(userUUID); err != nil {
+	if err := uuid.Validate(userUUID); err != nil {
 		return Payment{}, fmt.Errorf("user uuid: %w", ErrInvalidFormat)
 	}
 	if paymentMethod == PaymentMethodUnknown {
@@ -33,7 +33,7 @@ func NewPayment(orderUUID, userUUID string, paymentMethod PaymentMethod) (Paymen
 type PaymentMethod int
 
 const (
-	PaymentMethodUnknown = iota
+	PaymentMethodUnknown PaymentMethod = iota
 	PaymentMethodCard
 	PaymentMethodSPB
 	PaymentMethodCreditCard

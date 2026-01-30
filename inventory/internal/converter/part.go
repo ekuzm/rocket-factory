@@ -143,6 +143,10 @@ func MetadataToAPI(metadata map[string]*model.Value) map[string]*inventoryV1.Val
 }
 
 func PartsToAPI(parts []model.Part) []*inventoryV1.Part {
+	if parts == nil {
+		return nil
+	}
+
 	out := make([]*inventoryV1.Part, len(parts))
 
 	for ind, part := range parts {

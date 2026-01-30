@@ -13,7 +13,7 @@ import (
 func (s *service) GetPart(ctx context.Context, input dto.GetPartInput) (dto.GetPartOutput, error) {
 	var output dto.GetPartOutput
 
-	if _, err := uuid.Parse(input.UUID); err != nil {
+	if err := uuid.Validate(input.UUID); err != nil {
 		return output, fmt.Errorf("part uuid: %w", model.ErrInvalidFormat)
 	}
 

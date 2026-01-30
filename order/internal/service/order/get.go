@@ -13,7 +13,7 @@ import (
 func (s *service) GetOrder(ctx context.Context, input dto.GetOrderInput) (dto.GetOrderOutput, error) {
 	var output dto.GetOrderOutput
 
-	if _, err := uuid.Parse(input.UUID); err != nil {
+	if err := uuid.Validate(input.UUID); err != nil {
 		return output, fmt.Errorf("order uuid: %w", model.ErrInvalidFormat)
 	}
 

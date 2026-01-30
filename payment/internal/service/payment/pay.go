@@ -16,10 +16,10 @@ func (s *service) PayOrder(ctx context.Context, input dto.PayOrderInput) (dto.Pa
 
 	_, err := model.NewPayment(input.OrderUUID, input.UserUUID, input.PaymentMethod)
 	if err != nil {
-		return output, fmt.Errorf("payment validation: %w", err)
+		return output, fmt.Errorf("new payment: %w", err)
 	}
 
-	transactionUUID := uuid.New().String()
+	transactionUUID := uuid.NewString()
 
 	log.Printf("Payment was successfully, transaction uuid: %s", transactionUUID)
 

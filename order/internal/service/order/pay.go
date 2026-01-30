@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/ekuzm/rocket-factory/order/internal/dto"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	repoConverter "github.com/ekuzm/rocket-factory/order/internal/repository/converter"
@@ -11,6 +13,10 @@ import (
 
 func (s *service) PayOrder(ctx context.Context, input dto.PayOrderInput) (dto.PayOrderOutput, error) {
 	var output dto.PayOrderOutput
+
+	if err := uuid.Validate(input.OrderUUID); err != nil {
+		return output, fmt.Errorf("order uuid: %w", model.ErrInvalidFormat)
+	}
 
 	order, err := s.repository.GetOrder(ctx, input.OrderUUID)
 	if err != nil {

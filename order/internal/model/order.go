@@ -13,7 +13,7 @@ type Order struct {
 type PaymentMethod int
 
 const (
-	PaymentMethodUnknown = iota
+	PaymentMethodUnknown PaymentMethod = iota
 	PaymentMethodCard
 	PaymentMethodSPB
 	PaymentMethodCreditCard
@@ -23,7 +23,7 @@ const (
 type Status int
 
 const (
-	StatusPendingPayment = iota
+	StatusPendingPayment Status = iota
 	StatusPaid
 	StatusCancelled
 )

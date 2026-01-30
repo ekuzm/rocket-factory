@@ -20,7 +20,7 @@ type Part struct {
 type Category int
 
 const (
-	CategoryUnspecified = iota
+	CategoryUnspecified Category = iota
 	CategoryEngine
 	CategoryFuel
 	CategoryPorthole

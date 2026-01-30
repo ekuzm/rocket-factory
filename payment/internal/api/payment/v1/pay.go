@@ -3,8 +3,8 @@ package v1
 import (
 	"context"
 
-	"github.com/ekuzm/rocket-factory/payment/internal/converter"
 	"github.com/ekuzm/rocket-factory/payment/internal/dto"
+	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
@@ -12,7 +12,7 @@ func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*pa
 	input := dto.PayOrderInput{
 		OrderUUID:     req.GetUuid(),
 		UserUUID:      req.GetUserUuid(),
-		PaymentMethod: converter.PaymentMethodToModel(req.GetPaymentMethod()),
+		PaymentMethod: model.PaymentMethod(req.GetPaymentMethod()),
 	}
 
 	output, err := a.service.PayOrder(ctx, input)

@@ -30,7 +30,7 @@ func (s *service) CreateOrder(ctx context.Context, input dto.CreateOrderInput) (
 	}
 
 	order := model.Order{
-		UUID:       uuid.New().String(),
+		UUID:       uuid.NewString(),
 		UserUUID:   input.UserUUID,
 		PartUUIDs:  input.PartUUIDs,
 		TotalPrice: totalPrice,

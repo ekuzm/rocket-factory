@@ -12,7 +12,7 @@ import (
 )
 
 func (s *service) CancelOrder(ctx context.Context, input dto.CancelOrderInput) error {
-	if _, err := uuid.Parse(input.UUID); err != nil {
+	if err := uuid.Validate(input.UUID); err != nil {
 		return fmt.Errorf("order uuid: %w", model.ErrInvalidFormat)
 	}
 

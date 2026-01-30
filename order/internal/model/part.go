@@ -34,14 +34,14 @@ type Manufacturer struct {
 	Website string
 }
 
-type Category string
+type Category int
 
 const (
-	CategoryUnknown  = "UNKNOWN"
-	CategoryEngine   = "ENGINE"
-	CategoryFuel     = "FUEL"
-	CategoryPorthole = "PORTHOLE"
-	CategoryWing     = "WING"
+	CategoryUnknown Category = iota
+	CategoryEngine
+	CategoryFuel
+	CategoryPorthole
+	CategoryWing
 )
 
 type Filter struct {

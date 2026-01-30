@@ -25,7 +25,7 @@ type Part struct {
 type Category int
 
 const (
-	CategoryUnspecified = iota
+	CategoryUnspecified Category = iota
 	CategoryEngine
 	CategoryFuel
 	CategoryPorthole
@@ -66,7 +66,7 @@ func (f *Filter) Validate() error {
 	}
 
 	for _, partUUID := range f.UUIDs {
-		if _, err := uuid.Parse(partUUID); err != nil {
+		if err := uuid.Validate(partUUID); err != nil {
 			return fmt.Errorf("part uuid: %w", ErrInvalidFormat)
 		}
 	}

@@ -12,7 +12,11 @@ import (
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 )
 
-func (a *api) NewError(ctx context.Context, err error) (r *orderV1.GenericErrorStatusCode) {
+func (a *api) NewError(ctx context.Context, err error) *orderV1.GenericErrorStatusCode {
+	if err == nil {
+		return nil
+	}
+
 	var (
 		code    int
 		message string

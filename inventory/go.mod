@@ -4,6 +4,7 @@ go 1.25.6
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.14.0
+	github.com/ekuzm/rocket-factory/shared v0.0.0-00010101000000-000000000000
 	github.com/google/uuid v1.6.0
 	github.com/samber/lo v1.52.0
 	github.com/stretchr/testify v1.11.1
@@ -11,12 +12,14 @@ require (
 	google.golang.org/protobuf v1.36.10
 )
 
+replace github.com/ekuzm/rocket-factory/shared => ../shared
+
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	go.opentelemetry.io/otel v1.39.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
