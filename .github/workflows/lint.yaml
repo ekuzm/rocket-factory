@@ -11,13 +11,16 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v6.0.1
-            - name: Setup Go
+              
+            - name: Set up Go
               uses: actions/setup-go@v6.2.0
               with:
                   go-version: "1.25.0"
-            - name: Setup Task-tool for work with Taskfile.yaml
+                  
+            - name: Set up Task-tool to work with Taskfile.yaml
               uses: go-task/setup-task@v1.0.0
               with:
                   version: 3.47.0
+                  
             - name: Run golangci-lint via Taskfile
               run: task lint
