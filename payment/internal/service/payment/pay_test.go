@@ -12,8 +12,6 @@ import (
 )
 
 func TestPayOrder(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx   context.Context
 		input dto.PayOrderInput
@@ -109,6 +107,8 @@ func TestPayOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			service := NewService()
 
 			output, err := service.PayOrder(test.args.ctx, test.args.input)

@@ -13,8 +13,6 @@ import (
 )
 
 func TestGetOrder(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx    context.Context
 		params orderV1.GetOrderParams
@@ -73,6 +71,8 @@ func TestGetOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			service := mock.NewOrderService(t)
 			api := NewAPI(service)
 

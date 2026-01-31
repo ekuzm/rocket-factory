@@ -16,8 +16,6 @@ import (
 )
 
 func TestCancelOrder(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx   context.Context
 		input dto.CancelOrderInput
@@ -139,6 +137,8 @@ func TestCancelOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			repo := repositoryMock.NewOrderRepository(t)
 			inventoryClient := clientMock.NewInventoryClient(t)
 			paymentClient := clientMock.NewPaymentClient(t)

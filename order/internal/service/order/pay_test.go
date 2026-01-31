@@ -16,7 +16,7 @@ import (
 )
 
 func TestPayOrder(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 
 	type args struct {
 		ctx   context.Context
@@ -180,6 +180,8 @@ func TestPayOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			repo := repoMock.NewOrderRepository(t)
 			inventoryClient := clientMock.NewInventoryClient(t)
 			paymentClient := clientMock.NewPaymentClient(t)

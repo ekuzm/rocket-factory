@@ -13,8 +13,6 @@ import (
 )
 
 func TestGetPart(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx context.Context
 		req *inventoryV1.GetPartRequest
@@ -73,6 +71,8 @@ func TestGetPart(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			service := mock.NewInventoryService(t)
 			api := NewAPI(service)
 

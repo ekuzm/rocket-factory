@@ -12,8 +12,6 @@ import (
 )
 
 func TestCreateOrder(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx context.Context
 		req *orderV1.CreateOrderRequest
@@ -80,6 +78,8 @@ func TestCreateOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			service := mock.NewOrderService(t)
 			api := NewAPI(service)
 

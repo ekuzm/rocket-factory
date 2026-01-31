@@ -16,8 +16,6 @@ import (
 )
 
 func TestCreateOrder(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx   context.Context
 		input dto.CreateOrderInput
@@ -112,6 +110,8 @@ func TestCreateOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			repo := repoMock.NewOrderRepository(t)
 			inventoryClient := clientMock.NewInventoryClient(t)
 			paymentClient := clientMock.NewPaymentClient(t)

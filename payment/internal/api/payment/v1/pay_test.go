@@ -13,8 +13,6 @@ import (
 )
 
 func TestPayOrder(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		ctx context.Context
 		req *paymentV1.PayOrderRequest
@@ -85,6 +83,8 @@ func TestPayOrder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
 			service := mock.NewPaymentService(t)
 
 			api := NewAPI(service)
