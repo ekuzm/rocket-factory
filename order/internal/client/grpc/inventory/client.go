@@ -1,8 +1,6 @@
 package inventory
 
 import (
-	"google.golang.org/grpc"
-
 	def "github.com/ekuzm/rocket-factory/order/internal/client"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
@@ -13,8 +11,8 @@ type client struct {
 	generatedClient inventoryV1.InventoryServiceClient
 }
 
-func NewClient(conn *grpc.ClientConn) *client {
+func NewClient(generatedClient inventoryV1.InventoryServiceClient) *client {
 	return &client{
-		generatedClient: inventoryV1.NewInventoryServiceClient(conn),
+		generatedClient: generatedClient,
 	}
 }

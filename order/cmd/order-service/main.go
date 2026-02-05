@@ -22,6 +22,8 @@ import (
 	orderRepository "github.com/ekuzm/rocket-factory/order/internal/repository/order/memory"
 	orderService "github.com/ekuzm/rocket-factory/order/internal/service/order"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
+	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
+	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
 const (
@@ -56,8 +58,8 @@ func main() {
 	}()
 
 	repository := orderRepository.NewRepository()
-	inventoryClient := inventory.NewClient(inventoryConn)
-	paymentClient := payment.NewClient(paymentConn)
+	inventoryClient := inventory.NewClient(inventoryV1.NewInventoryServiceClient(inventoryConn))
+	paymentClient := payment.NewClient(paymentV1.NewPaymentServiceClient(paymentConn))
 
 	service := orderService.NewService(repository, inventoryClient, paymentClient)
 	api := orderAPI.NewAPI(service)
