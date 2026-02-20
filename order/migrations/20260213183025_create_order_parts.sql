@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS order_parts (
-    order_uuid UUID,
-    part_uuid UUID,
+CREATE TABLE IF NOT EXISTS order_parts(
+    order_uuid UUID NOT NULL,
+    part_uuid UUID NOT NULL,
     PRIMARY KEY(order_uuid, part_uuid),
     FOREIGN KEY(order_uuid) REFERENCES orders(uuid) ON DELETE CASCADE
 );
