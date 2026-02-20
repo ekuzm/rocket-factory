@@ -10,7 +10,7 @@ x-ogen:
 
 tags:
     - name: order
-      description: Operations with data about Orders - create order, pay for order, get order by uuid, cancel order
+      description: Operations with data about Orders - create order, pay order, get order by uuid, cancel order
 
 paths:
     /api/v1/orders:

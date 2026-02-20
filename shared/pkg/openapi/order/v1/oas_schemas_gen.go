@@ -4,6 +4,7 @@ package order_v1
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-faster/errors"
 )
@@ -148,6 +149,52 @@ func (s *NoContent) SetCode(val int) {
 // SetMessage sets the value of Message.
 func (s *NoContent) SetMessage(val string) {
 	s.Message = val
+}
+
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDateTime) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
 }
 
 // NewOptInt returns new OptInt with value set to v.
@@ -302,6 +349,10 @@ type Order struct {
 	TransactionUUID OptString        `json:"transaction_uuid"`
 	PaymentMethod   OptPaymentMethod `json:"payment_method"`
 	Status          OrderStatus      `json:"status"`
+	// Timestamp when order was create.
+	CreatedAt time.Time `json:"created_at"`
+	// Timestamp when order was update.
+	UpdatedAt OptDateTime `json:"updated_at"`
 }
 
 // GetUUID returns the value of UUID.
@@ -339,6 +390,16 @@ func (s *Order) GetStatus() OrderStatus {
 	return s.Status
 }
 
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Order) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Order) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
 // SetUUID sets the value of UUID.
 func (s *Order) SetUUID(val string) {
 	s.UUID = val
@@ -372,6 +433,16 @@ func (s *Order) SetPaymentMethod(val OptPaymentMethod) {
 // SetStatus sets the value of Status.
 func (s *Order) SetStatus(val OrderStatus) {
 	s.Status = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Order) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Order) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
 }
 
 // Status of order.

@@ -5,6 +5,7 @@ required:
     - part_uuids
     - total_price
     - status
+    - created_at
 properties:
     uuid:
         type: string
@@ -37,3 +38,13 @@ properties:
         $ref: "../enums/order_status.yaml"
         default: PENDING_PAYMENT
         example: "PAID"
+    created_at:
+        type: string
+        format: date-time
+        description: Timestamp when order was create
+        example: 2026-02-15 04:44:52.790608611
+    updated_at:
+        type: string
+        format: date-time
+        description: Timestamp when order was update
+        example: 2026-02-15 04:44:52.790608611
