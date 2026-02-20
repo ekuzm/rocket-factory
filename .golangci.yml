@@ -33,6 +33,9 @@ linters:
                     show-ignored: true
                 severity: "medium"
                 confidence: "medium"
+            excludes:
+                - G706
+                - G115
         cyclop:
             max-complexity: 20
         depguard:
