@@ -4,7 +4,7 @@ silent: true
 
 vars:
     GO_VERSION: "1.25"
-    GOLANGCI_LINT_VERSION: "v2.7.1"
+    GOLANGCI_LINT_VERSION: "v2.10.1"
     GCI_VERSION: "v0.13.7"
     GOFUMPT_VERSION: "v0.9.2"
     OGEN_VERSION: "v1.18.0"
@@ -14,6 +14,7 @@ vars:
     PROTOC_GEN_GO_GRPC_VERSION: "v1.6.0"
     GRPCURL_VERSION: "v1.9.3"
     MOCKERY_VERSION: "v3.6.3"
+    GOOSE_VERSION: "v3.26.0"
 
     BIN_DIR: "{{.ROOT_DIR}}/bin"
     COVERAGE_DIR: "{{.ROOT_DIR}}/coverage"
@@ -27,6 +28,7 @@ vars:
     PROTOC_GEN_GO_GRPC: "{{.BIN_DIR}}/protoc-gen-go-grpc"
     GRPCURL: "{{.BIN_DIR}}/grpcurl"
     MOCKERY: "{{.BIN_DIR}}/mockery"
+    GOOSE: "{{.BIN_DIR}}/goose"
 
     OGEN_API_FILES: "{{.ROOT_DIR}}/shared/api/order/v1/"
     OGEN_CONFIG: "{{.ROOT_DIR}}/ogen.yaml"
@@ -389,7 +391,7 @@ tasks:
             - for:
                   var: MODULES
                   as: MOD
-              cmd: go list -f '{{`{{if .TestGoFiles}}{{.ImportPath}}{{end}}`}}' ./"{{.MOD}}"/... | xargs -r go test -v
+              cmd: go list -f '{{`{{if .XTestGoFiles}}{{.ImportPath}}{{end}}`}}' ./"{{.MOD}}"/... | xargs -r go test -v
     test-coverage:
         desc: "Calculate test coverage"
 
@@ -399,13 +401,13 @@ tasks:
             - for:
                   var: MODULES
                   as: MOD
-              cmd: go test -v -coverprofile={{.COVERAGE_DIR}}/coverage_"{{.MOD}}".out -coverpkg=$(go list ./"{{.MOD}}"/... | grep -v "/mock" | grep -E '/(api|service)/' | tr '\n' ',') $(go list -f '{{`{{if .TestGoFiles}}{{.ImportPath}}{{end}}`}}' ./"{{.MOD}}"/...)
-              if: '{{ne .MOD "shared"}}'
+              cmd: go test -v -coverprofile={{.COVERAGE_DIR}}/coverage_"{{.MOD}}".out -coverpkg=$(go list ./"{{.MOD}}"/... | grep -Ev "/(mock|dto)" | grep -E '/(api|service)/' | tr '\n' ',') $(go list -f '{{`{{if .XTestGoFiles}}{{.ImportPath}}{{end}}`}}' ./"{{.MOD}}"/...)
+              if: '{{ne .MOD "shared"}} && {{ne .MOD "inventory"}} && {{ne .MOD "payment"}}'
             - for:
                   var: MODULES
                   as: MOD
               cmd: go tool cover -func={{.COVERAGE_DIR}}/coverage_"{{.MOD}}".out | tail -n1
-              if: '{{ne .MOD "shared"}}'
+              if: '{{ne .MOD "shared"}} && {{ne .MOD "inventory"}} && {{ne .MOD "payment"}}'
 
     test-coverage-html:
         desc: "Generate html with test coverage"
@@ -416,4 +418,12 @@ tasks:
                   var: MODULES
                   as: MOD
               cmd: go tool cover -html="{{.COVERAGE_DIR}}"/coverage_"{{.MOD}}".out -o "{{.COVERAGE_DIR}}"/coverage_"{{.MOD}}".html
-              if: '{{ne .MOD "shared"}}'
+              if: '{{ne .MOD "shared"}} && {{ne .MOD "inventory"}} && {{ne .MOD "payment"}}'
+    install-goose:
+        desc: "Installing goose in bin directory"
+        deps: [create-bin]
+        cmds:
+            - echo "Installing goose..."
+            - GOBIN="{{.BIN_DIR}}" go install github.com/pressly/goose/v3/cmd/goose@"{{.GOOSE_VERSION}}"
+        status:
+            - test -x "{{.GOOSE}}"
