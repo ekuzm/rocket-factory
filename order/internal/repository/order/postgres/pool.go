@@ -1,0 +1,62 @@
+package postgres
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/ekuzm/rocket-factory/order/internal/repository/order/postgres/transaction"
+)
+
+type Pool struct {
+	*pgxpool.Pool
+}
+
+type Sqlizer interface {
+	ToSql() (string, []any, error)
+}
+
+func (p *Pool) Get(ctx context.Context, dst any, sqlizer Sqlizer) error {
+	query, args, err := sqlizer.ToSql()
+	if err != nil {
+		return fmt.Errorf("sqlizer.ToSql: %w", err)
+	}
+
+	tx := transaction.Extract(ctx)
+	if tx != nil {
+		return pgxscan.Get(ctx, tx, dst, query, args)
+	}
+
+	return pgxscan.Get(ctx, p.Pool, dst, query, args)
+}
+
+func (p *Pool) Select(ctx context.Context, dst any, sqlizer Sqlizer) error {
+	query, args, err := sqlizer.ToSql()
+	if err != nil {
+		return fmt.Errorf("sqlizer.ToSql: %w", err)
+	}
+
+	tx := transaction.Extract(ctx)
+	if tx != nil {
+		return pgxscan.Select(ctx, tx, dst, query, args)
+	}
+
+	return pgxscan.Select(ctx, p.Pool, dst, query, args)
+}
+
+func (p *Pool) Exec(ctx context.Context, sqlizer Sqlizer) (pgconn.CommandTag, error) {
+	query, args, err := sqlizer.ToSql()
+	if err != nil {
+		return pgconn.CommandTag{}, fmt.Errorf("sqlizer.ToSql: %w", err)
+	}
+
+	tx := transaction.Extract(ctx)
+	if tx != nil {
+		return tx.Exec(ctx, query, args)
+	}
+
+	return p.Pool.Exec(ctx, query, args)
+}
