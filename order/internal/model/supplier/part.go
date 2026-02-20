@@ -1,4 +1,4 @@
-package model
+package supplier
 
 import (
 	"time"
@@ -7,7 +7,7 @@ import (
 )
 
 type Part struct {
-	UUID          string
+	UUID          uuid.UUID
 	Name          string
 	Description   string
 	Price         float64
@@ -17,7 +17,7 @@ type Part struct {
 	Category      Category
 	Tags          []string
 	Metadata      map[string]*Value
-	CreatedAt     *time.Time
+	CreatedAt     time.Time
 	UpdateAt      *time.Time
 }
 
@@ -45,21 +45,11 @@ const (
 )
 
 type Filter struct {
-	UUIDs                 []string
+	UUIDs                 uuid.UUIDs
 	Names                 []string
 	Categories            []Category
 	ManufacturerCountries []string
 	Tags                  []string
-}
-
-func (f Filter) Validate() error {
-	for _, partUUID := range f.UUIDs {
-		if _, err := uuid.Parse(partUUID); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 type Value struct {

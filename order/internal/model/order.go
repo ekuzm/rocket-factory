@@ -1,11 +1,23 @@
 package model
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type Order struct {
-	UUID            string
-	UserUUID        string
-	PartUUIDs       []string
+	UUID      uuid.UUID
+	Info      OrderInfo
+	CreatedAt time.Time
+	UpdatedAt *time.Time
+}
+
+type OrderInfo struct {
+	UserUUID        uuid.UUID
+	PartUUIDs       uuid.UUIDs
 	TotalPrice      float64
-	TransactionUUID string
+	TransactionUUID uuid.UUID
 	PaymentMethod   PaymentMethod
 	Status          Status
 }
