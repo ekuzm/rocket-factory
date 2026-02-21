@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	paymentAPI "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
+	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/payment/internal/interceptor"
-	paymentService "github.com/ekuzm/rocket-factory/payment/internal/service"
+	"github.com/ekuzm/rocket-factory/payment/internal/service"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
@@ -34,8 +34,8 @@ func main() {
 
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.RequestLogger(), interceptor.MappingErrors()))
 
-	service := paymentService.NewService()
-	api := paymentAPI.NewAPI(service)
+	service := service.New()
+	api := api.New(service)
 
 	paymentV1.RegisterPaymentServiceServer(server, api)
 	reflection.Register(server)

@@ -1,4 +1,4 @@
-package payment
+package service_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 
 	errs "github.com/ekuzm/rocket-factory/payment/internal/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
+	"github.com/ekuzm/rocket-factory/payment/internal/service"
 	"github.com/ekuzm/rocket-factory/payment/pkg/testutil"
 )
 
@@ -51,7 +52,7 @@ func TestPayOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			service := NewService()
+			service := service.New()
 
 			transactionUUID, err := service.PayOrder(test.args.ctx, test.args.orderUUID, test.args.userUUID, test.args.paymentMethod)
 			if err != nil {

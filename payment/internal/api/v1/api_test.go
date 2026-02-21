@@ -1,4 +1,4 @@
-package v1
+package v1_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
 	mockPayment "github.com/ekuzm/rocket-factory/payment/internal/api/v1/mock"
 	errs "github.com/ekuzm/rocket-factory/payment/internal/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
@@ -102,7 +103,7 @@ func TestPayOrder(t *testing.T) {
 
 			service := mockPayment.NewPaymentService(t)
 
-			api := NewAPI(service)
+			api := api.New(service)
 
 			test.mock(service, test.args)
 

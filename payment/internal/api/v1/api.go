@@ -21,7 +21,7 @@ type api struct {
 	service PaymentService
 }
 
-func NewAPI(service PaymentService) *api {
+func New(service PaymentService) *api {
 	return &api{
 		service: service,
 	}

@@ -1,4 +1,4 @@
-package payment
+package service
 
 import (
 	"context"
@@ -16,7 +16,7 @@ var _ api.PaymentService = (*service)(nil)
 
 type service struct{}
 
-func NewService() *service {
+func New() *service {
 	return &service{}
 }
 
