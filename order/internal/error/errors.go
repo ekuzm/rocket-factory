@@ -3,9 +3,8 @@ package error
 import "errors"
 
 var (
-	ErrOrderNotFound   = errors.New("order not found")
-	ErrInvalidFormat   = errors.New("invalid format")
-	ErrStatusPaid      = errors.New("order already paid")
-	ErrStatusCancelled = errors.New("order already cancelled")
-	ErrInvalidState    = errors.New("invalid state")
+	ErrOrderNotFound     = errors.New("order not found")
+	ErrInvalidUUIDFormat = errors.New("invalid UUID format")
+	ErrStatusPaid        = errors.New("order already paid")
+	ErrStatusCancelled   = errors.New("order already cancelled")
 )

@@ -35,7 +35,7 @@ func (a *adapter) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, p
 
 	transactionUUID, err := uuid.Parse(resp.TransactionUuid)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("transaction UUID: %w", errs.ErrInvalidFormat)
+		return uuid.Nil, fmt.Errorf("transaction UUID: %w", errs.ErrInvalidUUIDFormat)
 	}
 
 	return transactionUUID, nil

@@ -39,11 +39,11 @@ func New(service OrderService) *api {
 func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (*orderV1.CreateOrderResponse, error) {
 	userUUID, err := uuid.Parse(req.UserUUID)
 	if err != nil {
-		return nil, fmt.Errorf("user UUID: %w", errs.ErrInvalidFormat)
+		return nil, fmt.Errorf("user UUID: %w", errs.ErrInvalidUUIDFormat)
 	}
 	partUUIDs, err := uuidx.Parse(req.PartUuids)
 	if err != nil {
-		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalidFormat)
+		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalidUUIDFormat)
 	}
 
 	summary, err := a.service.CreateOrder(ctx, userUUID, partUUIDs)
@@ -57,7 +57,7 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*orderV1.Order, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidFormat)
+		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidUUIDFormat)
 	}
 
 	order, err := a.service.GetOrder(ctx, uuid)
@@ -71,7 +71,7 @@ func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*ord
 func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (*orderV1.NoContent, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidFormat)
+		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidUUIDFormat)
 	}
 
 	err = a.service.CancelOrder(ctx, uuid)
@@ -85,7 +85,7 @@ func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams)
 func (a *api) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (*orderV1.PayOrderResponse, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidFormat)
+		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidUUIDFormat)
 	}
 
 	transactionUUID, err := a.service.PayOrder(ctx, uuid, dto.PaymentMethodToModel[req.PaymentMethod])
@@ -109,7 +109,7 @@ func (a *api) NewError(ctx context.Context, err error) *orderV1.GenericErrorStat
 	status, ok := status.FromError(err)
 	if !ok {
 		switch {
-		case errors.Is(err, errs.ErrInvalidFormat):
+		case errors.Is(err, errs.ErrInvalidUUIDFormat):
 			code, message = http.StatusBadRequest, err.Error()
 		case errors.Is(err, errs.ErrOrderNotFound):
 			code, message = http.StatusNotFound, err.Error()

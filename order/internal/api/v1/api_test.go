@@ -58,7 +58,7 @@ func TestCreateOrder(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid user uuid: returns ErrInvalidFormat, no service call",
+			name: "invalid user uuid: returns ErrInvalidUUIDFormat, no service call",
 			args: args{
 				ctx: context.Background(),
 				req: &orderV1.CreateOrderRequest{
@@ -67,13 +67,13 @@ func TestCreateOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidFormat,
+			err:  errs.ErrInvalidUUIDFormat,
 			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "CreateOrder", mock.Anything, mock.Anything)
 			},
 		},
 		{
-			name: "invalid part uuids: returns ErrInvalidFormat, no service call",
+			name: "invalid part uuids: returns ErrInvalidUUIDFormat, no service call",
 			args: args{
 				ctx: context.Background(),
 				req: &orderV1.CreateOrderRequest{
@@ -82,7 +82,7 @@ func TestCreateOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidFormat,
+			err:  errs.ErrInvalidUUIDFormat,
 			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "CreateOrder", mock.Anything, mock.Anything)
 			},
@@ -158,14 +158,14 @@ func TestGetOrder(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid order uuid: returns ErrInvalidFormat, no service call",
+			name: "invalid order uuid: returns ErrInvalidUUIDFormat, no service call",
 			args: args{
 				ctx: context.Background(),
 				params: orderV1.GetOrderParams{
 					OrderUUID: uuid.Invalid.String(),
 				},
 			},
-			err: errs.ErrInvalidFormat,
+			err: errs.ErrInvalidUUIDFormat,
 			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "GetOrder", mock.Anything, mock.Anything)
 			},
@@ -240,7 +240,7 @@ func TestCancelOrder(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid order uuid: returns ErrInvalidFormat, no service call",
+			name: "invalid order uuid: returns ErrInvalidUUIDFormat, no service call",
 			args: args{
 				ctx: context.Background(),
 				params: orderV1.CancelOrderParams{
@@ -248,7 +248,7 @@ func TestCancelOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidFormat,
+			err:  errs.ErrInvalidUUIDFormat,
 			mock: func(service *mockOrder.OrderService, args args) {},
 		},
 		{
@@ -328,7 +328,7 @@ func TestPayOrder(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid order uuid: returns ErrInvalidFormat, no service call",
+			name: "invalid order uuid: returns ErrInvalidUUIDFormat, no service call",
 			args: args{
 				ctx: context.Background(),
 				req: &orderV1.PayOrderRequest{
@@ -339,7 +339,7 @@ func TestPayOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidFormat,
+			err:  errs.ErrInvalidUUIDFormat,
 			mock: func(service *mockOrder.OrderService, args args) {},
 		},
 		{
@@ -410,13 +410,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status bad request",
 			args: args{
 				ctx: context.Background(),
-				err: errs.ErrInvalidFormat,
+				err: errs.ErrInvalidUUIDFormat,
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusBadRequest,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusBadRequest),
-					Message: orderV1.NewOptString(errs.ErrInvalidFormat.Error()),
+					Message: orderV1.NewOptString(errs.ErrInvalidUUIDFormat.Error()),
 				},
 			},
 		},
@@ -480,13 +480,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status bad request from gRPC invalid argument",
 			args: args{
 				ctx: context.Background(),
-				err: status.Error(codes.InvalidArgument, errs.ErrInvalidFormat.Error()),
+				err: status.Error(codes.InvalidArgument, errs.ErrInvalidUUIDFormat.Error()),
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusBadRequest,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusBadRequest),
-					Message: orderV1.NewOptString(errs.ErrInvalidFormat.Error()),
+					Message: orderV1.NewOptString(errs.ErrInvalidUUIDFormat.Error()),
 				},
 			},
 		},
