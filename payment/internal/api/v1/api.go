@@ -30,11 +30,11 @@ func New(service PaymentService) *api {
 func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
 	orderUUID, err := uuid.Parse(req.Uuid)
 	if err != nil {
-		return nil, fmt.Errorf("parse order uuid: %w", errs.ErrInvalidUUID)
+		return nil, fmt.Errorf("parse order UUID: %w", errs.ErrInvalidUUID)
 	}
 	userUUID, err := uuid.Parse(req.UserUuid)
 	if err != nil {
-		return nil, fmt.Errorf("parse user uuid: %w", errs.ErrInvalidUUID)
+		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalidUUID)
 	}
 
 	transactionUUID, err := a.service.PayOrder(ctx, orderUUID, userUUID, dto.PaymentMethodToModel[req.PaymentMethod])
