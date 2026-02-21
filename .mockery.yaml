@@ -5,21 +5,21 @@ pkgname: "mock"
 structname: "{{.InterfaceName}}"
 
 packages:
-    github.com/ekuzm/rocket-factory/inventory/internal/api/inventory/v1:
+    github.com/ekuzm/rocket-factory/inventory/internal/api/v1:
         config:
             include-interface-regex: ".*Service"
-    github.com/ekuzm/rocket-factory/inventory/internal/service/inventory:
+    github.com/ekuzm/rocket-factory/inventory/internal/service:
         config:
             include-interface-regex: ".*Repository || .*Port"
-    github.com/ekuzm/rocket-factory/order/internal/api/order/v1:
+    github.com/ekuzm/rocket-factory/order/internal/api/v1:
         config:
             include-interface-regex: ".*Service"
-    github.com/ekuzm/rocket-factory/order/internal/service/order:
+    github.com/ekuzm/rocket-factory/order/internal/service:
         config:
             include-interface-regex: ".*Repository || .*Port"
-    github.com/ekuzm/rocket-factory/payment/internal/api/payment/v1:
+    github.com/ekuzm/rocket-factory/payment/internal/api/v1:
         config:
             include-interface-regex: ".*Service"
-    github.com/ekuzm/rocket-factory/payment/internal/service/payment:
+    github.com/ekuzm/rocket-factory/payment/internal/service:
         config:
             include-interface-regex: ".*Repository || .*Port"
