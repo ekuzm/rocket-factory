@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/ekuzm/rocket-factory/payment/internal/model"
+	errs "github.com/ekuzm/rocket-factory/payment/internal/error"
 )
 
 func MappingErrors() grpc.UnaryServerInterceptor {
@@ -21,7 +21,7 @@ func MappingErrors() grpc.UnaryServerInterceptor {
 		resp, err := handler(ctx, req)
 		if err != nil {
 			switch {
-			case errors.Is(err, model.ErrInvalidFormat):
+			case errors.Is(err, errs.ErrInvalidPaymentMethod) || errors.Is(err, errs.ErrInvalidUUID):
 				return nil, status.Error(codes.InvalidArgument, err.Error())
 			default:
 				return nil, status.Error(codes.Internal, err.Error())
