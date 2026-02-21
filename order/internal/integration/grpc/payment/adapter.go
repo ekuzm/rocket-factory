@@ -15,7 +15,7 @@ type adapter struct {
 	grpcClient paymentV1.PaymentServiceClient
 }
 
-func NewAdapter(grpcClient paymentV1.PaymentServiceClient) *adapter {
+func New(grpcClient paymentV1.PaymentServiceClient) *adapter {
 	return &adapter{
 		grpcClient: grpcClient,
 	}

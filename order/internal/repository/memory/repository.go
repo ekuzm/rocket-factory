@@ -20,7 +20,7 @@ type repository struct {
 	mtx    sync.RWMutex
 }
 
-func NewRepository() *repository {
+func New() *repository {
 	return &repository{
 		orders: make(map[uuid.UUID]model.Order),
 	}

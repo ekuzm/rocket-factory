@@ -12,7 +12,7 @@ type adapter struct {
 	grpcClient inventoryV1.InventoryServiceClient
 }
 
-func NewAdapter(grpcClient inventoryV1.InventoryServiceClient) *adapter {
+func New(grpcClient inventoryV1.InventoryServiceClient) *adapter {
 	return &adapter{
 		grpcClient: grpcClient,
 	}

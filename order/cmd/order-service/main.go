@@ -73,10 +73,10 @@ func main() {
 	}
 	defer pool.Close()
 
-	repository := postgres.NewRepository(ctx, pool)
-	inventoryAdapter := inventory.NewAdapter(inventoryV1.NewInventoryServiceClient(inventoryConn))
-	paymentAdapter := payment.NewAdapter(paymentV1.NewPaymentServiceClient(paymentConn))
-	manager := transaction.NewManager(pool)
+	repository := postgres.New(ctx, pool)
+	inventoryAdapter := inventory.New(inventoryV1.NewInventoryServiceClient(inventoryConn))
+	paymentAdapter := payment.New(paymentV1.NewPaymentServiceClient(paymentConn))
+	manager := transaction.New(pool)
 
 	service := service.New(repository, inventoryAdapter, paymentAdapter, manager)
 	api := api.New(service)

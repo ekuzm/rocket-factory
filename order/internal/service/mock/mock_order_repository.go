@@ -7,10 +7,9 @@ package mock
 import (
 	"context"
 
+	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
-
-	"github.com/ekuzm/rocket-factory/order/internal/model"
 )
 
 // NewOrderRepository creates a new instance of OrderRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -18,8 +17,7 @@ import (
 func NewOrderRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *OrderRepository {
+}) *OrderRepository {
 	mock := &OrderRepository{}
 	mock.Mock.Test(t)
 
@@ -75,7 +73,7 @@ type OrderRepository_GetOrder_Call struct {
 // GetOrder is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *OrderRepository_Expecter) GetOrder(ctx, uuid1 interface{}) *OrderRepository_GetOrder_Call {
+func (_e *OrderRepository_Expecter) GetOrder(ctx interface{}, uuid1 interface{}) *OrderRepository_GetOrder_Call {
 	return &OrderRepository_GetOrder_Call{Call: _e.mock.On("GetOrder", ctx, uuid1)}
 }
 
@@ -132,7 +130,7 @@ type OrderRepository_SaveOrder_Call struct {
 // SaveOrder is a helper method to define mock.On call
 //   - ctx context.Context
 //   - order model.Order
-func (_e *OrderRepository_Expecter) SaveOrder(ctx, order interface{}) *OrderRepository_SaveOrder_Call {
+func (_e *OrderRepository_Expecter) SaveOrder(ctx interface{}, order interface{}) *OrderRepository_SaveOrder_Call {
 	return &OrderRepository_SaveOrder_Call{Call: _e.mock.On("SaveOrder", ctx, order)}
 }
 
@@ -190,7 +188,7 @@ type OrderRepository_UpdateOrder_Call struct {
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
 //   - info model.OrderInfo
-func (_e *OrderRepository_Expecter) UpdateOrder(ctx, uuid1, info interface{}) *OrderRepository_UpdateOrder_Call {
+func (_e *OrderRepository_Expecter) UpdateOrder(ctx interface{}, uuid1 interface{}, info interface{}) *OrderRepository_UpdateOrder_Call {
 	return &OrderRepository_UpdateOrder_Call{Call: _e.mock.On("UpdateOrder", ctx, uuid1, info)}
 }
 

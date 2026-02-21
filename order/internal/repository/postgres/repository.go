@@ -19,7 +19,7 @@ type repository struct {
 	pool Pool
 }
 
-func NewRepository(ctx context.Context, pool *pgxpool.Pool) *repository {
+func New(ctx context.Context, pool *pgxpool.Pool) *repository {
 	return &repository{
 		pool: Pool{pool},
 	}

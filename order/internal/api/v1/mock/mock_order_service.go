@@ -7,11 +7,10 @@ package mock
 import (
 	"context"
 
-	"github.com/google/uuid"
-	mock "github.com/stretchr/testify/mock"
-
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/service/dto"
+	"github.com/google/uuid"
+	mock "github.com/stretchr/testify/mock"
 )
 
 // NewOrderService creates a new instance of OrderService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -19,8 +18,7 @@ import (
 func NewOrderService(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *OrderService {
+}) *OrderService {
 	mock := &OrderService{}
 	mock.Mock.Test(t)
 
@@ -67,7 +65,7 @@ type OrderService_CancelOrder_Call struct {
 // CancelOrder is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *OrderService_Expecter) CancelOrder(ctx, uuid1 interface{}) *OrderService_CancelOrder_Call {
+func (_e *OrderService_Expecter) CancelOrder(ctx interface{}, uuid1 interface{}) *OrderService_CancelOrder_Call {
 	return &OrderService_CancelOrder_Call{Call: _e.mock.On("CancelOrder", ctx, uuid1)}
 }
 
@@ -134,7 +132,7 @@ type OrderService_CreateOrder_Call struct {
 //   - ctx context.Context
 //   - userUUID uuid.UUID
 //   - partUUIDs uuid.UUIDs
-func (_e *OrderService_Expecter) CreateOrder(ctx, userUUID, partUUIDs interface{}) *OrderService_CreateOrder_Call {
+func (_e *OrderService_Expecter) CreateOrder(ctx interface{}, userUUID interface{}, partUUIDs interface{}) *OrderService_CreateOrder_Call {
 	return &OrderService_CreateOrder_Call{Call: _e.mock.On("CreateOrder", ctx, userUUID, partUUIDs)}
 }
 
@@ -205,7 +203,7 @@ type OrderService_GetOrder_Call struct {
 // GetOrder is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *OrderService_Expecter) GetOrder(ctx, uuid1 interface{}) *OrderService_GetOrder_Call {
+func (_e *OrderService_Expecter) GetOrder(ctx interface{}, uuid1 interface{}) *OrderService_GetOrder_Call {
 	return &OrderService_GetOrder_Call{Call: _e.mock.On("GetOrder", ctx, uuid1)}
 }
 
@@ -274,7 +272,7 @@ type OrderService_PayOrder_Call struct {
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
 //   - paymentMethod model.PaymentMethod
-func (_e *OrderService_Expecter) PayOrder(ctx, uuid1, paymentMethod interface{}) *OrderService_PayOrder_Call {
+func (_e *OrderService_Expecter) PayOrder(ctx interface{}, uuid1 interface{}, paymentMethod interface{}) *OrderService_PayOrder_Call {
 	return &OrderService_PayOrder_Call{Call: _e.mock.On("PayOrder", ctx, uuid1, paymentMethod)}
 }
 
