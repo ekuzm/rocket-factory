@@ -11,19 +11,19 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	inventoryAPI "github.com/ekuzm/rocket-factory/inventory/internal/api/inventory/v1"
+	api "github.com/ekuzm/rocket-factory/inventory/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/inventory/internal/interceptor"
-	inventoryRepository "github.com/ekuzm/rocket-factory/inventory/internal/repository/part/memory"
-	inventoryService "github.com/ekuzm/rocket-factory/inventory/internal/service/part"
+	"github.com/ekuzm/rocket-factory/inventory/internal/repository/memory"
+	"github.com/ekuzm/rocket-factory/inventory/internal/service"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
 
 const (
-	InventoryServiceAddress = "127.0.0.1:50051"
+	inventoryServiceAddress = "127.0.0.1:50051"
 )
 
 func main() {
-	lis, err := net.Listen("tcp", InventoryServiceAddress)
+	lis, err := net.Listen("tcp", inventoryServiceAddress)
 	if err != nil {
 		log.Fatalf("Failed to listen inventory service: %v", err)
 	}
@@ -33,9 +33,9 @@ func main() {
 		}
 	}()
 
-	repository := inventoryRepository.NewRepository()
-	service := inventoryService.NewService(repository)
-	api := inventoryAPI.NewAPI(service)
+	repository := memory.New()
+	service := service.New(repository)
+	api := api.New(service)
 
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.RequestLogger(), interceptor.MappingErrors()))
 
@@ -43,7 +43,7 @@ func main() {
 	reflection.Register(server)
 
 	go func() {
-		log.Printf("Start gRPC server at %s", InventoryServiceAddress)
+		log.Printf("Start gRPC server at %s", inventoryServiceAddress)
 		if err := server.Serve(lis); err != nil {
 			log.Printf("Failed to serve gRPC server: %v", err)
 		}
