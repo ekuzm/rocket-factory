@@ -402,12 +402,12 @@ tasks:
                   var: MODULES
                   as: MOD
               cmd: go test -v -coverprofile={{.COVERAGE_DIR}}/coverage_"{{.MOD}}".out -coverpkg=$(go list ./"{{.MOD}}"/... | grep -Ev "/(mock|dto)" | grep -E '/(api|service)/' | tr '\n' ',') $(go list -f '{{`{{if .XTestGoFiles}}{{.ImportPath}}{{end}}`}}' ./"{{.MOD}}"/...)
-              if: '{{ne .MOD "shared"}} && {{ne .MOD "inventory"}} && {{ne .MOD "payment"}}'
+              if: '{{ne .MOD "shared"}}'
             - for:
                   var: MODULES
                   as: MOD
               cmd: go tool cover -func={{.COVERAGE_DIR}}/coverage_"{{.MOD}}".out | tail -n1
-              if: '{{ne .MOD "shared"}} && {{ne .MOD "inventory"}} && {{ne .MOD "payment"}}'
+              if: '{{ne .MOD "shared"}}'
 
     test-coverage-html:
         desc: "Generate html with test coverage"
@@ -418,7 +418,7 @@ tasks:
                   var: MODULES
                   as: MOD
               cmd: go tool cover -html="{{.COVERAGE_DIR}}"/coverage_"{{.MOD}}".out -o "{{.COVERAGE_DIR}}"/coverage_"{{.MOD}}".html
-              if: '{{ne .MOD "shared"}} && {{ne .MOD "inventory"}} && {{ne .MOD "payment"}}'
+              if: '{{ne .MOD "shared"}}'
     install-goose:
         desc: "Installing goose in bin directory"
         deps: [create-bin]
