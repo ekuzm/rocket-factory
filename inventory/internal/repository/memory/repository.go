@@ -5,16 +5,48 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"sync"
 
+	"github.com/google/uuid"
+
+	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
-	repoConverter "github.com/ekuzm/rocket-factory/inventory/internal/repository/converter"
-	repoModel "github.com/ekuzm/rocket-factory/inventory/internal/repository/model"
+	"github.com/ekuzm/rocket-factory/inventory/internal/service"
 )
 
-type PartPredicate func(repoModel.Part) bool
+var _ service.InventoryRepository = (*repository)(nil)
 
-func (r *repository) ListParts(ctx context.Context, filter repoModel.Filter) ([]model.Part, error) {
-	parts := make([]repoModel.Part, 0, len(r.parts))
+type repository struct {
+	parts map[uuid.UUID]model.Part
+	mtx   sync.RWMutex
+}
+
+func New() *repository {
+	repo := &repository{
+		parts: make(map[uuid.UUID]model.Part),
+	}
+
+	repo.InitRepository()
+
+	return repo
+}
+
+func (r *repository) GetPart(_ context.Context, uuid uuid.UUID) (model.Part, error) {
+	r.mtx.RLock()
+	defer r.mtx.RUnlock()
+
+	part, ok := r.parts[uuid]
+	if !ok {
+		return model.Part{}, fmt.Errorf("part with %s uuid: %w", uuid, errs.ErrPartNotFound)
+	}
+
+	return part, nil
+}
+
+type PartPredicate func(model.Part) bool
+
+func (r *repository) ListParts(ctx context.Context, filter model.Filter) ([]model.Part, error) {
+	parts := make([]model.Part, 0, len(r.parts))
 
 	r.mtx.RLock()
 	for _, part := range r.parts {
@@ -43,14 +75,14 @@ func (r *repository) ListParts(ctx context.Context, filter repoModel.Filter) ([]
 	parts = filterParts(parts, preds)
 
 	if len(parts) != len(filter.UUIDs) && filter.UUIDs != nil {
-		return nil, fmt.Errorf("one or more parts: %w", model.ErrNotFound)
+		return nil, fmt.Errorf("one or more parts: %w", errs.ErrPartNotFound)
 	}
 
-	return repoConverter.PartsToModel(parts), nil
+	return parts, nil
 }
 
-func filterParts(parts []repoModel.Part, preds []PartPredicate) []repoModel.Part {
-	var out []repoModel.Part
+func filterParts(parts []model.Part, preds []PartPredicate) []model.Part {
+	var out []model.Part
 
 	for _, part := range parts {
 		if matchesAll(part, preds) {
@@ -61,7 +93,7 @@ func filterParts(parts []repoModel.Part, preds []PartPredicate) []repoModel.Part
 	return out
 }
 
-func matchesAll(part repoModel.Part, preds []PartPredicate) bool {
+func matchesAll(part model.Part, preds []PartPredicate) bool {
 	for _, pred := range preds {
 		if !pred(part) {
 			return false
@@ -71,10 +103,10 @@ func matchesAll(part repoModel.Part, preds []PartPredicate) bool {
 	return true
 }
 
-func byUUIDs(uuids []string) PartPredicate {
-	return func(part repoModel.Part) bool {
+func byUUIDs(uuids uuid.UUIDs) PartPredicate {
+	return func(part model.Part) bool {
 		for _, uuid := range uuids {
-			if strings.EqualFold(part.UUID, uuid) {
+			if part.UUID == uuid {
 				return true
 			}
 		}
@@ -84,7 +116,7 @@ func byUUIDs(uuids []string) PartPredicate {
 }
 
 func byNames(names []string) PartPredicate {
-	return func(part repoModel.Part) bool {
+	return func(part model.Part) bool {
 		for _, name := range names {
 			if strings.EqualFold(part.Name, name) {
 				return true
@@ -95,14 +127,14 @@ func byNames(names []string) PartPredicate {
 	}
 }
 
-func byCategories(categories []repoModel.Category) PartPredicate {
-	return func(part repoModel.Part) bool {
+func byCategories(categories []model.Category) PartPredicate {
+	return func(part model.Part) bool {
 		return slices.Contains(categories, part.Category)
 	}
 }
 
 func byManufacturerCountries(countries []string) PartPredicate {
-	return func(part repoModel.Part) bool {
+	return func(part model.Part) bool {
 		for _, country := range countries {
 			if strings.EqualFold(part.Manufacturer.Country, country) {
 				return true
@@ -114,7 +146,7 @@ func byManufacturerCountries(countries []string) PartPredicate {
 }
 
 func byTags(tags []string) PartPredicate {
-	return func(part repoModel.Part) bool {
+	return func(part model.Part) bool {
 		var counter int
 
 		for _, partTag := range part.Tags {

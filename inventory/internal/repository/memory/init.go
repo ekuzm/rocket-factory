@@ -5,26 +5,27 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/google/uuid"
 	"github.com/samber/lo"
 
-	repoModel "github.com/ekuzm/rocket-factory/inventory/internal/repository/model"
+	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 )
 
 func (r *repository) InitRepository() {
 	parts := generateParts()
-	r.parts = make(map[string]repoModel.Part, len(parts))
+	r.parts = make(map[uuid.UUID]model.Part, len(parts))
 
 	for _, part := range parts {
 		r.parts[part.UUID] = part
 	}
 }
 
-func generateParts() []repoModel.Part {
-	parts := make([]repoModel.Part, gofakeit.Number(10, 30))
+func generateParts() []model.Part {
+	parts := make([]model.Part, gofakeit.Number(10, 30))
 
 	for ind := range parts {
-		parts[ind] = repoModel.Part{
-			UUID:          gofakeit.UUID(),
+		parts[ind] = model.Part{
+			UUID:          uuid.New(),
 			Name:          gofakeit.Name(),
 			Description:   gofakeit.Paragraph(1, 3, 5, " "),
 			Price:         gofakeit.Price(100.0, 100000.0),
@@ -34,7 +35,7 @@ func generateParts() []repoModel.Part {
 			Manufacturer:  generateManufacturer(),
 			Tags:          gofakeit.ProductAudience(),
 			Metadata:      generateMetadata(),
-			CreatedAt:     lo.ToPtr(time.Now()),
+			CreatedAt:     time.Now(),
 			UpdatedAt:     lo.ToPtr(time.Now()),
 		}
 	}
@@ -42,23 +43,23 @@ func generateParts() []repoModel.Part {
 	return parts
 }
 
-func generateCategory(category int) repoModel.Category {
+func generateCategory(category int) model.Category {
 	switch category {
 	case 1:
-		return repoModel.CategoryEngine
+		return model.CategoryEngine
 	case 2:
-		return repoModel.CategoryFuel
+		return model.CategoryFuel
 	case 3:
-		return repoModel.CategoryPorthole
+		return model.CategoryPorthole
 	case 4:
-		return repoModel.CategoryWing
+		return model.CategoryWing
 	default:
-		return repoModel.CategoryUnspecified
+		return model.CategoryUnspecified
 	}
 }
 
-func generateDimensions() *repoModel.Dimensions {
-	return &repoModel.Dimensions{
+func generateDimensions() *model.Dimensions {
+	return &model.Dimensions{
 		Length: gofakeit.Float64(),
 		Width:  gofakeit.Float64(),
 		Height: gofakeit.Float64(),
@@ -66,8 +67,8 @@ func generateDimensions() *repoModel.Dimensions {
 	}
 }
 
-func generateManufacturer() *repoModel.Manufacturer {
-	return &repoModel.Manufacturer{
+func generateManufacturer() *model.Manufacturer {
+	return &model.Manufacturer{
 		Name:    gofakeit.Name(),
 		Country: gofakeit.Country(),
 		Website: fmt.Sprintf("https://%s", gofakeit.DomainName()),
@@ -81,21 +82,21 @@ const (
 	BoolValue   = 3
 )
 
-func generateMetadata() map[string]*repoModel.Value {
-	metadata := make(map[string]*repoModel.Value)
+func generateMetadata() map[string]*model.Value {
+	metadata := make(map[string]*model.Value)
 
 	for index := range gofakeit.Number(0, 10) {
 		key := fmt.Sprintf("%d-%s", index, gofakeit.Word())
 
 		switch index % 4 {
 		case StringValue:
-			metadata[key] = &repoModel.Value{StringValue: lo.ToPtr(gofakeit.Word())}
+			metadata[key] = &model.Value{StringValue: lo.ToPtr(gofakeit.Word())}
 		case Int64Value:
-			metadata[key] = &repoModel.Value{Int64Value: lo.ToPtr(gofakeit.Int64())}
+			metadata[key] = &model.Value{Int64Value: lo.ToPtr(gofakeit.Int64())}
 		case DoubleValue:
-			metadata[key] = &repoModel.Value{DoubleValue: lo.ToPtr(gofakeit.Float64())}
+			metadata[key] = &model.Value{DoubleValue: lo.ToPtr(gofakeit.Float64())}
 		case BoolValue:
-			metadata[key] = &repoModel.Value{BoolValue: lo.ToPtr(gofakeit.Bool())}
+			metadata[key] = &model.Value{BoolValue: lo.ToPtr(gofakeit.Bool())}
 		}
 	}
 
