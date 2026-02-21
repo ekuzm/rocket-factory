@@ -11,12 +11,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	api "github.com/ekuzm/rocket-factory/order/internal/api/order/v1"
-	"github.com/ekuzm/rocket-factory/order/internal/api/order/v1/dto"
-	serviceMock "github.com/ekuzm/rocket-factory/order/internal/api/order/v1/mock"
+	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
+	"github.com/ekuzm/rocket-factory/order/internal/api/v1/dto"
+	mockOrder "github.com/ekuzm/rocket-factory/order/internal/api/v1/mock"
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
-	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/order/dto"
+	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	"github.com/ekuzm/rocket-factory/order/pkg/testutil"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 )
@@ -32,7 +32,7 @@ func TestCreateOrder(t *testing.T) {
 		args args
 		want *orderV1.CreateOrderResponse
 		err  error
-		mock func(service *serviceMock.OrderService, args args)
+		mock func(service *mockOrder.OrderService, args args)
 	}{
 		{
 			name: "ok: parses uuids, calls service, returns response",
@@ -48,7 +48,7 @@ func TestCreateOrder(t *testing.T) {
 				TotalPrice: testutil.TestTotalPrice,
 			},
 			err: nil,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				summary := orderDto.Summary{
 					OrderUUID:  testutil.TestOrderUUID,
 					TotalPrice: testutil.TestTotalPrice,
@@ -68,7 +68,7 @@ func TestCreateOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  errs.ErrInvalidFormat,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "CreateOrder", mock.Anything, mock.Anything)
 			},
 		},
@@ -83,7 +83,7 @@ func TestCreateOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  errs.ErrInvalidFormat,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "CreateOrder", mock.Anything, mock.Anything)
 			},
 		},
@@ -98,7 +98,7 @@ func TestCreateOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  testutil.ErrService,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.On("CreateOrder", args.ctx, testutil.TestUserUUID, uuid.UUIDs{testutil.TestPartUUID}).Once().Return(orderDto.Summary{}, testutil.ErrService)
 			},
 		},
@@ -108,10 +108,10 @@ func TestCreateOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			service := serviceMock.NewOrderService(t)
+			service := mockOrder.NewOrderService(t)
 			test.mock(service, test.args)
 
-			args := api.NewAPI(service)
+			args := api.New(service)
 
 			got, err := args.CreateOrder(test.args.ctx, test.args.req)
 
@@ -140,7 +140,7 @@ func TestGetOrder(t *testing.T) {
 		args args
 		want *orderV1.Order
 		err  error
-		mock func(service *serviceMock.OrderService, args args)
+		mock func(service *mockOrder.OrderService, args args)
 	}{
 		{
 			name: "ok: parses uuid, calls service, returns api order",
@@ -152,7 +152,7 @@ func TestGetOrder(t *testing.T) {
 			},
 			want: dto.OrderToAPI(testutil.MakeOrder(t)),
 			err:  nil,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				order := testutil.MakeOrder(t)
 				service.On("GetOrder", args.ctx, testutil.TestOrderUUID).Once().Return(order, nil)
 			},
@@ -166,7 +166,7 @@ func TestGetOrder(t *testing.T) {
 				},
 			},
 			err: errs.ErrInvalidFormat,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "GetOrder", mock.Anything, mock.Anything)
 			},
 		},
@@ -179,7 +179,7 @@ func TestGetOrder(t *testing.T) {
 				},
 			},
 			err: testutil.ErrService,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.On("GetOrder", args.ctx, testutil.TestOrderUUID).Once().Return(model.Order{}, testutil.ErrService)
 			},
 		},
@@ -189,10 +189,10 @@ func TestGetOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			service := serviceMock.NewOrderService(t)
+			service := mockOrder.NewOrderService(t)
 			test.mock(service, test.args)
 
-			args := api.NewAPI(service)
+			args := api.New(service)
 			got, err := args.GetOrder(test.args.ctx, test.args.params)
 
 			if test.err != nil {
@@ -220,7 +220,7 @@ func TestCancelOrder(t *testing.T) {
 		args args
 		want *orderV1.NoContent
 		err  error
-		mock func(service *serviceMock.OrderService, args args)
+		mock func(service *mockOrder.OrderService, args args)
 	}{
 		{
 			name: "ok: parses uuid, calls service, returns 204 no content",
@@ -235,7 +235,7 @@ func TestCancelOrder(t *testing.T) {
 				Message: testutil.TestNoContentMessage,
 			},
 			err: nil,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.On("CancelOrder", args.ctx, testutil.TestOrderUUID).Once().Return(nil)
 			},
 		},
@@ -249,7 +249,7 @@ func TestCancelOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  errs.ErrInvalidFormat,
-			mock: func(service *serviceMock.OrderService, args args) {},
+			mock: func(service *mockOrder.OrderService, args args) {},
 		},
 		{
 			name: "service error: wrapped as cancel order",
@@ -261,7 +261,7 @@ func TestCancelOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  testutil.ErrService,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				service.On("CancelOrder", args.ctx, testutil.TestOrderUUID).Once().Return(testutil.ErrService)
 			},
 		},
@@ -271,10 +271,10 @@ func TestCancelOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			service := serviceMock.NewOrderService(t)
+			service := mockOrder.NewOrderService(t)
 			test.mock(service, test.args)
 
-			args := api.NewAPI(service)
+			args := api.New(service)
 
 			got, err := args.CancelOrder(test.args.ctx, test.args.params)
 
@@ -304,7 +304,7 @@ func TestPayOrder(t *testing.T) {
 		args args
 		want *orderV1.PayOrderResponse
 		err  error
-		mock func(service *serviceMock.OrderService, args args)
+		mock func(service *mockOrder.OrderService, args args)
 	}{
 		{
 			name: "ok: parses uuid, maps payment method, calls service, returns transaction uuid",
@@ -321,7 +321,7 @@ func TestPayOrder(t *testing.T) {
 				TransactionUUID: testutil.TestTransactionUUID.String(),
 			},
 			err: nil,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				paymentMethod := dto.PaymentMethodToModel[args.req.PaymentMethod]
 
 				service.On("PayOrder", args.ctx, testutil.TestOrderUUID, paymentMethod).Once().Return(testutil.TestTransactionUUID, nil)
@@ -340,7 +340,7 @@ func TestPayOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  errs.ErrInvalidFormat,
-			mock: func(service *serviceMock.OrderService, args args) {},
+			mock: func(service *mockOrder.OrderService, args args) {},
 		},
 		{
 			name: "service error: wrapped as pay order",
@@ -355,7 +355,7 @@ func TestPayOrder(t *testing.T) {
 			},
 			want: nil,
 			err:  testutil.ErrService,
-			mock: func(service *serviceMock.OrderService, args args) {
+			mock: func(service *mockOrder.OrderService, args args) {
 				paymentMethod := dto.PaymentMethodToModel[args.req.PaymentMethod]
 				service.On("PayOrder", args.ctx, testutil.TestOrderUUID, paymentMethod).Once().Return(uuid.Nil, testutil.ErrService)
 			},
@@ -366,10 +366,10 @@ func TestPayOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			serviceMock := serviceMock.NewOrderService(t)
-			test.mock(serviceMock, test.args)
+			service := mockOrder.NewOrderService(t)
+			test.mock(service, test.args)
 
-			args := api.NewAPI(serviceMock)
+			args := api.New(service)
 
 			got, err := args.PayOrder(test.args.ctx, test.args.req, test.args.params)
 
@@ -524,9 +524,9 @@ func TestNewError(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			service := serviceMock.NewOrderService(t)
+			service := mockOrder.NewOrderService(t)
 
-			api := api.NewAPI(service)
+			api := api.New(service)
 
 			resp := api.NewError(test.args.ctx, test.args.err)
 

@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/ekuzm/rocket-factory/order/internal/repository/order/postgres/transaction"
+	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/transaction"
 )
 
 type Pool struct {

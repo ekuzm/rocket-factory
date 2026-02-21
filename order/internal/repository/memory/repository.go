@@ -10,7 +10,7 @@ import (
 
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
-	service "github.com/ekuzm/rocket-factory/order/internal/service/order"
+	"github.com/ekuzm/rocket-factory/order/internal/service"
 )
 
 var _ service.OrderRepository = (*repository)(nil)

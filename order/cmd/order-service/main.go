@@ -12,31 +12,34 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	orderAPI "github.com/ekuzm/rocket-factory/order/internal/api/order/v1"
-	"github.com/ekuzm/rocket-factory/order/internal/client/grpc/inventory"
-	"github.com/ekuzm/rocket-factory/order/internal/client/grpc/payment"
+	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
+	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/inventory"
+	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/payment"
 	customMiddleware "github.com/ekuzm/rocket-factory/order/internal/middleware"
-	orderRepository "github.com/ekuzm/rocket-factory/order/internal/repository/order/memory"
-	orderService "github.com/ekuzm/rocket-factory/order/internal/service/order"
+	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres"
+	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/transaction"
+	"github.com/ekuzm/rocket-factory/order/internal/service"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
 const (
-	InventoryServiceAddress = "127.0.0.1:50051"
-	PaymentServiceAddress   = "127.0.0.1:50052"
-	OrderServiceAddress     = "127.0.0.1:8080"
-	RequestTimeout          = 10 * time.Second
-	ReadHeaderTimeout       = 5 * time.Second
-	ShutdownTimeout         = 10 * time.Second
+	inventoryServiceAddress = ":50051"
+	paymentServiceAddress   = ":50052"
+	orderServiceAddress     = ":8080"
+	requestTimeout          = 10 * time.Second
+	readHeaderTimeout       = 5 * time.Second
+	shutdownTimeout         = 10 * time.Second
+	dbTimeout               = 5 * time.Second
 )
 
 func main() {
-	inventoryConn, err := grpc.NewClient(InventoryServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	inventoryConn, err := grpc.NewClient(inventoryServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("failed to get client connection to inventory service: %v", err)
 		return
@@ -47,9 +50,10 @@ func main() {
 		}
 	}()
 
-	paymentConn, err := grpc.NewClient(PaymentServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	paymentConn, err := grpc.NewClient(paymentServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Failed to get client connection to payment service: %v", err)
+		return
 	}
 	defer func() {
 		if cerr := paymentConn.Close(); cerr != nil {
@@ -57,12 +61,25 @@ func main() {
 		}
 	}()
 
-	repository := orderRepository.NewRepository()
-	inventoryClient := inventory.NewClient(inventoryV1.NewInventoryServiceClient(inventoryConn))
-	paymentClient := payment.NewClient(paymentV1.NewPaymentServiceClient(paymentConn))
+	dbURI := os.Getenv("DB_URI")
 
-	service := orderService.NewService(repository, inventoryClient, paymentClient)
-	api := orderAPI.NewAPI(service)
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	pool, err := pgxpool.New(ctx, dbURI)
+	if err != nil {
+		log.Printf("Failed to initialize pgxpool: %v", err)
+		return
+	}
+	defer pool.Close()
+
+	repository := postgres.NewRepository(ctx, pool)
+	inventoryAdapter := inventory.NewAdapter(inventoryV1.NewInventoryServiceClient(inventoryConn))
+	paymentAdapter := payment.NewAdapter(paymentV1.NewPaymentServiceClient(paymentConn))
+	manager := transaction.NewManager(pool)
+
+	service := service.New(repository, inventoryAdapter, paymentAdapter, manager)
+	api := api.New(service)
 
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {
@@ -73,19 +90,19 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(RequestTimeout))
+	router.Use(middleware.Timeout(requestTimeout))
 	router.Use(customMiddleware.RequestLogger)
 
 	router.Mount("/", orderServer)
 
 	server := &http.Server{
-		Addr:              OrderServiceAddress,
+		Addr:              orderServiceAddress,
 		Handler:           router,
-		ReadHeaderTimeout: ReadHeaderTimeout,
+		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
 	go func() {
-		log.Printf("Order HTTP server listening at %s", OrderServiceAddress)
+		log.Printf("Order HTTP server listening at %s", orderServiceAddress)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("Failed to listen and serve order service HTTP server: %v", err)
 		}
@@ -97,10 +114,10 @@ func main() {
 
 	log.Printf("Shutting down the HTTP server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), ShutdownTimeout)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
-	if err := server.Shutdown(ctx); err != nil {
+	if err := server.Shutdown(shutdownCtx); err != nil {
 		log.Printf("Failed to shutdown the HTTP server: %v", err)
 		return
 	}

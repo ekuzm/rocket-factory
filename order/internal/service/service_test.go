@@ -1,4 +1,4 @@
-package order_test
+package service_test
 
 import (
 	"context"
@@ -11,9 +11,9 @@ import (
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
-	"github.com/ekuzm/rocket-factory/order/internal/service/order"
-	dto "github.com/ekuzm/rocket-factory/order/internal/service/order/dto"
-	mockOrder "github.com/ekuzm/rocket-factory/order/internal/service/order/mock"
+	"github.com/ekuzm/rocket-factory/order/internal/service"
+	dto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
+	mockOrder "github.com/ekuzm/rocket-factory/order/internal/service/mock"
 	"github.com/ekuzm/rocket-factory/order/pkg/testutil"
 )
 
@@ -126,7 +126,7 @@ func TestCreateOrder(t *testing.T) {
 
 			test.mock(repository, inventoryPort, manager, test.args)
 
-			service := order.NewService(repository, inventoryPort, paymentPort, manager)
+			service := service.New(repository, inventoryPort, paymentPort, manager)
 
 			got, err := service.CreateOrder(test.args.ctx, test.args.userUUID, test.args.partUUIDs)
 			if err != nil {
@@ -205,7 +205,7 @@ func TestGetOrder(t *testing.T) {
 
 			test.mock(repository, test.args)
 
-			svc := order.NewService(repository, inventoryPort, paymentPort, manager)
+			svc := service.New(repository, inventoryPort, paymentPort, manager)
 
 			got, err := svc.GetOrder(test.args.ctx, test.args.orderUUID)
 			if err != nil {
@@ -342,7 +342,7 @@ func TestCancelOrder(t *testing.T) {
 
 			test.mock(repository, manager, test.args)
 
-			svc := order.NewService(repository, inventoryPort, paymentPort, manager)
+			svc := service.New(repository, inventoryPort, paymentPort, manager)
 			err := svc.CancelOrder(test.args.ctx, test.args.orderUUID)
 
 			if test.err != nil {
@@ -518,7 +518,7 @@ func TestPayOrder(t *testing.T) {
 
 			test.mock(repository, paymentPort, manager, test.args)
 
-			svc := order.NewService(repository, inventoryPort, paymentPort, manager)
+			svc := service.New(repository, inventoryPort, paymentPort, manager)
 
 			got, err := svc.PayOrder(test.args.ctx, test.args.orderUUID, test.args.paymentMethod)
 

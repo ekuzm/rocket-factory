@@ -11,7 +11,7 @@ import (
 	mock "github.com/stretchr/testify/mock"
 
 	"github.com/ekuzm/rocket-factory/order/internal/model"
-	"github.com/ekuzm/rocket-factory/order/internal/service/order/dto"
+	"github.com/ekuzm/rocket-factory/order/internal/service/dto"
 )
 
 // NewOrderService creates a new instance of OrderService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

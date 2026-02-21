@@ -10,10 +10,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/ekuzm/rocket-factory/order/internal/api/order/v1/dto"
+	"github.com/ekuzm/rocket-factory/order/internal/api/v1/dto"
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
-	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/order/dto"
+	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 	"github.com/ekuzm/rocket-factory/shared/uuidx"
 )
@@ -30,7 +30,7 @@ type api struct {
 	orderV1.UnimplementedHandler
 }
 
-func NewAPI(service OrderService) *api {
+func New(service OrderService) *api {
 	return &api{
 		service: service,
 	}

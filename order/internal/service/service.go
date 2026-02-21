@@ -1,4 +1,4 @@
-package order
+package service
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 
 	"github.com/google/uuid"
 
-	api "github.com/ekuzm/rocket-factory/order/internal/api/order/v1"
+	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
-	"github.com/ekuzm/rocket-factory/order/internal/service/order/dto"
+	"github.com/ekuzm/rocket-factory/order/internal/service/dto"
 )
 
 type OrderRepository interface {
@@ -41,7 +41,7 @@ type service struct {
 	manager       TransactionManager
 }
 
-func NewService(
+func New(
 	repository OrderRepository,
 	inventoryPort InventoryPort,
 	paymentPort PaymentPort,

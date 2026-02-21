@@ -12,7 +12,7 @@ import (
 
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
-	schema "github.com/ekuzm/rocket-factory/order/internal/repository/order/postgres/schema"
+	schema "github.com/ekuzm/rocket-factory/order/internal/repository/postgres/schema"
 )
 
 type repository struct {
