@@ -1,14 +1,13 @@
 package model
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type Part struct {
-	UUID          string
+	UUID          uuid.UUID
 	Name          string
 	Description   string
 	Price         float64
@@ -18,7 +17,7 @@ type Part struct {
 	Manufacturer  *Manufacturer
 	Tags          []string
 	Metadata      map[string]*Value
-	CreatedAt     *time.Time
+	CreatedAt     time.Time
 	UpdatedAt     *time.Time
 }
 
@@ -53,23 +52,9 @@ type Value struct {
 }
 
 type Filter struct {
-	UUIDs                 []string
+	UUIDs                 uuid.UUIDs
 	Names                 []string
 	Categories            []Category
 	ManufacturerCountries []string
 	Tags                  []string
-}
-
-func (f *Filter) Validate() error {
-	if f == nil {
-		return fmt.Errorf("filter is required: %w", ErrInvalidFormat)
-	}
-
-	for _, partUUID := range f.UUIDs {
-		if err := uuid.Validate(partUUID); err != nil {
-			return fmt.Errorf("part uuid: %w", ErrInvalidFormat)
-		}
-	}
-
-	return nil
 }
