@@ -427,3 +427,69 @@ tasks:
             - GOBIN="{{.BIN_DIR}}" go install github.com/pressly/goose/v3/cmd/goose@"{{.GOOSE_VERSION}}"
         status:
             - test -x "{{.GOOSE}}"
+
+    core-up:
+        desc: "Container with core up"
+        cmds:
+            - echo "Core container up..."
+            - docker compose -f ./deploy/compose/core/compose.yaml up -d --build
+
+    order-service-up:
+        desc: "Container with order service up"
+        cmds:
+            - echo "Order service container up..."
+            - docker compose --env-file ./deploy/env/order/.env -f ./deploy/compose/order/compose.yaml up -d --build
+
+    inventory-service-up:
+        desc: "Container with inventory service up"
+        cmds:
+            - echo "Inventory service container up..."
+            - docker compose --env-file ./deploy/env/inventory/.env -f ./deploy/compose/inventory/compose.yaml up -d --build
+
+    payment-service-up:
+        desc: "Container with payment service up"
+        cmds:
+            - echo "Payment service container up..."
+            - docker compose --env-file ./deploy/env/payment/.env -f ./deploy/compose/payment/compose.yaml up -d --build\
+
+    core-down:
+        desc: "Container with core down"
+        cmds:
+            - echo "Core container down..."
+            - docker compose -f ./deploy/compose/core/compose.yaml down
+
+    order-service-down:
+        desc: "Container with order service down"
+        cmds:
+            - echo "Order service container down..."
+            - docker compose --env-file ./deploy/env/order/.env -f ./deploy/compose/order/compose.yaml down
+
+    inventory-service-down:
+        desc: "Container with inventory service down"
+        cmds:
+            - echo "Inventory service container down..."
+            - docker compose --env-file ./deploy/env/inventory/.env -f ./deploy/compose/inventory/compose.yaml down
+
+    payment-service-down:
+        desc: "Container with payment service down"
+        cmds:
+            - echo "Payment service container down..."
+            - docker compose --env-file ./deploy/env/payment/.env -f ./deploy/compose/payment/compose.yaml down
+
+    containers-up:
+        desc: "All containers up"
+        cmds:
+            - echo "All containers up..."
+            - task: core-up
+            # - task: order-service-up
+            - task: inventory-service-up
+            - task: payment-service-up
+
+    containers-down:
+        desc: "All containers down"
+        cmds:
+            - echo "All containers down..."
+            - task: core-down
+            # - task: order-service-up
+            - task: inventory-service-down
+            - task: payment-service-down
