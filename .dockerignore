@@ -1,0 +1,9 @@
+.gitignore
+.golangci.yml
+.mockery.yaml
+README.md
+ogen.yaml
+Taskfile.yml
+bin
+coverage
+.github
