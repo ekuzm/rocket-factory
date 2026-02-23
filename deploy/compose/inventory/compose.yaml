@@ -1,0 +1,15 @@
+services:
+    inventory-service:
+        container_name: inventory-service
+        build:
+            context: ../../..
+            dockerfile: ./deploy/docker/inventory/Dockerfile
+        ports:
+            - ${INVENTORY_SERVICE_PORT}:50052
+        restart: unless-stopped
+        networks:
+            - rocket-factory-net
+
+networks:
+    rocket-factory-net:
+        external: true

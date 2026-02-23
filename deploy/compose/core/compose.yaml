@@ -1,0 +1,11 @@
+services:
+    placeholder:
+        image: alpine:3.23
+        command: sh -c "echo 'Placeholder'"
+        networks:
+            - rocket-factory-net
+
+networks:
+    rocket-factory-net:
+        name: rocket-factory-net
+        external: false
