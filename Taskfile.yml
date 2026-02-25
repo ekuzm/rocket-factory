@@ -481,7 +481,7 @@ tasks:
         cmds:
             - echo "All containers up..."
             - task: core-up
-            # - task: order-service-up
+            - task: order-service-up
             - task: inventory-service-up
             - task: payment-service-up
 
@@ -490,6 +490,6 @@ tasks:
         cmds:
             - echo "All containers down..."
             - task: core-down
-            # - task: order-service-up
+            - task: order-service-down
             - task: inventory-service-down
             - task: payment-service-down
