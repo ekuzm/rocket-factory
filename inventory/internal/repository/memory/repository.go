@@ -74,7 +74,7 @@ func (r *repository) ListParts(ctx context.Context, filter model.Filter) ([]mode
 
 	parts = filterParts(parts, preds)
 
-	if len(parts) != len(filter.UUIDs) && filter.UUIDs != nil {
+	if len(parts) != len(filter.UUIDs) && len(filter.UUIDs) != 0 {
 		return nil, fmt.Errorf("one or more parts: %w", errs.ErrPartNotFound)
 	}
 

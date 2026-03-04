@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	inventoryServiceAddress = "127.0.0.1:50051"
+	inventoryServiceAddress = ":50051"
 )
 
 func main() {
