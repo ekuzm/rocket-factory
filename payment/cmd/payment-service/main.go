@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	paymentServiceAddress = "127.0.0.1:50052"
+	paymentServiceAddress = ":50052"
 )
 
 func main() {
