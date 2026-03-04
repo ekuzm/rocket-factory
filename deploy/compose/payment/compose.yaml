@@ -5,7 +5,7 @@ services:
             context: ../../..
             dockerfile: ./deploy/docker/payment/Dockerfile
         ports:
-            - ${PAYMENT_SERVICE_PORT}:50051
+            - ${PAYMENT_SERVICE_PORT}:50052
         restart: unless-stopped
         networks:
             - rocket-factory-net

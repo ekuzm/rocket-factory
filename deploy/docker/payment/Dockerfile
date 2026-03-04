@@ -26,6 +26,6 @@ RUN addgroup -S appgroup && \
 
 USER appuser
 
-EXPOSE 50051
+EXPOSE 50052
 
 ENTRYPOINT [ "./payment-service" ]
