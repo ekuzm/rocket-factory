@@ -149,6 +149,7 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 			return fmt.Errorf("payment port: %w", err)
 		}
 
+		order.Info.PaymentMethod = paymentMethod
 		order.Info.Status = model.StatusPaid
 		order.Info.TransactionUUID = transactionUUID
 

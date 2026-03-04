@@ -13,7 +13,7 @@ func (m *manager) Wrap(ctx context.Context, callback func(ctx context.Context) e
 
 	inject(ctx, tx)
 	if err = callback(ctx); err != nil {
-		if err = tx.Rollback(ctx); err != nil {
+		if err := tx.Rollback(ctx); err != nil {
 			return fmt.Errorf("rollback transaction: %w", err)
 		}
 

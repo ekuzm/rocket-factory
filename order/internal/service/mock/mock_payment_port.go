@@ -7,9 +7,10 @@ package mock
 import (
 	"context"
 
-	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
+
+	"github.com/ekuzm/rocket-factory/order/internal/model"
 )
 
 // NewPaymentPort creates a new instance of PaymentPort. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -17,7 +18,8 @@ import (
 func NewPaymentPort(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *PaymentPort {
+},
+) *PaymentPort {
 	mock := &PaymentPort{}
 	mock.Mock.Test(t)
 
@@ -40,7 +42,7 @@ func (_m *PaymentPort) EXPECT() *PaymentPort_Expecter {
 }
 
 // PayOrder provides a mock function for the type PaymentPort
-func (_mock *PaymentPort) PayOrder(ctx context.Context, orderUUID uuid.UUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
+func (_mock *PaymentPort) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	ret := _mock.Called(ctx, orderUUID, userUUID, paymentMethod)
 
 	if len(ret) == 0 {
@@ -77,11 +79,11 @@ type PaymentPort_PayOrder_Call struct {
 //   - orderUUID uuid.UUID
 //   - userUUID uuid.UUID
 //   - paymentMethod model.PaymentMethod
-func (_e *PaymentPort_Expecter) PayOrder(ctx interface{}, orderUUID interface{}, userUUID interface{}, paymentMethod interface{}) *PaymentPort_PayOrder_Call {
+func (_e *PaymentPort_Expecter) PayOrder(ctx, orderUUID, userUUID, paymentMethod interface{}) *PaymentPort_PayOrder_Call {
 	return &PaymentPort_PayOrder_Call{Call: _e.mock.On("PayOrder", ctx, orderUUID, userUUID, paymentMethod)}
 }
 
-func (_c *PaymentPort_PayOrder_Call) Run(run func(ctx context.Context, orderUUID uuid.UUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod)) *PaymentPort_PayOrder_Call {
+func (_c *PaymentPort_PayOrder_Call) Run(run func(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod)) *PaymentPort_PayOrder_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -114,7 +116,7 @@ func (_c *PaymentPort_PayOrder_Call) Return(uUID uuid.UUID, err error) *PaymentP
 	return _c
 }
 
-func (_c *PaymentPort_PayOrder_Call) RunAndReturn(run func(ctx context.Context, orderUUID uuid.UUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)) *PaymentPort_PayOrder_Call {
+func (_c *PaymentPort_PayOrder_Call) RunAndReturn(run func(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)) *PaymentPort_PayOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }

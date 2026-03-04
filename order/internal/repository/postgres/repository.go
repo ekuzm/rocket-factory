@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -33,20 +34,10 @@ func (r *repository) SaveOrder(ctx context.Context, order model.Order) error {
 		Columns(schema.OrdersTableColumns...).
 		Values(row.Values()...)
 
+	log.Print(insertBuilder.ToSql())
+
 	if _, err := r.pool.Exec(ctx, insertBuilder); err != nil {
 		return fmt.Errorf("execute insert query into orders table: %w", err)
-	}
-
-	insertBuilder = sq.Insert(schema.OrderPartsTable).
-		PlaceholderFormat(sq.Dollar).
-		Columns(schema.OrderPartsTableColumns...)
-
-	for _, partUUID := range order.Info.PartUUIDs {
-		insertBuilder = insertBuilder.Values(order.UUID, partUUID)
-	}
-
-	if _, err := r.pool.Exec(ctx, insertBuilder); err != nil {
-		return fmt.Errorf("execute insert query into order parts table: %w", err)
 	}
 
 	return nil
@@ -68,18 +59,7 @@ func (r *repository) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order,
 		return model.Order{}, fmt.Errorf("execute select query from orders table: %w", err)
 	}
 
-	selectBuilder = sq.Select(schema.OrderPartsColumnPartUUID).
-		PlaceholderFormat(sq.Dollar).
-		From(schema.OrderPartsTable).
-		Where(sq.Eq{schema.OrderPartsColumnOrderUUID: uuid})
-
-	var partUUIDs []string
-
-	if err := r.pool.Select(ctx, &partUUIDs, selectBuilder); err != nil {
-		return model.Order{}, fmt.Errorf("execute select query from order parts table: %w", err)
-	}
-
-	return schema.OrderToModel(row, partUUIDs)
+	return schema.OrderToModel(row)
 }
 
 func (r *repository) UpdateOrder(ctx context.Context, uuid uuid.UUID, info model.OrderInfo) error {
@@ -102,29 +82,6 @@ func (r *repository) UpdateOrder(ctx context.Context, uuid uuid.UUID, info model
 
 	if res.RowsAffected() == 0 {
 		return errs.ErrOrderNotFound
-	}
-
-	deleteBuilder := sq.Delete(schema.OrderPartsTable).
-		PlaceholderFormat(sq.Dollar).
-		Where(sq.Eq{schema.OrderPartsColumnOrderUUID: uuid})
-
-	if _, err = r.pool.Exec(ctx, deleteBuilder); err != nil {
-		return fmt.Errorf("execute delete columns from order parts table: %w", err)
-	}
-
-	insertBuilder := sq.Insert(schema.OrderPartsTable).
-		PlaceholderFormat(sq.Dollar).
-		Columns(schema.OrderPartsTableColumns...)
-
-	if len(info.PartUUIDs) > 0 {
-		for _, partUUID := range info.PartUUIDs {
-			insertBuilder = insertBuilder.
-				Values(uuid, partUUID)
-		}
-
-		if _, err = r.pool.Exec(ctx, insertBuilder); err != nil {
-			return fmt.Errorf("execute insert into order parts table: %w", err)
-		}
 	}
 
 	return nil

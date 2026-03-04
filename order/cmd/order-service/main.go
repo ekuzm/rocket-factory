@@ -29,9 +29,9 @@ import (
 )
 
 const (
-	inventoryServiceAddress = ":50051"
-	paymentServiceAddress   = ":50052"
-	orderServiceAddress     = ":8080"
+	inventoryServiceAddress = "inventory-service:50051"
+	paymentServiceAddress   = "payment-service:50052"
+	orderServiceAddress     = ":80"
 	requestTimeout          = 10 * time.Second
 	readHeaderTimeout       = 5 * time.Second
 	shutdownTimeout         = 10 * time.Second
