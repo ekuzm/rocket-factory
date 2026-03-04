@@ -1,15 +1,16 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS orders(
-    uuid UUID NOT NULL,
+    uuid UUID PRIMARY KEY,
     user_uuid UUID NOT NULL,
+    part_uuids UUID ARRAY,
     total_price DOUBLE PRECISION NOT NULL,
-    transaction_uuid UUID NULL,
-    status INTEGER NOT NULL CHECK(status BETWEEN 0 AND 2),
-    payment_method INTEGER CHECK(payment_method BETWEEN 0 AND 4),
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    transaction_uuid UUID,
+    status order_status NOT NULL,
+    payment_method payment_method,
+    created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
-    PRIMARY KEY(uuid)
+    UNIQUE (user_uuid, transaction_uuid)
 );
 -- +goose StatementEnd
 
