@@ -1,14 +1,42 @@
 services:
+    mongodb:
+        container_name: inventory-service-mongo
+        image: mongo:8.2.6-rc0-noble
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+            - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+            - MONGO_INITDB_DATABASE=${DB_NAME}
+        ports:
+            - ${DB_PORT}:27017
+        volumes:
+            - inventory-service-data:/data/db
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongosh --quiet -u ${DB_USER} -p ${DB_PASSWORD} --authenticationDatabase ${DB_AUTH}
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        restart: unless-stopped
+        networks:
+            - rocket-factory-net
+
     inventory-service:
         container_name: inventory-service
         build:
             context: ../../..
             dockerfile: ./deploy/docker/inventory/Dockerfile
+        environment:
+            - DB_URI=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=${DB_AUTH}
         ports:
             - ${INVENTORY_SERVICE_PORT}:50051
+        depends_on:
+            mongodb:
+                condition: service_healthy
         restart: unless-stopped
         networks:
             - rocket-factory-net
+
+volumes:
+    inventory-service-data:
 
 networks:
     rocket-factory-net:
