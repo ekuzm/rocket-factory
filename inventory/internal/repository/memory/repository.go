@@ -12,6 +12,7 @@ import (
 	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/internal/service"
+	"github.com/ekuzm/rocket-factory/inventory/pkg/fixtures"
 )
 
 var _ service.InventoryRepository = (*repository)(nil)
@@ -31,7 +32,16 @@ func New() *repository {
 	return repo
 }
 
-func (r *repository) GetPart(_ context.Context, uuid uuid.UUID) (model.Part, error) {
+func (r *repository) InitRepository() {
+	parts := fixtures.GenerateParts()
+	r.parts = make(map[uuid.UUID]model.Part, len(parts))
+
+	for _, part := range parts {
+		r.parts[part.UUID] = part
+	}
+}
+
+func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Part, error) {
 	r.mtx.RLock()
 	defer r.mtx.RUnlock()
 
@@ -45,7 +55,7 @@ func (r *repository) GetPart(_ context.Context, uuid uuid.UUID) (model.Part, err
 
 type PartPredicate func(model.Part) bool
 
-func (r *repository) ListParts(ctx context.Context, filter model.Filter) ([]model.Part, error) {
+func (r *repository) GetAllByFilter(ctx context.Context, filter model.Filter) ([]model.Part, error) {
 	parts := make([]model.Part, 0, len(r.parts))
 
 	r.mtx.RLock()
@@ -73,10 +83,6 @@ func (r *repository) ListParts(ctx context.Context, filter model.Filter) ([]mode
 	}
 
 	parts = filterParts(parts, preds)
-
-	if len(parts) != len(filter.UUIDs) && len(filter.UUIDs) != 0 {
-		return nil, fmt.Errorf("one or more parts: %w", errs.ErrPartNotFound)
-	}
 
 	return parts, nil
 }

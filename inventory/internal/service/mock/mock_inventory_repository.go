@@ -7,10 +7,9 @@ package mock
 import (
 	"context"
 
+	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
-
-	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 )
 
 // NewInventoryRepository creates a new instance of InventoryRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -18,8 +17,7 @@ import (
 func NewInventoryRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *InventoryRepository {
+}) *InventoryRepository {
 	mock := &InventoryRepository{}
 	mock.Mock.Test(t)
 
@@ -41,78 +39,12 @@ func (_m *InventoryRepository) EXPECT() *InventoryRepository_Expecter {
 	return &InventoryRepository_Expecter{mock: &_m.Mock}
 }
 
-// GetPart provides a mock function for the type InventoryRepository
-func (_mock *InventoryRepository) GetPart(ctx context.Context, uuid1 uuid.UUID) (model.Part, error) {
-	ret := _mock.Called(ctx, uuid1)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetPart")
-	}
-
-	var r0 model.Part
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (model.Part, error)); ok {
-		return returnFunc(ctx, uuid1)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) model.Part); ok {
-		r0 = returnFunc(ctx, uuid1)
-	} else {
-		r0 = ret.Get(0).(model.Part)
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(ctx, uuid1)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// InventoryRepository_GetPart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetPart'
-type InventoryRepository_GetPart_Call struct {
-	*mock.Call
-}
-
-// GetPart is a helper method to define mock.On call
-//   - ctx context.Context
-//   - uuid1 uuid.UUID
-func (_e *InventoryRepository_Expecter) GetPart(ctx, uuid1 interface{}) *InventoryRepository_GetPart_Call {
-	return &InventoryRepository_GetPart_Call{Call: _e.mock.On("GetPart", ctx, uuid1)}
-}
-
-func (_c *InventoryRepository_GetPart_Call) Run(run func(ctx context.Context, uuid1 uuid.UUID)) *InventoryRepository_GetPart_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *InventoryRepository_GetPart_Call) Return(part model.Part, err error) *InventoryRepository_GetPart_Call {
-	_c.Call.Return(part, err)
-	return _c
-}
-
-func (_c *InventoryRepository_GetPart_Call) RunAndReturn(run func(ctx context.Context, uuid1 uuid.UUID) (model.Part, error)) *InventoryRepository_GetPart_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// ListParts provides a mock function for the type InventoryRepository
-func (_mock *InventoryRepository) ListParts(ctx context.Context, filter model.Filter) ([]model.Part, error) {
+// GetAllByFilter provides a mock function for the type InventoryRepository
+func (_mock *InventoryRepository) GetAllByFilter(ctx context.Context, filter model.Filter) ([]model.Part, error) {
 	ret := _mock.Called(ctx, filter)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListParts")
+		panic("no return value specified for GetAllByFilter")
 	}
 
 	var r0 []model.Part
@@ -135,19 +67,19 @@ func (_mock *InventoryRepository) ListParts(ctx context.Context, filter model.Fi
 	return r0, r1
 }
 
-// InventoryRepository_ListParts_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListParts'
-type InventoryRepository_ListParts_Call struct {
+// InventoryRepository_GetAllByFilter_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllByFilter'
+type InventoryRepository_GetAllByFilter_Call struct {
 	*mock.Call
 }
 
-// ListParts is a helper method to define mock.On call
+// GetAllByFilter is a helper method to define mock.On call
 //   - ctx context.Context
 //   - filter model.Filter
-func (_e *InventoryRepository_Expecter) ListParts(ctx, filter interface{}) *InventoryRepository_ListParts_Call {
-	return &InventoryRepository_ListParts_Call{Call: _e.mock.On("ListParts", ctx, filter)}
+func (_e *InventoryRepository_Expecter) GetAllByFilter(ctx interface{}, filter interface{}) *InventoryRepository_GetAllByFilter_Call {
+	return &InventoryRepository_GetAllByFilter_Call{Call: _e.mock.On("GetAllByFilter", ctx, filter)}
 }
 
-func (_c *InventoryRepository_ListParts_Call) Run(run func(ctx context.Context, filter model.Filter)) *InventoryRepository_ListParts_Call {
+func (_c *InventoryRepository_GetAllByFilter_Call) Run(run func(ctx context.Context, filter model.Filter)) *InventoryRepository_GetAllByFilter_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -165,12 +97,78 @@ func (_c *InventoryRepository_ListParts_Call) Run(run func(ctx context.Context, 
 	return _c
 }
 
-func (_c *InventoryRepository_ListParts_Call) Return(parts []model.Part, err error) *InventoryRepository_ListParts_Call {
+func (_c *InventoryRepository_GetAllByFilter_Call) Return(parts []model.Part, err error) *InventoryRepository_GetAllByFilter_Call {
 	_c.Call.Return(parts, err)
 	return _c
 }
 
-func (_c *InventoryRepository_ListParts_Call) RunAndReturn(run func(ctx context.Context, filter model.Filter) ([]model.Part, error)) *InventoryRepository_ListParts_Call {
+func (_c *InventoryRepository_GetAllByFilter_Call) RunAndReturn(run func(ctx context.Context, filter model.Filter) ([]model.Part, error)) *InventoryRepository_GetAllByFilter_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetByUUID provides a mock function for the type InventoryRepository
+func (_mock *InventoryRepository) GetByUUID(ctx context.Context, uuid1 uuid.UUID) (model.Part, error) {
+	ret := _mock.Called(ctx, uuid1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetByUUID")
+	}
+
+	var r0 model.Part
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (model.Part, error)); ok {
+		return returnFunc(ctx, uuid1)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) model.Part); ok {
+		r0 = returnFunc(ctx, uuid1)
+	} else {
+		r0 = ret.Get(0).(model.Part)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = returnFunc(ctx, uuid1)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// InventoryRepository_GetByUUID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByUUID'
+type InventoryRepository_GetByUUID_Call struct {
+	*mock.Call
+}
+
+// GetByUUID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - uuid1 uuid.UUID
+func (_e *InventoryRepository_Expecter) GetByUUID(ctx interface{}, uuid1 interface{}) *InventoryRepository_GetByUUID_Call {
+	return &InventoryRepository_GetByUUID_Call{Call: _e.mock.On("GetByUUID", ctx, uuid1)}
+}
+
+func (_c *InventoryRepository_GetByUUID_Call) Run(run func(ctx context.Context, uuid1 uuid.UUID)) *InventoryRepository_GetByUUID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *InventoryRepository_GetByUUID_Call) Return(part model.Part, err error) *InventoryRepository_GetByUUID_Call {
+	_c.Call.Return(part, err)
+	return _c
+}
+
+func (_c *InventoryRepository_GetByUUID_Call) RunAndReturn(run func(ctx context.Context, uuid1 uuid.UUID) (model.Part, error)) *InventoryRepository_GetByUUID_Call {
 	_c.Call.Return(run)
 	return _c
 }

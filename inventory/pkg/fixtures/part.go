@@ -1,4 +1,4 @@
-package memory
+package fixtures
 
 import (
 	"fmt"
@@ -11,16 +11,7 @@ import (
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 )
 
-func (r *repository) InitRepository() {
-	parts := generateParts()
-	r.parts = make(map[uuid.UUID]model.Part, len(parts))
-
-	for _, part := range parts {
-		r.parts[part.UUID] = part
-	}
-}
-
-func generateParts() []model.Part {
+func GenerateParts() []model.Part {
 	parts := make([]model.Part, gofakeit.Number(10, 30))
 
 	for ind := range parts {

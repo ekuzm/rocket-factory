@@ -76,6 +76,10 @@ func metadataToAPI(metadata map[string]*model.Value) map[string]*inventoryV1.Val
 }
 
 func FilterToModel(filter *inventoryV1.PartsFilter) (model.Filter, error) {
+	if filter == nil {
+		return model.Filter{}, errs.ErrInvalidFilter
+	}
+
 	uuids := make(uuid.UUIDs, len(filter.Uuids))
 
 	for i, partUUID := range filter.Uuids {

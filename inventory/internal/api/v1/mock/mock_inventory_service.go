@@ -7,10 +7,9 @@ package mock
 import (
 	"context"
 
+	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
-
-	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 )
 
 // NewInventoryService creates a new instance of InventoryService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -18,8 +17,7 @@ import (
 func NewInventoryService(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *InventoryService {
+}) *InventoryService {
 	mock := &InventoryService{}
 	mock.Mock.Test(t)
 
@@ -75,7 +73,7 @@ type InventoryService_GetPart_Call struct {
 // GetPart is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *InventoryService_Expecter) GetPart(ctx, uuid1 interface{}) *InventoryService_GetPart_Call {
+func (_e *InventoryService_Expecter) GetPart(ctx interface{}, uuid1 interface{}) *InventoryService_GetPart_Call {
 	return &InventoryService_GetPart_Call{Call: _e.mock.On("GetPart", ctx, uuid1)}
 }
 
@@ -143,7 +141,7 @@ type InventoryService_ListParts_Call struct {
 // ListParts is a helper method to define mock.On call
 //   - ctx context.Context
 //   - filter model.Filter
-func (_e *InventoryService_Expecter) ListParts(ctx, filter interface{}) *InventoryService_ListParts_Call {
+func (_e *InventoryService_Expecter) ListParts(ctx interface{}, filter interface{}) *InventoryService_ListParts_Call {
 	return &InventoryService_ListParts_Call{Call: _e.mock.On("ListParts", ctx, filter)}
 }
 

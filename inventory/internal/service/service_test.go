@@ -37,7 +37,7 @@ func TestGetPart(t *testing.T) {
 			mock: func(repo *mockInventory.InventoryRepository, args args) {
 				part := testutil.MakePart(t)
 
-				repo.On("GetPart", args.ctx, args.uuid).Once().Return(part, nil)
+				repo.On("GetByUUID", args.ctx, args.uuid).Once().Return(part, nil)
 			},
 		},
 		{
@@ -51,7 +51,7 @@ func TestGetPart(t *testing.T) {
 			mock: func(repo *mockInventory.InventoryRepository, args args) {
 				var part model.Part
 
-				repo.On("GetPart", args.ctx, args.uuid).Once().Return(part, testutil.ErrRepository)
+				repo.On("GetByUUID", args.ctx, args.uuid).Once().Return(part, testutil.ErrRepository)
 			},
 		},
 	}
@@ -104,7 +104,7 @@ func TestListParts(t *testing.T) {
 			mock: func(repo *mockInventory.InventoryRepository, args args) {
 				parts := []model.Part{testutil.MakePart(t)}
 
-				repo.On("ListParts", args.ctx, args.filter).Once().Return(parts, nil)
+				repo.On("GetAllByFilter", args.ctx, args.filter).Once().Return(parts, nil)
 			},
 		},
 		{
@@ -116,7 +116,7 @@ func TestListParts(t *testing.T) {
 			want: nil,
 			err:  testutil.ErrRepository,
 			mock: func(repo *mockInventory.InventoryRepository, args args) {
-				repo.On("ListParts", args.ctx, args.filter).Once().Return(nil, testutil.ErrRepository)
+				repo.On("GetAllByFilter", args.ctx, args.filter).Once().Return(nil, testutil.ErrRepository)
 			},
 		},
 	}
