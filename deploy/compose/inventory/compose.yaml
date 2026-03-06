@@ -26,6 +26,7 @@ services:
             dockerfile: ./deploy/docker/inventory/Dockerfile
         environment:
             - DB_URI=mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=${DB_AUTH}
+            - DB_NAME=${DB_NAME}
         ports:
             - ${INVENTORY_SERVICE_PORT}:50051
         depends_on:
