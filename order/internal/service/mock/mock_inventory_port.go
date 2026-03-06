@@ -7,9 +7,8 @@ package mock
 import (
 	"context"
 
-	mock "github.com/stretchr/testify/mock"
-
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
+	mock "github.com/stretchr/testify/mock"
 )
 
 // NewInventoryPort creates a new instance of InventoryPort. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -17,8 +16,7 @@ import (
 func NewInventoryPort(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *InventoryPort {
+}) *InventoryPort {
 	mock := &InventoryPort{}
 	mock.Mock.Test(t)
 
@@ -76,7 +74,7 @@ type InventoryPort_ListParts_Call struct {
 // ListParts is a helper method to define mock.On call
 //   - ctx context.Context
 //   - filter supplier.Filter
-func (_e *InventoryPort_Expecter) ListParts(ctx, filter interface{}) *InventoryPort_ListParts_Call {
+func (_e *InventoryPort_Expecter) ListParts(ctx interface{}, filter interface{}) *InventoryPort_ListParts_Call {
 	return &InventoryPort_ListParts_Call{Call: _e.mock.On("ListParts", ctx, filter)}
 }
 

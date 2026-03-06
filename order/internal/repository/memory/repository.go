@@ -26,7 +26,7 @@ func New() *repository {
 	}
 }
 
-func (r *repository) SaveOrder(_ context.Context, order model.Order) error {
+func (r *repository) Save(_ context.Context, order model.Order) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 
@@ -40,7 +40,7 @@ func (r *repository) SaveOrder(_ context.Context, order model.Order) error {
 	return nil
 }
 
-func (r *repository) GetOrder(_ context.Context, uuid uuid.UUID) (model.Order, error) {
+func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Order, error) {
 	r.mtx.RLock()
 	defer r.mtx.RUnlock()
 
@@ -52,7 +52,7 @@ func (r *repository) GetOrder(_ context.Context, uuid uuid.UUID) (model.Order, e
 	return order, nil
 }
 
-func (r *repository) UpdateOrder(_ context.Context, uuid uuid.UUID, info model.OrderInfo) error {
+func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderInfo) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 

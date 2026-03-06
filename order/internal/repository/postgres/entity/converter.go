@@ -39,7 +39,7 @@ var statusToSchema = map[model.Status]Status{
 	model.StatusCancelled:      StatusCancelled,
 }
 
-func OrderToSchema(order model.Order) OrderRow {
+func OrderToEntity(order model.Order) OrderRow {
 	return OrderRow{
 		UUID:            order.UUID,
 		UserUUID:        order.Info.UserUUID,
@@ -52,7 +52,7 @@ func OrderToSchema(order model.Order) OrderRow {
 	}
 }
 
-func OrderInfoToSchema(info model.OrderInfo) OrderRow {
+func OrderInfoToEntity(info model.OrderInfo) OrderRow {
 	return OrderRow{
 		UserUUID:        info.UserUUID,
 		PartUUIDs:       info.PartUUIDs,

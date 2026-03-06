@@ -7,10 +7,9 @@ package mock
 import (
 	"context"
 
+	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
-
-	"github.com/ekuzm/rocket-factory/order/internal/model"
 )
 
 // NewOrderRepository creates a new instance of OrderRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -18,8 +17,7 @@ import (
 func NewOrderRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *OrderRepository {
+}) *OrderRepository {
 	mock := &OrderRepository{}
 	mock.Mock.Test(t)
 
@@ -41,12 +39,12 @@ func (_m *OrderRepository) EXPECT() *OrderRepository_Expecter {
 	return &OrderRepository_Expecter{mock: &_m.Mock}
 }
 
-// GetOrder provides a mock function for the type OrderRepository
-func (_mock *OrderRepository) GetOrder(ctx context.Context, uuid1 uuid.UUID) (model.Order, error) {
+// GetByUUID provides a mock function for the type OrderRepository
+func (_mock *OrderRepository) GetByUUID(ctx context.Context, uuid1 uuid.UUID) (model.Order, error) {
 	ret := _mock.Called(ctx, uuid1)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetOrder")
+		panic("no return value specified for GetByUUID")
 	}
 
 	var r0 model.Order
@@ -67,19 +65,19 @@ func (_mock *OrderRepository) GetOrder(ctx context.Context, uuid1 uuid.UUID) (mo
 	return r0, r1
 }
 
-// OrderRepository_GetOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetOrder'
-type OrderRepository_GetOrder_Call struct {
+// OrderRepository_GetByUUID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByUUID'
+type OrderRepository_GetByUUID_Call struct {
 	*mock.Call
 }
 
-// GetOrder is a helper method to define mock.On call
+// GetByUUID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *OrderRepository_Expecter) GetOrder(ctx, uuid1 interface{}) *OrderRepository_GetOrder_Call {
-	return &OrderRepository_GetOrder_Call{Call: _e.mock.On("GetOrder", ctx, uuid1)}
+func (_e *OrderRepository_Expecter) GetByUUID(ctx interface{}, uuid1 interface{}) *OrderRepository_GetByUUID_Call {
+	return &OrderRepository_GetByUUID_Call{Call: _e.mock.On("GetByUUID", ctx, uuid1)}
 }
 
-func (_c *OrderRepository_GetOrder_Call) Run(run func(ctx context.Context, uuid1 uuid.UUID)) *OrderRepository_GetOrder_Call {
+func (_c *OrderRepository_GetByUUID_Call) Run(run func(ctx context.Context, uuid1 uuid.UUID)) *OrderRepository_GetByUUID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -97,22 +95,22 @@ func (_c *OrderRepository_GetOrder_Call) Run(run func(ctx context.Context, uuid1
 	return _c
 }
 
-func (_c *OrderRepository_GetOrder_Call) Return(order model.Order, err error) *OrderRepository_GetOrder_Call {
+func (_c *OrderRepository_GetByUUID_Call) Return(order model.Order, err error) *OrderRepository_GetByUUID_Call {
 	_c.Call.Return(order, err)
 	return _c
 }
 
-func (_c *OrderRepository_GetOrder_Call) RunAndReturn(run func(ctx context.Context, uuid1 uuid.UUID) (model.Order, error)) *OrderRepository_GetOrder_Call {
+func (_c *OrderRepository_GetByUUID_Call) RunAndReturn(run func(ctx context.Context, uuid1 uuid.UUID) (model.Order, error)) *OrderRepository_GetByUUID_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// SaveOrder provides a mock function for the type OrderRepository
-func (_mock *OrderRepository) SaveOrder(ctx context.Context, order model.Order) error {
+// Save provides a mock function for the type OrderRepository
+func (_mock *OrderRepository) Save(ctx context.Context, order model.Order) error {
 	ret := _mock.Called(ctx, order)
 
 	if len(ret) == 0 {
-		panic("no return value specified for SaveOrder")
+		panic("no return value specified for Save")
 	}
 
 	var r0 error
@@ -124,19 +122,19 @@ func (_mock *OrderRepository) SaveOrder(ctx context.Context, order model.Order) 
 	return r0
 }
 
-// OrderRepository_SaveOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveOrder'
-type OrderRepository_SaveOrder_Call struct {
+// OrderRepository_Save_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Save'
+type OrderRepository_Save_Call struct {
 	*mock.Call
 }
 
-// SaveOrder is a helper method to define mock.On call
+// Save is a helper method to define mock.On call
 //   - ctx context.Context
 //   - order model.Order
-func (_e *OrderRepository_Expecter) SaveOrder(ctx, order interface{}) *OrderRepository_SaveOrder_Call {
-	return &OrderRepository_SaveOrder_Call{Call: _e.mock.On("SaveOrder", ctx, order)}
+func (_e *OrderRepository_Expecter) Save(ctx interface{}, order interface{}) *OrderRepository_Save_Call {
+	return &OrderRepository_Save_Call{Call: _e.mock.On("Save", ctx, order)}
 }
 
-func (_c *OrderRepository_SaveOrder_Call) Run(run func(ctx context.Context, order model.Order)) *OrderRepository_SaveOrder_Call {
+func (_c *OrderRepository_Save_Call) Run(run func(ctx context.Context, order model.Order)) *OrderRepository_Save_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -154,22 +152,22 @@ func (_c *OrderRepository_SaveOrder_Call) Run(run func(ctx context.Context, orde
 	return _c
 }
 
-func (_c *OrderRepository_SaveOrder_Call) Return(err error) *OrderRepository_SaveOrder_Call {
+func (_c *OrderRepository_Save_Call) Return(err error) *OrderRepository_Save_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *OrderRepository_SaveOrder_Call) RunAndReturn(run func(ctx context.Context, order model.Order) error) *OrderRepository_SaveOrder_Call {
+func (_c *OrderRepository_Save_Call) RunAndReturn(run func(ctx context.Context, order model.Order) error) *OrderRepository_Save_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// UpdateOrder provides a mock function for the type OrderRepository
-func (_mock *OrderRepository) UpdateOrder(ctx context.Context, uuid1 uuid.UUID, info model.OrderInfo) error {
+// Update provides a mock function for the type OrderRepository
+func (_mock *OrderRepository) Update(ctx context.Context, uuid1 uuid.UUID, info model.OrderInfo) error {
 	ret := _mock.Called(ctx, uuid1, info)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UpdateOrder")
+		panic("no return value specified for Update")
 	}
 
 	var r0 error
@@ -181,20 +179,20 @@ func (_mock *OrderRepository) UpdateOrder(ctx context.Context, uuid1 uuid.UUID, 
 	return r0
 }
 
-// OrderRepository_UpdateOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateOrder'
-type OrderRepository_UpdateOrder_Call struct {
+// OrderRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type OrderRepository_Update_Call struct {
 	*mock.Call
 }
 
-// UpdateOrder is a helper method to define mock.On call
+// Update is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
 //   - info model.OrderInfo
-func (_e *OrderRepository_Expecter) UpdateOrder(ctx, uuid1, info interface{}) *OrderRepository_UpdateOrder_Call {
-	return &OrderRepository_UpdateOrder_Call{Call: _e.mock.On("UpdateOrder", ctx, uuid1, info)}
+func (_e *OrderRepository_Expecter) Update(ctx interface{}, uuid1 interface{}, info interface{}) *OrderRepository_Update_Call {
+	return &OrderRepository_Update_Call{Call: _e.mock.On("Update", ctx, uuid1, info)}
 }
 
-func (_c *OrderRepository_UpdateOrder_Call) Run(run func(ctx context.Context, uuid1 uuid.UUID, info model.OrderInfo)) *OrderRepository_UpdateOrder_Call {
+func (_c *OrderRepository_Update_Call) Run(run func(ctx context.Context, uuid1 uuid.UUID, info model.OrderInfo)) *OrderRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -217,12 +215,12 @@ func (_c *OrderRepository_UpdateOrder_Call) Run(run func(ctx context.Context, uu
 	return _c
 }
 
-func (_c *OrderRepository_UpdateOrder_Call) Return(err error) *OrderRepository_UpdateOrder_Call {
+func (_c *OrderRepository_Update_Call) Return(err error) *OrderRepository_Update_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *OrderRepository_UpdateOrder_Call) RunAndReturn(run func(ctx context.Context, uuid1 uuid.UUID, info model.OrderInfo) error) *OrderRepository_UpdateOrder_Call {
+func (_c *OrderRepository_Update_Call) RunAndReturn(run func(ctx context.Context, uuid1 uuid.UUID, info model.OrderInfo) error) *OrderRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }

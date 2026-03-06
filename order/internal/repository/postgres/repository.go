@@ -13,7 +13,7 @@ import (
 
 	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
-	schema "github.com/ekuzm/rocket-factory/order/internal/repository/postgres/schema"
+	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/entity"
 )
 
 type repository struct {
@@ -26,12 +26,12 @@ func New(ctx context.Context, pool *pgxpool.Pool) *repository {
 	}
 }
 
-func (r *repository) SaveOrder(ctx context.Context, order model.Order) error {
-	row := schema.OrderToSchema(order)
+func (r *repository) Save(ctx context.Context, order model.Order) error {
+	row := entity.OrderToEntity(order)
 
-	insertBuilder := sq.Insert(schema.OrdersTable).
+	insertBuilder := sq.Insert(entity.OrdersTable).
 		PlaceholderFormat(sq.Dollar).
-		Columns(schema.OrdersTableColumns...).
+		Columns(entity.OrdersTableColumns...).
 		Values(row.Values()...)
 
 	log.Print(insertBuilder.ToSql())
@@ -43,13 +43,13 @@ func (r *repository) SaveOrder(ctx context.Context, order model.Order) error {
 	return nil
 }
 
-func (r *repository) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, error) {
-	selectBuilder := sq.Select(schema.OrdersTableColumns...).
+func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Order, error) {
+	selectBuilder := sq.Select(entity.OrdersTableColumns...).
 		PlaceholderFormat(sq.Dollar).
-		From(schema.OrdersTable).
-		Where(sq.Eq{schema.OrdersTableColumnUUID: uuid})
+		From(entity.OrdersTable).
+		Where(sq.Eq{entity.OrdersTableColumnUUID: uuid})
 
-	var row schema.OrderRow
+	var row entity.OrderRow
 
 	if err := r.pool.Get(ctx, &row, selectBuilder); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -59,21 +59,21 @@ func (r *repository) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order,
 		return model.Order{}, fmt.Errorf("execute select query from orders table: %w", err)
 	}
 
-	return schema.OrderToModel(row)
+	return entity.OrderToModel(row)
 }
 
-func (r *repository) UpdateOrder(ctx context.Context, uuid uuid.UUID, info model.OrderInfo) error {
-	row := schema.OrderInfoToSchema(info)
+func (r *repository) Update(ctx context.Context, uuid uuid.UUID, info model.OrderInfo) error {
+	row := entity.OrderInfoToEntity(info)
 
-	updateBuilder := sq.Update(schema.OrdersTable).
+	updateBuilder := sq.Update(entity.OrdersTable).
 		PlaceholderFormat(sq.Dollar).
-		Set(schema.OrdersTableColumnUserUUID, row.UserUUID).
-		Set(schema.OrdersTableColumnTotalPrice, row.TotalPrice).
-		Set(schema.OrdersTableColumnTransactionUUID, row.TransactionUUID).
-		Set(schema.OrdersTableColumnPaymentMethod, row.PaymentMethod).
-		Set(schema.OrdersTableColumnStatus, row.Status).
-		Set(schema.OrdersTableColumnUpdatedAt, sq.Expr("NOW()")).
-		Where(sq.Eq{schema.OrdersTableColumnUUID: uuid})
+		Set(entity.OrdersTableColumnUserUUID, row.UserUUID).
+		Set(entity.OrdersTableColumnTotalPrice, row.TotalPrice).
+		Set(entity.OrdersTableColumnTransactionUUID, row.TransactionUUID).
+		Set(entity.OrdersTableColumnPaymentMethod, row.PaymentMethod).
+		Set(entity.OrdersTableColumnStatus, row.Status).
+		Set(entity.OrdersTableColumnUpdatedAt, sq.Expr("NOW()")).
+		Where(sq.Eq{entity.OrdersTableColumnUUID: uuid})
 
 	res, err := r.pool.Exec(ctx, updateBuilder)
 	if err != nil {

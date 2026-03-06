@@ -15,9 +15,9 @@ import (
 )
 
 type OrderRepository interface {
-	SaveOrder(ctx context.Context, order model.Order) error
-	GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, error)
-	UpdateOrder(ctx context.Context, uuid uuid.UUID, info model.OrderInfo) error
+	Save(ctx context.Context, order model.Order) error
+	GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Order, error)
+	Update(ctx context.Context, uuid uuid.UUID, info model.OrderInfo) error
 }
 
 type InventoryPort interface {
@@ -79,7 +79,7 @@ func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs
 	}
 
 	err = s.manager.Wrap(ctx, func(ctx context.Context) error {
-		if err := s.repository.SaveOrder(ctx, order); err != nil {
+		if err := s.repository.Save(ctx, order); err != nil {
 			return fmt.Errorf("repository: %w", err)
 		}
 
@@ -93,7 +93,7 @@ func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs
 }
 
 func (s *service) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, error) {
-	order, err := s.repository.GetOrder(ctx, uuid)
+	order, err := s.repository.GetByUUID(ctx, uuid)
 	if err != nil {
 		return model.Order{}, fmt.Errorf("repository: %w", err)
 	}
@@ -103,7 +103,7 @@ func (s *service) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, er
 
 func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 	err := s.manager.Wrap(ctx, func(ctx context.Context) error {
-		order, err := s.repository.GetOrder(ctx, uuid)
+		order, err := s.repository.GetByUUID(ctx, uuid)
 		if err != nil {
 			return fmt.Errorf("repository: %w", err)
 		}
@@ -118,7 +118,7 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 
 		order.Info.Status = model.StatusCancelled
 
-		if err = s.repository.UpdateOrder(ctx, uuid, order.Info); err != nil {
+		if err = s.repository.Update(ctx, uuid, order.Info); err != nil {
 			return fmt.Errorf("repository: %w", err)
 		}
 
@@ -131,7 +131,7 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	var transactionUUID uuid.UUID
 	err := s.manager.Wrap(ctx, func(ctx context.Context) error {
-		order, err := s.repository.GetOrder(ctx, orderUUID)
+		order, err := s.repository.GetByUUID(ctx, orderUUID)
 		if err != nil {
 			return fmt.Errorf("repository: %w", err)
 		}
@@ -153,7 +153,7 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 		order.Info.Status = model.StatusPaid
 		order.Info.TransactionUUID = transactionUUID
 
-		if err = s.repository.UpdateOrder(ctx, orderUUID, order.Info); err != nil {
+		if err = s.repository.Update(ctx, orderUUID, order.Info); err != nil {
 			return fmt.Errorf("repository: %w", err)
 		}
 
