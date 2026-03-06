@@ -493,3 +493,8 @@ tasks:
             - task: order-service-down
             - task: inventory-service-down
             - task: payment-service-down
+    clear-volumes:
+        desc: "Clear mongodb and postgres volumes"
+        cmds:
+            - docker compose --env-file ./deploy/env/order/.env --file ./deploy/compose/order/compose.yaml down -v
+            - docker compose --env-file ./deploy/env/inventory/.env --file ./deploy/compose/inventory/compose.yaml down -v
