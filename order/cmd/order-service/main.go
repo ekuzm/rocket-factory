@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
+	"github.com/ekuzm/rocket-factory/order/internal/config"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/inventory"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/payment"
 	customMiddleware "github.com/ekuzm/rocket-factory/order/internal/middleware"
@@ -29,17 +30,13 @@ import (
 )
 
 const (
-	inventoryServiceAddress = "inventory-service:50051"
-	paymentServiceAddress   = "payment-service:50052"
-	orderServiceAddress     = ":80"
-	requestTimeout          = 10 * time.Second
-	readHeaderTimeout       = 5 * time.Second
-	shutdownTimeout         = 10 * time.Second
-	dbTimeout               = 5 * time.Second
+	path = "./deploy/env/order/.env"
 )
 
 func main() {
-	inventoryConn, err := grpc.NewClient(inventoryServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	config.Load(path)
+
+	inventoryConn, err := grpc.NewClient(config.App().HTTP.InventoryAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("failed to get client connection to inventory service: %v", err)
 		return
@@ -50,7 +47,7 @@ func main() {
 		}
 	}()
 
-	paymentConn, err := grpc.NewClient(paymentServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	paymentConn, err := grpc.NewClient(config.App().HTTP.PaymentAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Failed to get client connection to payment service: %v", err)
 		return
@@ -63,7 +60,7 @@ func main() {
 
 	dbURI := os.Getenv("DB_URI")
 
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	pool, err := pgxpool.New(ctx, dbURI)
@@ -90,19 +87,19 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(requestTimeout))
+	router.Use(middleware.Timeout(10 * time.Second))
 	router.Use(customMiddleware.RequestLogger)
 
 	router.Mount("/", orderServer)
 
 	server := &http.Server{
-		Addr:              orderServiceAddress,
+		Addr:              config.App().HTTP.OrderAddress(),
 		Handler:           router,
-		ReadHeaderTimeout: readHeaderTimeout,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	go func() {
-		log.Printf("Order HTTP server listening at %s", orderServiceAddress)
+		log.Printf("Order HTTP server listening at %s", config.App().HTTP.OrderAddress())
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("Failed to listen and serve order service HTTP server: %v", err)
 		}
@@ -114,7 +111,7 @@ func main() {
 
 	log.Printf("Shutting down the HTTP server...")
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
