@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
@@ -25,7 +26,30 @@ type repository struct {
 	collection *mongo.Collection
 }
 
-func New(collection *mongo.Collection) *repository {
+func New(db *mongo.Database) *repository {
+	collection := db.Collection(entity.PartsCollection)
+
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: entity.PartsCollectionFieldUUID, Value: 1},
+			{Key: entity.PartsCollectionFieldName, Value: 1},
+			{Key: entity.PartsCollectionFieldCategory, Value: 1},
+			{Key: entity.PartsCollectionFieldManufacturerCountry, Value: 1},
+			{Key: entity.PartsCollectionFieldTags, Value: 1},
+		},
+		Options: options.Index().SetUnique(true),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	indexName, err := collection.Indexes().CreateOne(ctx, indexModel)
+	if err != nil {
+		panic("failed to create index" + err.Error())
+	}
+
+	log.Printf("Create index with name: %v", indexName)
+
 	repository := &repository{
 		collection: collection,
 	}

@@ -53,25 +53,12 @@ type Value struct {
 	BoolValue   *bool    `bson:"bool_value,omitempty"`
 }
 
+const PartsCollection = "parts"
+
 const (
-	PartsCollectionFieldID                  = "id"
 	PartsCollectionFieldUUID                = "uuid"
 	PartsCollectionFieldName                = "name"
-	PartsCollectionFieldDescription         = "description"
-	PartsCollectionFieldPrice               = "price"
-	PartsCollectionFieldStockQuantity       = "stock_quantity"
 	PartsCollectionFieldCategory            = "category"
-	PartsCollectionFieldDimensions          = "dimensions"
-	PartsCollectionFieldDimensionsLength    = "dimensions.length"
-	PartsCollectionFieldDimensionsWidth     = "dimensions.width"
-	PartsCollectionFieldDimensionsHeight    = "dimensions.height"
-	PartsCollectionFieldDimensionsWeight    = "dimensions.weight"
-	PartsCollectionFieldManufacturer        = "manufacturer"
-	PartsCollectionFieldManufacturerName    = "manufacturer.name"
 	PartsCollectionFieldManufacturerCountry = "manufacturer.country"
-	PartsCollectionFieldManufacturerWebsite = "manufacturer.website"
 	PartsCollectionFieldTags                = "tags"
-	PartsCollectionFieldMetadata            = "metadata"
-	PartsCollectionFieldCreatedAt           = "created_at"
-	PartsCollectionFieldUpdatedAt           = "updated_at"
 )
