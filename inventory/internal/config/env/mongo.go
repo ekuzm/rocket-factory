@@ -27,6 +27,10 @@ func (mc *mongoConfig) URI() string {
 	return fmt.Sprintf("mongo://%s:%s@%s:%s/%s", mc.raw.User, mc.raw.Password, mc.raw.Host, mc.raw.Port, mc.raw.Name)
 }
 
+func (mc *mongoConfig) IsInit() bool {
+	return mc.raw.IsInit
+}
+
 func NewMongoConfig() (*mongoConfig, error) {
 	var raw mongoEnvConfig
 

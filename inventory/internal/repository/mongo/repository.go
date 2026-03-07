@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/ekuzm/rocket-factory/inventory/internal/config"
 	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/internal/repository/mongo/entity"
@@ -54,7 +55,9 @@ func New(db *mongo.Database) *repository {
 		collection: collection,
 	}
 
-	repository.Init()
+	if !config.App().Mongo.IsInit() {
+		repository.Init()
+	}
 
 	return repository
 }

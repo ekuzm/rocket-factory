@@ -16,6 +16,7 @@ type Logger interface {
 type Mongo interface {
 	Name() string
 	URI() string
+	IsInit() bool
 }
 
 type config struct {
