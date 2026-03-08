@@ -1,11 +1,12 @@
 services:
     payment-service:
         container_name: payment-service
+        env_file: ../../env/payment/.env
         build:
             context: ../../..
             dockerfile: ./deploy/docker/payment/Dockerfile
         ports:
-            - ${PAYMENT_SERVICE_PORT}:50052
+            - ${SERVICE_PORT}:50052
         restart: unless-stopped
         networks:
             - rocket-factory-net

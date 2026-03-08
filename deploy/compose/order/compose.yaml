@@ -40,8 +40,7 @@ services:
         build:
             context: ../../..
             dockerfile: ./deploy/docker/order/Dockerfile
-        environment:
-            - DB_URI=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+        env_file: ../../env/order/.env
         ports:
             - "${ORDER_SERVICE_PORT}:80"
         depends_on:
