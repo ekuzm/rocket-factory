@@ -3,6 +3,7 @@ module github.com/ekuzm/rocket-factory/payment
 go 1.25.6
 
 require (
+	github.com/caarlos0/env/v11 v11.4.0
 	github.com/ekuzm/rocket-factory/shared v0.0.0-00010101000000-000000000000
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.11.1

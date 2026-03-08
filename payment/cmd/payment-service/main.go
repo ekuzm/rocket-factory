@@ -12,19 +12,20 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
+	"github.com/ekuzm/rocket-factory/payment/internal/config"
 	"github.com/ekuzm/rocket-factory/payment/internal/interceptor"
 	"github.com/ekuzm/rocket-factory/payment/internal/service"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
-const (
-	paymentServiceAddress = ":50052"
-)
-
 func main() {
-	lis, err := net.Listen("tcp", paymentServiceAddress)
+	if err := config.Setup(); err != nil {
+		log.Fatalf("Failed to setup config: %v", err)
+	}
+
+	lis, err := net.Listen("tcp", config.App().GRPC.Address())
 	if err != nil {
-		log.Fatalf("Failed to listen payment service at %s: %v", paymentServiceAddress, err)
+		log.Fatalf("Failed to listen payment service at %s: %v", config.App().GRPC.Address(), err)
 	}
 	defer func() {
 		if cerr := lis.Close(); cerr != nil && !errors.Is(cerr, net.ErrClosed) {
@@ -41,10 +42,10 @@ func main() {
 	reflection.Register(server)
 
 	go func() {
-		log.Printf("Start gRPC server at %s", paymentServiceAddress)
+		log.Printf("Start gRPC server at %s", config.App().GRPC.Address())
 
 		if err = server.Serve(lis); err != nil {
-			log.Printf("Failed to serve gRPC server at %s: %v", paymentServiceAddress, err)
+			log.Printf("Failed to serve gRPC server at %s: %v", config.App().GRPC.Address(), err)
 		}
 	}()
 

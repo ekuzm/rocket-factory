@@ -7,9 +7,10 @@ package mock
 import (
 	"context"
 
-	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
+
+	"github.com/ekuzm/rocket-factory/payment/internal/model"
 )
 
 // NewPaymentService creates a new instance of PaymentService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -17,7 +18,8 @@ import (
 func NewPaymentService(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *PaymentService {
+},
+) *PaymentService {
 	mock := &PaymentService{}
 	mock.Mock.Test(t)
 
@@ -40,7 +42,7 @@ func (_m *PaymentService) EXPECT() *PaymentService_Expecter {
 }
 
 // PayOrder provides a mock function for the type PaymentService
-func (_mock *PaymentService) PayOrder(ctx context.Context, orderUUID uuid.UUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
+func (_mock *PaymentService) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	ret := _mock.Called(ctx, orderUUID, userUUID, paymentMethod)
 
 	if len(ret) == 0 {
@@ -77,11 +79,11 @@ type PaymentService_PayOrder_Call struct {
 //   - orderUUID uuid.UUID
 //   - userUUID uuid.UUID
 //   - paymentMethod model.PaymentMethod
-func (_e *PaymentService_Expecter) PayOrder(ctx interface{}, orderUUID interface{}, userUUID interface{}, paymentMethod interface{}) *PaymentService_PayOrder_Call {
+func (_e *PaymentService_Expecter) PayOrder(ctx, orderUUID, userUUID, paymentMethod interface{}) *PaymentService_PayOrder_Call {
 	return &PaymentService_PayOrder_Call{Call: _e.mock.On("PayOrder", ctx, orderUUID, userUUID, paymentMethod)}
 }
 
-func (_c *PaymentService_PayOrder_Call) Run(run func(ctx context.Context, orderUUID uuid.UUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod)) *PaymentService_PayOrder_Call {
+func (_c *PaymentService_PayOrder_Call) Run(run func(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod)) *PaymentService_PayOrder_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -114,7 +116,7 @@ func (_c *PaymentService_PayOrder_Call) Return(uUID uuid.UUID, err error) *Payme
 	return _c
 }
 
-func (_c *PaymentService_PayOrder_Call) RunAndReturn(run func(ctx context.Context, orderUUID uuid.UUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)) *PaymentService_PayOrder_Call {
+func (_c *PaymentService_PayOrder_Call) RunAndReturn(run func(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)) *PaymentService_PayOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }
