@@ -37,6 +37,7 @@ linters:
                 - G706
                 - G115
                 - G102
+                - G117
         cyclop:
             max-complexity: 20
         depguard:
