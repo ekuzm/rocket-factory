@@ -10,7 +10,6 @@ require (
 	github.com/go-chi/chi/v5 v5.2.4
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
-	github.com/joho/godotenv v1.5.1
 	github.com/samber/lo v1.52.0
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.78.0

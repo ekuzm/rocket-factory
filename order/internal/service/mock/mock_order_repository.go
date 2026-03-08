@@ -7,9 +7,10 @@ package mock
 import (
 	"context"
 
-	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
+
+	"github.com/ekuzm/rocket-factory/order/internal/model"
 )
 
 // NewOrderRepository creates a new instance of OrderRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -17,7 +18,8 @@ import (
 func NewOrderRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *OrderRepository {
+},
+) *OrderRepository {
 	mock := &OrderRepository{}
 	mock.Mock.Test(t)
 
@@ -73,7 +75,7 @@ type OrderRepository_GetByUUID_Call struct {
 // GetByUUID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *OrderRepository_Expecter) GetByUUID(ctx interface{}, uuid1 interface{}) *OrderRepository_GetByUUID_Call {
+func (_e *OrderRepository_Expecter) GetByUUID(ctx, uuid1 interface{}) *OrderRepository_GetByUUID_Call {
 	return &OrderRepository_GetByUUID_Call{Call: _e.mock.On("GetByUUID", ctx, uuid1)}
 }
 
@@ -130,7 +132,7 @@ type OrderRepository_Save_Call struct {
 // Save is a helper method to define mock.On call
 //   - ctx context.Context
 //   - order model.Order
-func (_e *OrderRepository_Expecter) Save(ctx interface{}, order interface{}) *OrderRepository_Save_Call {
+func (_e *OrderRepository_Expecter) Save(ctx, order interface{}) *OrderRepository_Save_Call {
 	return &OrderRepository_Save_Call{Call: _e.mock.On("Save", ctx, order)}
 }
 
@@ -188,7 +190,7 @@ type OrderRepository_Update_Call struct {
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
 //   - info model.OrderInfo
-func (_e *OrderRepository_Expecter) Update(ctx interface{}, uuid1 interface{}, info interface{}) *OrderRepository_Update_Call {
+func (_e *OrderRepository_Expecter) Update(ctx, uuid1, info interface{}) *OrderRepository_Update_Call {
 	return &OrderRepository_Update_Call{Call: _e.mock.On("Update", ctx, uuid1, info)}
 }
 

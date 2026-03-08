@@ -15,7 +15,8 @@ import (
 func NewTransactionManager(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *TransactionManager {
+},
+) *TransactionManager {
 	mock := &TransactionManager{}
 	mock.Mock.Test(t)
 
@@ -62,7 +63,7 @@ type TransactionManager_Wrap_Call struct {
 // Wrap is a helper method to define mock.On call
 //   - context1 context.Context
 //   - fn func(context.Context) error
-func (_e *TransactionManager_Expecter) Wrap(context1 interface{}, fn interface{}) *TransactionManager_Wrap_Call {
+func (_e *TransactionManager_Expecter) Wrap(context1, fn interface{}) *TransactionManager_Wrap_Call {
 	return &TransactionManager_Wrap_Call{Call: _e.mock.On("Wrap", context1, fn)}
 }
 

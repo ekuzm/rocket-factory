@@ -8,8 +8,8 @@ import (
 )
 
 type serviceConfig struct {
-	Host string `env:"SERVICE_HOST, required"`
-	Port string `env:"SERVICE_PORT, required"`
+	Host string `env:"SERVICE_HOST,required"`
+	Port string `env:"SERVICE_PORT,required"`
 }
 
 type httpEnvConfig struct {
@@ -38,7 +38,7 @@ func NewHTTPConfig() (*httpConfig, error) {
 	var raw httpEnvConfig
 
 	if err := env.Parse(&raw); err != nil {
-		return nil, fmt.Errorf("parsing .env: %w", err)
+		return nil, fmt.Errorf("parsing envs: %w", err)
 	}
 
 	return &httpConfig{

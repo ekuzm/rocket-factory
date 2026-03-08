@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/ekuzm/rocket-factory/order/internal/config/env"
-	"github.com/joho/godotenv"
 )
 
 type Logger interface {
@@ -34,24 +33,20 @@ func App() *config {
 	return app
 }
 
-func Load(path ...string) error {
-	if err := godotenv.Load(path...); err != nil {
-		return fmt.Errorf("load env file from %v: %w", path, err)
-	}
-
+func Setup() error {
 	http, err := env.NewHTTPConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("create http config: %w", err)
 	}
 
 	logger, err := env.NewLoggerConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("create logger config: %w", err)
 	}
 
 	postgres, err := env.NewPostgresConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("create postgres config: %w", err)
 	}
 
 	app = &config{

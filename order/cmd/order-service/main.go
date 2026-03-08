@@ -29,16 +29,14 @@ import (
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
-const (
-	path = "./deploy/env/order/.env"
-)
-
 func main() {
-	config.Load(path)
+	if err := config.Setup(); err != nil {
+		log.Fatal("Failed to setup config: %w", err)
+	}
 
 	inventoryConn, err := grpc.NewClient(config.App().HTTP.InventoryAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Printf("failed to get client connection to inventory service: %v", err)
+		log.Printf("Failed to get client connection to inventory service: %v", err)
 		return
 	}
 	defer func() {
@@ -58,12 +56,10 @@ func main() {
 		}
 	}()
 
-	dbURI := os.Getenv("DB_URI")
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	pool, err := pgxpool.New(ctx, dbURI)
+	pool, err := pgxpool.New(ctx, config.App().Postgres.URI())
 	if err != nil {
 		log.Printf("Failed to initialize pgxpool: %v", err)
 		return

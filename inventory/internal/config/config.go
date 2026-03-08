@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/ekuzm/rocket-factory/inventory/internal/config/env"
 )
 
@@ -30,17 +32,17 @@ var app *config
 func Setup() error {
 	grpc, err := env.NewGRPCConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("create grpc config: %w", err)
 	}
 
 	logger, err := env.NewLoggerConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("create logger config: %w", err)
 	}
 
 	mongo, err := env.NewMongoConfig()
 	if err != nil {
-		return err
+		return fmt.Errorf("create mongo config: %w", err)
 	}
 
 	app = &config{

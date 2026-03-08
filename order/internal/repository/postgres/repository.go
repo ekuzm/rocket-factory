@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -33,8 +32,6 @@ func (r *repository) Save(ctx context.Context, order model.Order) error {
 		PlaceholderFormat(sq.Dollar).
 		Columns(entity.OrdersTableColumns...).
 		Values(row.Values()...)
-
-	log.Print(insertBuilder.ToSql())
 
 	if _, err := r.pool.Exec(ctx, insertBuilder); err != nil {
 		return fmt.Errorf("execute insert query into orders table: %w", err)

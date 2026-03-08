@@ -27,7 +27,7 @@ func NewLoggerConfig() (*loggerConfig, error) {
 	var raw loggerEnvConfig
 
 	if err := env.Parse(&raw); err != nil {
-		return nil, fmt.Errorf("parsing .env: %w", err)
+		return nil, fmt.Errorf("parsing envs: %w", err)
 	}
 
 	return &loggerConfig{
