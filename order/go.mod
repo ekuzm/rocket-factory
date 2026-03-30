@@ -5,6 +5,7 @@ go 1.25.6
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/caarlos0/env/v11 v11.4.0
+	github.com/ekuzm/rocket-factory/platform v0.0.0-00010101000000-000000000000
 	github.com/ekuzm/rocket-factory/shared v0.0.0-00010101000000-000000000000
 	github.com/georgysavva/scany/v2 v2.1.4
 	github.com/go-chi/chi/v5 v5.2.4
@@ -16,6 +17,8 @@ require (
 )
 
 replace github.com/ekuzm/rocket-factory/shared => ../shared
+
+replace github.com/ekuzm/rocket-factory/platform => ../platform
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

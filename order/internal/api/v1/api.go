@@ -15,7 +15,7 @@ import (
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
-	"github.com/ekuzm/rocket-factory/shared/uuidx"
+	"github.com/ekuzm/rocket-factory/platform/pkg/uuidx"
 )
 
 type OrderService interface {

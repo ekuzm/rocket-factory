@@ -34,7 +34,7 @@ vars:
     OGEN_CONFIG: "{{.ROOT_DIR}}/ogen.yaml"
     OPEN_API_ORDER_V1: "{{.ROOT_DIR}}/shared/api/order/v1/order.openapi.yaml"
 
-    MODULES: [inventory, order, payment, shared]
+    MODULES: [inventory, order, payment, shared, platfrom]
 
 tasks:
     create-bin:

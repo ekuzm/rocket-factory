@@ -16,6 +16,8 @@ require (
 
 replace github.com/ekuzm/rocket-factory/shared => ../shared
 
+replace github.com/ekuzm/rocket-factory/platform => ../platform
+
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/golang/snappy v0.0.4 // indirect
