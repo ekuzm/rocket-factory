@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	logger   *logrus.Logger
+	logger   = logrus.New()
 	initOnce sync.Once
 )
 

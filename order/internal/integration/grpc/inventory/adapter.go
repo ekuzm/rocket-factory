@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
 	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
-	"github.com/sirupsen/logrus"
 )
 
 type adapter struct {

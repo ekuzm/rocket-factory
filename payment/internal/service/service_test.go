@@ -7,10 +7,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	"github.com/ekuzm/rocket-factory/payment/internal/service"
 	"github.com/ekuzm/rocket-factory/payment/pkg/testutil"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 )
 
 func TestPayOrder(t *testing.T) {

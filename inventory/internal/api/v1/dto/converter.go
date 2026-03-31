@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
 

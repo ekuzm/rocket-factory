@@ -11,9 +11,9 @@ import (
 	api "github.com/ekuzm/rocket-factory/inventory/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/inventory/internal/api/v1/dto"
 	mockInventory "github.com/ekuzm/rocket-factory/inventory/internal/api/v1/mock"
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/pkg/testutil"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
 

@@ -10,9 +10,9 @@ import (
 
 	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
 	mockPayment "github.com/ekuzm/rocket-factory/payment/internal/api/v1/mock"
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	"github.com/ekuzm/rocket-factory/payment/pkg/testutil"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 

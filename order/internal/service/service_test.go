@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
 	"github.com/ekuzm/rocket-factory/order/internal/service"
 	dto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	mockOrder "github.com/ekuzm/rocket-factory/order/internal/service/mock"
 	"github.com/ekuzm/rocket-factory/order/pkg/testutil"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 )
 
 func TestCreateOrder(t *testing.T) {
