@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/ekuzm/rocket-factory/order/internal/api/v1/dto"
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
@@ -39,11 +39,11 @@ func New(service OrderService) *api {
 func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (*orderV1.CreateOrderResponse, error) {
 	userUUID, err := uuid.Parse(req.UserUUID)
 	if err != nil {
-		return nil, fmt.Errorf("user UUID: %w", errs.ErrInvalidUUIDFormat)
+		return nil, fmt.Errorf("user UUID: %w", errs.ErrInvalid)
 	}
 	partUUIDs, err := uuidx.Parse(req.PartUuids)
 	if err != nil {
-		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalidUUIDFormat)
+		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalid)
 	}
 
 	summary, err := a.service.CreateOrder(ctx, userUUID, partUUIDs)
@@ -57,7 +57,7 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*orderV1.Order, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidUUIDFormat)
+		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
 	}
 
 	order, err := a.service.GetOrder(ctx, uuid)
@@ -71,7 +71,7 @@ func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*ord
 func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (*orderV1.NoContent, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidUUIDFormat)
+		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
 	}
 
 	err = a.service.CancelOrder(ctx, uuid)
@@ -85,7 +85,7 @@ func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams)
 func (a *api) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (*orderV1.PayOrderResponse, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalidUUIDFormat)
+		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
 	}
 
 	transactionUUID, err := a.service.PayOrder(ctx, uuid, dto.PaymentMethodToModel[req.PaymentMethod])
@@ -109,11 +109,11 @@ func (a *api) NewError(ctx context.Context, err error) *orderV1.GenericErrorStat
 	status, ok := status.FromError(err)
 	if !ok {
 		switch {
-		case errors.Is(err, errs.ErrInvalidUUIDFormat):
+		case errors.Is(err, errs.ErrInvalid):
 			code, message = http.StatusBadRequest, err.Error()
-		case errors.Is(err, errs.ErrOrderNotFound):
+		case errors.Is(err, errs.ErrNotFound):
 			code, message = http.StatusNotFound, err.Error()
-		case errors.Is(err, errs.ErrStatusCancelled) || errors.Is(err, errs.ErrStatusPaid):
+		case errors.Is(err, errs.ErrConflict):
 			code, message = http.StatusConflict, err.Error()
 		default:
 			code, message = http.StatusInternalServerError, err.Error()

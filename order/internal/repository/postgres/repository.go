@@ -10,9 +10,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/entity"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 )
 
 type repository struct {
@@ -50,7 +50,7 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Order
 
 	if err := r.pool.Get(ctx, &row, selectBuilder); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return model.Order{}, errs.ErrOrderNotFound
+			return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
 		}
 
 		return model.Order{}, fmt.Errorf("execute select query from orders table: %w", err)
@@ -78,7 +78,7 @@ func (r *repository) Update(ctx context.Context, uuid uuid.UUID, info model.Orde
 	}
 
 	if res.RowsAffected() == 0 {
-		return errs.ErrOrderNotFound
+		return fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
 
 	return nil

@@ -14,10 +14,10 @@ import (
 	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/order/internal/api/v1/dto"
 	mockOrder "github.com/ekuzm/rocket-factory/order/internal/api/v1/mock"
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	"github.com/ekuzm/rocket-factory/order/pkg/testutil"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 )
 
@@ -67,7 +67,7 @@ func TestCreateOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUIDFormat,
+			err:  errs.ErrInvalid,
 			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "CreateOrder", mock.Anything, mock.Anything)
 			},
@@ -82,7 +82,7 @@ func TestCreateOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUIDFormat,
+			err:  errs.ErrInvalid,
 			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "CreateOrder", mock.Anything, mock.Anything)
 			},
@@ -165,7 +165,7 @@ func TestGetOrder(t *testing.T) {
 					OrderUUID: uuid.Invalid.String(),
 				},
 			},
-			err: errs.ErrInvalidUUIDFormat,
+			err: errs.ErrInvalid,
 			mock: func(service *mockOrder.OrderService, args args) {
 				service.AssertNotCalled(t, "GetOrder", mock.Anything, mock.Anything)
 			},
@@ -248,7 +248,7 @@ func TestCancelOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUIDFormat,
+			err:  errs.ErrInvalid,
 			mock: func(service *mockOrder.OrderService, args args) {},
 		},
 		{
@@ -339,7 +339,7 @@ func TestPayOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUIDFormat,
+			err:  errs.ErrInvalid,
 			mock: func(service *mockOrder.OrderService, args args) {},
 		},
 		{
@@ -410,13 +410,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status bad request",
 			args: args{
 				ctx: context.Background(),
-				err: errs.ErrInvalidUUIDFormat,
+				err: errs.ErrInvalid,
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusBadRequest,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusBadRequest),
-					Message: orderV1.NewOptString(errs.ErrInvalidUUIDFormat.Error()),
+					Message: orderV1.NewOptString(errs.ErrInvalid.Error()),
 				},
 			},
 		},
@@ -424,13 +424,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status not found",
 			args: args{
 				ctx: context.Background(),
-				err: errs.ErrOrderNotFound,
+				err: errs.ErrNotFound,
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusNotFound,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusNotFound),
-					Message: orderV1.NewOptString(errs.ErrOrderNotFound.Error()),
+					Message: orderV1.NewOptString(errs.ErrNotFound.Error()),
 				},
 			},
 		},
@@ -438,13 +438,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status conflict by status cancelled error",
 			args: args{
 				ctx: context.Background(),
-				err: errs.ErrStatusCancelled,
+				err: errs.ErrConflict,
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusConflict,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusConflict),
-					Message: orderV1.NewOptString(errs.ErrStatusCancelled.Error()),
+					Message: orderV1.NewOptString(errs.ErrConflict.Error()),
 				},
 			},
 		},
@@ -452,13 +452,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status conflict by status paid error",
 			args: args{
 				ctx: context.Background(),
-				err: errs.ErrStatusPaid,
+				err: errs.ErrConflict,
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusConflict,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusConflict),
-					Message: orderV1.NewOptString(errs.ErrStatusPaid.Error()),
+					Message: orderV1.NewOptString(errs.ErrConflict.Error()),
 				},
 			},
 		},
@@ -480,13 +480,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status bad request from gRPC invalid argument",
 			args: args{
 				ctx: context.Background(),
-				err: status.Error(codes.InvalidArgument, errs.ErrInvalidUUIDFormat.Error()),
+				err: status.Error(codes.InvalidArgument, errs.ErrInvalid.Error()),
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusBadRequest,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusBadRequest),
-					Message: orderV1.NewOptString(errs.ErrInvalidUUIDFormat.Error()),
+					Message: orderV1.NewOptString(errs.ErrInvalid.Error()),
 				},
 			},
 		},
@@ -494,13 +494,13 @@ func TestNewError(t *testing.T) {
 			name: "returns HTTP status not found from gRPC not found",
 			args: args{
 				ctx: context.Background(),
-				err: status.Error(codes.NotFound, errs.ErrOrderNotFound.Error()),
+				err: status.Error(codes.NotFound, errs.ErrNotFound.Error()),
 			},
 			want: &orderV1.GenericErrorStatusCode{
 				StatusCode: http.StatusNotFound,
 				Response: orderV1.GenericError{
 					Code:    orderV1.NewOptInt(http.StatusNotFound),
-					Message: orderV1.NewOptString(errs.ErrOrderNotFound.Error()),
+					Message: orderV1.NewOptString(errs.ErrNotFound.Error()),
 				},
 			},
 		},

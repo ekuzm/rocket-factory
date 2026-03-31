@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
@@ -35,7 +35,7 @@ func (a *adapter) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, p
 
 	transactionUUID, err := uuid.Parse(resp.TransactionUuid)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("transaction UUID: %w", errs.ErrInvalidUUIDFormat)
+		return uuid.Nil, fmt.Errorf("transaction UUID: %w", errs.ErrInvalid)
 	}
 
 	return transactionUUID, nil

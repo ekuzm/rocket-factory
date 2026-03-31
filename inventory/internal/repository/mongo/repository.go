@@ -8,17 +8,19 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ekuzm/rocket-factory/inventory/internal/config"
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/internal/repository/mongo/entity"
 	"github.com/ekuzm/rocket-factory/inventory/internal/service"
 	"github.com/ekuzm/rocket-factory/inventory/pkg/fixtures"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
+	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 var _ service.InventoryRepository = (*repository)(nil)
@@ -46,10 +48,13 @@ func New(db *mongo.Database) *repository {
 
 	indexName, err := collection.Indexes().CreateOne(ctx, indexModel)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Failed to create index with name ", indexName)
 		panic("failed to create index" + err.Error())
 	}
 
-	log.Printf("Create index with name: %v", indexName)
+	logger.Debug("Create index with name ", indexName)
 
 	repository := &repository{
 		collection: collection,
@@ -70,10 +75,15 @@ func (r *repository) Init() {
 
 	ids, err := r.Save(ctx, parts)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"parts": parts,
+			"err":   err,
+		}).Error("Failed to save parts")
+
 		panic("failed to save parts in mongodb " + err.Error())
 	}
 
-	log.Printf("Inserted %d parts", len(ids))
+	logger.Debug("Count of inserted parts: ", len(ids))
 }
 
 func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.ObjectID, error) {
@@ -87,6 +97,11 @@ func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.
 
 	res, err := r.collection.InsertMany(ctx, docs)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"docs": docs,
+			"err":  err,
+		}).Error("Failed to insert parts into collection")
+
 		return nil, fmt.Errorf("insert parts into collection: %w", err)
 	}
 

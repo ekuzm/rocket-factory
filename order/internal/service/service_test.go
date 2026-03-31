@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
 	"github.com/ekuzm/rocket-factory/order/internal/service"
@@ -187,9 +187,9 @@ func TestGetByUUID(t *testing.T) {
 				orderUUID: testutil.TestOrderUUID,
 			},
 			want: model.Order{},
-			err:  errs.ErrOrderNotFound,
+			err:  errs.ErrNotFound,
 			mock: func(repo *mockOrder.OrderRepository, args args) {
-				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(model.Order{}, errs.ErrOrderNotFound)
+				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(model.Order{}, errs.ErrNotFound)
 			},
 		},
 	}
@@ -276,7 +276,7 @@ func TestCancelOrder(t *testing.T) {
 				ctx:       context.Background(),
 				orderUUID: testutil.TestOrderUUID,
 			},
-			err: errs.ErrStatusCancelled,
+			err: errs.ErrConflict,
 			mock: func(repo *mockOrder.OrderRepository, manager *mockOrder.TransactionManager, args args) {
 				order := testutil.MakeOrder(t)
 				order.Info.Status = model.StatusCancelled
@@ -295,7 +295,7 @@ func TestCancelOrder(t *testing.T) {
 				ctx:       context.Background(),
 				orderUUID: testutil.TestOrderUUID,
 			},
-			err: errs.ErrStatusPaid,
+			err: errs.ErrConflict,
 			mock: func(repo *mockOrder.OrderRepository, manager *mockOrder.TransactionManager, args args) {
 				order := testutil.MakeOrder(t)
 				order.Info.Status = model.StatusPaid
@@ -423,7 +423,7 @@ func TestPayOrder(t *testing.T) {
 				paymentMethod: model.PaymentMethodCard,
 			},
 			want: uuid.Nil,
-			err:  errs.ErrStatusCancelled,
+			err:  errs.ErrConflict,
 			mock: func(repo *mockOrder.OrderRepository, port *mockOrder.PaymentPort, manager *mockOrder.TransactionManager, args args) {
 				order := testutil.MakeOrder(t)
 				order.Info.Status = model.StatusCancelled
@@ -445,7 +445,7 @@ func TestPayOrder(t *testing.T) {
 				paymentMethod: model.PaymentMethodCard,
 			},
 			want: uuid.Nil,
-			err:  errs.ErrStatusPaid,
+			err:  errs.ErrConflict,
 			mock: func(repo *mockOrder.OrderRepository, port *mockOrder.PaymentPort, manager *mockOrder.TransactionManager, args args) {
 				order := testutil.MakeOrder(t)
 				order.Info.Status = model.StatusPaid

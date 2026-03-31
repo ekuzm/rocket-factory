@@ -2,15 +2,16 @@ package memory
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/samber/lo"
 
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/service"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 )
 
 var _ service.OrderRepository = (*repository)(nil)
@@ -46,7 +47,7 @@ func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Order, 
 
 	order, ok := r.orders[uuid]
 	if !ok {
-		return model.Order{}, errs.ErrOrderNotFound
+		return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
 
 	return order, nil
@@ -58,7 +59,7 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 
 	order, ok := r.orders[uuid]
 	if !ok {
-		return errs.ErrOrderNotFound
+		return fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
 
 	order.Info = info

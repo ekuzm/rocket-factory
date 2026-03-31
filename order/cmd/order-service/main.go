@@ -20,7 +20,7 @@ import (
 	"github.com/ekuzm/rocket-factory/order/internal/config"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/inventory"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/payment"
-	customMiddleware "github.com/ekuzm/rocket-factory/order/internal/middleware"
+	customMiddleware "github.com/ekuzm/rocket-factory/platform/pkg/middleware"
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres"
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/transaction"
 	"github.com/ekuzm/rocket-factory/order/internal/service"

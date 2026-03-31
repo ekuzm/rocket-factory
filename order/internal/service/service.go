@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 
 	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
-	errs "github.com/ekuzm/rocket-factory/order/internal/error"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
 	"github.com/ekuzm/rocket-factory/order/internal/service/dto"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 )
 
 type OrderRepository interface {
@@ -109,11 +109,11 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 		}
 
 		if order.Info.Status == model.StatusCancelled {
-			return errs.ErrStatusCancelled
+			return fmt.Errorf("order already cancelled: %w", errs.ErrConflict)
 		}
 
 		if order.Info.Status == model.StatusPaid {
-			return errs.ErrStatusPaid
+			return fmt.Errorf("order already paid: %w", errs.ErrConflict)
 		}
 
 		order.Info.Status = model.StatusCancelled
@@ -137,11 +137,11 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 		}
 
 		if order.Info.Status == model.StatusCancelled {
-			return errs.ErrStatusCancelled
+			return fmt.Errorf("order already cancelled", errs.ErrConflict)
 		}
 
 		if order.Info.Status == model.StatusPaid {
-			return errs.ErrStatusPaid
+			return fmt.Errorf("order already paid", errs.ErrConflict)
 		}
 
 		transactionUUID, err = s.paymentPort.PayOrder(ctx, orderUUID, order.Info.UserUUID, paymentMethod)
