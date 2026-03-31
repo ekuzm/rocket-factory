@@ -8,10 +8,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/samber/lo"
+	"github.com/sirupsen/logrus"
 
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/service"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
+	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 var _ service.OrderRepository = (*repository)(nil)
@@ -38,6 +40,13 @@ func (r *repository) Save(_ context.Context, order model.Order) error {
 		UpdatedAt: nil,
 	}
 
+	logger.WithFields(logrus.Fields{
+		"Order UUID":   order.UUID,
+		"User UUID":    order.Info.UserUUID,
+		"Part Count":   len(order.Info.PartUUIDs),
+		"Order Status": order.Info.Status,
+	}).Debug("Saved order in memory repository")
+
 	return nil
 }
 
@@ -47,6 +56,10 @@ func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Order, 
 
 	order, ok := r.orders[uuid]
 	if !ok {
+		logger.WithFields(logrus.Fields{
+			"Order UUID": uuid,
+		}).Warn("Failed to get order by UUID, not found")
+
 		return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
 
@@ -59,6 +72,10 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 
 	order, ok := r.orders[uuid]
 	if !ok {
+		logger.WithFields(logrus.Fields{
+			"Order UUID": uuid,
+		}).Warn("Failed to update order, not found")
+
 		return fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
 
@@ -66,6 +83,14 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 	order.UpdatedAt = lo.ToPtr(time.Now())
 
 	r.orders[uuid] = order
+
+	logger.WithFields(logrus.Fields{
+		"Order UUID":       uuid,
+		"User UUID":        info.UserUUID,
+		"Order Status":     info.Status,
+		"Payment Method":   info.PaymentMethod,
+		"Transaction UUID": info.TransactionUUID,
+	}).Debug("Updated order in memory repository")
 
 	return nil
 }

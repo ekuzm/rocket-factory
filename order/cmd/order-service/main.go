@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -20,10 +20,11 @@ import (
 	"github.com/ekuzm/rocket-factory/order/internal/config"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/inventory"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/payment"
-	customMiddleware "github.com/ekuzm/rocket-factory/platform/pkg/middleware"
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres"
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/transaction"
 	"github.com/ekuzm/rocket-factory/order/internal/service"
+	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
+	customMiddleware "github.com/ekuzm/rocket-factory/platform/pkg/middleware"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
@@ -31,28 +32,60 @@ import (
 
 func main() {
 	if err := config.Setup(); err != nil {
-		log.Fatal("Failed to setup config: %w", err)
+		panic("Failed to setup config")
 	}
+
+	logger.Init(config.App().Logger.Level(), config.App().Logger.AsJSON())
 
 	inventoryConn, err := grpc.NewClient(config.App().HTTP.InventoryAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Printf("Failed to get client connection to inventory service: %v", err)
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"component":         "inventory-client",
+			"error":             err,
+		}).Error("Failed to create client connection to inventory service")
+
 		return
 	}
 	defer func() {
 		if cerr := inventoryConn.Close(); cerr != nil {
-			log.Printf("Failed to close client connection to inventory service: %v", cerr)
+			logger.WithFields(logrus.Fields{
+				"service":           "order-service",
+				"http_address":      config.App().HTTP.OrderAddress(),
+				"inventory_address": config.App().HTTP.InventoryAddress(),
+				"payment_address":   config.App().HTTP.PaymentAddress(),
+				"component":         "inventory-client",
+				"error":             err,
+			}).Warn("Failed to close client connection to inventory service")
 		}
 	}()
 
 	paymentConn, err := grpc.NewClient(config.App().HTTP.PaymentAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Printf("Failed to get client connection to payment service: %v", err)
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"component":         "payment-client",
+			"error":             err,
+		}).Error("Failed to create client connection to payment service")
+
 		return
 	}
 	defer func() {
 		if cerr := paymentConn.Close(); cerr != nil {
-			log.Printf("Failed to close client connection to payment service: %v", cerr)
+			logger.WithFields(logrus.Fields{
+				"service":           "order-service",
+				"http_address":      config.App().HTTP.OrderAddress(),
+				"inventory_address": config.App().HTTP.InventoryAddress(),
+				"payment_address":   config.App().HTTP.PaymentAddress(),
+				"component":         "payment-client",
+				"error":             err,
+			}).Warn("Failed to close client connection to payment service")
 		}
 	}()
 
@@ -61,10 +94,28 @@ func main() {
 
 	pool, err := pgxpool.New(ctx, config.App().Postgres.URI())
 	if err != nil {
-		log.Printf("Failed to initialize pgxpool: %v", err)
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"component":         "postgres",
+			"error":             err,
+		}).Error("Failed to initialize pgx pool")
+
 		return
 	}
-	defer pool.Close()
+	defer func() {
+		pool.Close()
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"component":         "postgres",
+			"error":             err,
+		}).Debug("Closed pgx pool")
+	}()
 
 	repository := postgres.New(ctx, pool)
 	inventoryAdapter := inventory.New(inventoryV1.NewInventoryServiceClient(inventoryConn))
@@ -76,7 +127,15 @@ func main() {
 
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {
-		log.Printf("Failed to create order service server: %v", err)
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"component":         "payment-client",
+			"error":             err,
+		}).Error("Failed to create order service server")
+
 		return
 	}
 
@@ -95,25 +154,55 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Order HTTP server listening at %s", config.App().HTTP.OrderAddress())
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+		}).Debug("Starting order HTTP server...")
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("Failed to listen and serve order service HTTP server: %v", err)
+			logger.WithFields(logrus.Fields{
+				"service":           "order-service",
+				"http_address":      config.App().HTTP.OrderAddress(),
+				"inventory_address": config.App().HTTP.InventoryAddress(),
+				"payment_address":   config.App().HTTP.PaymentAddress(),
+				"error":             err,
+			}).Error("Failed to listen and serve order HTTP server")
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-	<-quit
+	shutdownSignal := <-quit
 
-	log.Printf("Shutting down the HTTP server...")
+	logger.WithFields(logrus.Fields{
+		"service":           "order-service",
+		"http_address":      config.App().HTTP.OrderAddress(),
+		"inventory_address": config.App().HTTP.InventoryAddress(),
+		"payment_address":   config.App().HTTP.PaymentAddress(),
+		"signal":            shutdownSignal.String(),
+		"error":             err,
+	}).Warn("Shutting down the HTTP server")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Printf("Failed to shutdown the HTTP server: %v", err)
+		logger.WithFields(logrus.Fields{
+			"service":           "order-service",
+			"http_address":      config.App().HTTP.OrderAddress(),
+			"inventory_address": config.App().HTTP.InventoryAddress(),
+			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"error":             err,
+		}).Error("Failed to shutdown the HTTP server")
+
 		return
 	}
 
-	log.Printf("Successfully stopped HTTP server")
+	logger.WithFields(logrus.Fields{
+		"service":           "order-service",
+		"http_address":      config.App().HTTP.OrderAddress(),
+		"inventory_address": config.App().HTTP.InventoryAddress(),
+		"payment_address":   config.App().HTTP.PaymentAddress(),
+	}).Debug("HTTP server successfully stopped")
 }

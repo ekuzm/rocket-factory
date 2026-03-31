@@ -6,12 +6,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 
 	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
 	"github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
+	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 type OrderRepository interface {
@@ -58,6 +60,13 @@ func New(
 func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs uuid.UUIDs) (dto.Summary, error) {
 	parts, err := s.inventoryPort.ListParts(ctx, supplier.Filter{UUIDs: partUUIDs})
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"User UUID":  userUUID,
+			"Part UUIDs": partUUIDs,
+			"Part Count": len(partUUIDs),
+			"error":      err,
+		}).Error("Failed to list parts for order")
+
 		return dto.Summary{}, fmt.Errorf("inventory port: %w", err)
 	}
 
@@ -80,6 +89,13 @@ func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs
 
 	err = s.manager.Wrap(ctx, func(ctx context.Context) error {
 		if err := s.repository.Save(ctx, order); err != nil {
+			logger.WithFields(logrus.Fields{
+				"Order UUID": order.UUID,
+				"User UUID":  userUUID,
+				"Part UUIDs": partUUIDs,
+				"error":      err,
+			}).Error("Failed to save order")
+
 			return fmt.Errorf("repository: %w", err)
 		}
 
@@ -95,6 +111,11 @@ func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs
 func (s *service) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, error) {
 	order, err := s.repository.GetByUUID(ctx, uuid)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"Order UUID": uuid,
+			"error":      err,
+		}).Warn("Failed to get order by UUID")
+
 		return model.Order{}, fmt.Errorf("repository: %w", err)
 	}
 
@@ -105,47 +126,96 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 	err := s.manager.Wrap(ctx, func(ctx context.Context) error {
 		order, err := s.repository.GetByUUID(ctx, uuid)
 		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"Order UUID": uuid,
+				"error":      err,
+			}).Warn("Failed to get order by UUID")
+
 			return fmt.Errorf("repository: %w", err)
 		}
 
 		if order.Info.Status == model.StatusCancelled {
+			logger.WithFields(logrus.Fields{
+				"Order UUID":   uuid,
+				"Order Status": order.Info.Status,
+			}).Warn("Failed to cancel order, already cancelled")
+
 			return fmt.Errorf("order already cancelled: %w", errs.ErrConflict)
 		}
 
 		if order.Info.Status == model.StatusPaid {
+			logger.WithFields(logrus.Fields{
+				"Order UUID":   uuid,
+				"Order Status": order.Info.Status,
+			}).Warn("Failed to cancel order, already paid")
+
 			return fmt.Errorf("order already paid: %w", errs.ErrConflict)
 		}
 
 		order.Info.Status = model.StatusCancelled
 
 		if err = s.repository.Update(ctx, uuid, order.Info); err != nil {
+			logger.WithFields(logrus.Fields{
+				"Order UUID":   uuid,
+				"Order Status": order.Info.Status,
+				"error":        err,
+			}).Warn("Failed to update order status")
+
 			return fmt.Errorf("repository: %w", err)
 		}
 
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
 
 func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	var transactionUUID uuid.UUID
+
 	err := s.manager.Wrap(ctx, func(ctx context.Context) error {
 		order, err := s.repository.GetByUUID(ctx, orderUUID)
 		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"Order UUID": orderUUID,
+				"error":      err,
+			}).Warn("Failed to get order by UUID")
+
 			return fmt.Errorf("repository: %w", err)
 		}
 
 		if order.Info.Status == model.StatusCancelled {
-			return fmt.Errorf("order already cancelled", errs.ErrConflict)
+			logger.WithFields(logrus.Fields{
+				"Order UUID":     orderUUID,
+				"Payment Method": paymentMethod,
+				"Order Status":   order.Info.Status,
+			}).Warn("Failed to pay order, already cancelled")
+
+			return fmt.Errorf("order already cancelled: %w", errs.ErrConflict)
 		}
 
 		if order.Info.Status == model.StatusPaid {
-			return fmt.Errorf("order already paid", errs.ErrConflict)
+			logger.WithFields(logrus.Fields{
+				"Order UUID":     orderUUID,
+				"Payment Method": paymentMethod,
+				"Order Status":   order.Info.Status,
+			}).Warn("Failed to pay order, already paid")
+
+			return fmt.Errorf("order already paid: %w", errs.ErrConflict)
 		}
 
 		transactionUUID, err = s.paymentPort.PayOrder(ctx, orderUUID, order.Info.UserUUID, paymentMethod)
 		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"Order UUID":     orderUUID,
+				"User UUID":      order.Info.UserUUID,
+				"Payment Method": paymentMethod,
+				"error":          err,
+			}).Error("Failed to pay order in payment service")
+
 			return fmt.Errorf("payment port: %w", err)
 		}
 
@@ -154,6 +224,14 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 		order.Info.TransactionUUID = transactionUUID
 
 		if err = s.repository.Update(ctx, orderUUID, order.Info); err != nil {
+			logger.WithFields(logrus.Fields{
+				"Order UUID":       orderUUID,
+				"Payment Method":   paymentMethod,
+				"Transaction UUID": transactionUUID,
+				"Order Status":     order.Info.Status,
+				"error":            err,
+			}).Warn("Failed to update order status")
+
 			return fmt.Errorf("repository: %w", err)
 		}
 
