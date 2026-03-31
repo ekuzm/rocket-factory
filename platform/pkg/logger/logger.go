@@ -53,6 +53,14 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 	return logger.WithFields(fields)
 }
 
+func Debug(args ...any) {
+	logger.Debug(args...)
+}
+
+func Warn(args ...any) {
+	logger.Warn(args...)
+}
+
 func parseLevel(level string) logrus.Level {
 	switch strings.ToUpper(level) {
 	case "INFO":
