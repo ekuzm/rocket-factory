@@ -2,34 +2,43 @@ package main
 
 import (
 	"errors"
-	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/payment/internal/config"
-	"github.com/ekuzm/rocket-factory/payment/internal/interceptor"
 	"github.com/ekuzm/rocket-factory/payment/internal/service"
+	"github.com/ekuzm/rocket-factory/platform/pkg/interceptor"
+	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
 func main() {
 	if err := config.Setup(); err != nil {
-		log.Fatalf("Failed to setup config: %v", err)
+		panic("Failed to setup config")
 	}
 
 	lis, err := net.Listen("tcp", config.App().GRPC.Address())
 	if err != nil {
-		log.Fatalf("Failed to listen payment service at %s: %v", config.App().GRPC.Address(), err)
+		logger.WithFields(logrus.Fields{
+			"service":      "payment-service",
+			"grpc_address": config.App().GRPC.Address(),
+			"error":        err,
+		}).Fatal("Failed to listen payment service")
 	}
 	defer func() {
 		if cerr := lis.Close(); cerr != nil && !errors.Is(cerr, net.ErrClosed) {
-			log.Printf("failed to close listener: %v", cerr)
+			logger.WithFields(logrus.Fields{
+				"service":      "payment-service",
+				"grpc_address": config.App().GRPC.Address(),
+				"error":        cerr,
+			}).Warn("Failed to close payment service listener")
 		}
 	}()
 
@@ -42,20 +51,34 @@ func main() {
 	reflection.Register(server)
 
 	go func() {
-		log.Printf("Start gRPC server at %s", config.App().GRPC.Address())
+		logger.WithFields(logrus.Fields{
+			"service":      "payment-service",
+			"grpc_address": config.App().GRPC.Address(),
+		}).Debug("Starting gRPC server...")
 
-		if err = server.Serve(lis); err != nil {
-			log.Printf("Failed to serve gRPC server at %s: %v", config.App().GRPC.Address(), err)
+		if err := server.Serve(lis); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			logger.WithFields(logrus.Fields{
+				"service":      "payment-service",
+				"grpc_address": config.App().GRPC.Address(),
+				"error":        err,
+			}).Error("Failed to serve gRPC server")
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-	<-quit
+	shutdownSignal := <-quit
 
-	log.Printf("Shutting down the server...")
+	logger.WithFields(logrus.Fields{
+		"service":      "payment-service",
+		"grpc_address": config.App().GRPC.Address(),
+		"signal":       shutdownSignal.String(),
+	}).Warn("Shutting down the gRPC server")
 
 	server.GracefulStop()
 
-	log.Printf("Server successfully stopped")
+	logger.WithFields(logrus.Fields{
+		"service":      "payment-service",
+		"grpc_address": config.App().GRPC.Address(),
+	}).Debug("gRPC server successfully stopped")
 }
