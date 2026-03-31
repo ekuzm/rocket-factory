@@ -17,8 +17,8 @@ func RequestLogger() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (any, error) {
 		logger.WithFields(logrus.Fields{
-			"Server": info.Server,
-			"Method": info.FullMethod,
+			"server": info.Server,
+			"method": info.FullMethod,
 		}).Debug("Running gRPC method...")
 
 		start := time.Now()
@@ -26,8 +26,8 @@ func RequestLogger() grpc.UnaryServerInterceptor {
 		resp, _ := handler(ctx, req)
 
 		logger.WithFields(logrus.Fields{
-			"Server": info.Server,
-			"Method": info.FullMethod,
+			"server": info.Server,
+			"method": info.FullMethod,
 		}).Debug("Finished gRPC method and had worked for ", time.Since(start))
 
 		return resp, nil

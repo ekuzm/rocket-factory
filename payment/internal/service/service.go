@@ -25,10 +25,10 @@ func (s *service) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, p
 	if paymentMethod == model.PaymentMethodUnknown {
 		err := fmt.Errorf("pay order: %w", errs.ErrInvalid)
 		logger.WithFields(logrus.Fields{
-			"Order UUID":     orderUUID,
-			"User UUID":      userUUID,
-			"Payment Method": paymentMethod,
-			"error":          err,
+			"orderUUID":     orderUUID,
+			"userUUID":      userUUID,
+			"paymentMethod": paymentMethod,
+			"error":         err,
 		}).Warn("Failed to pay order")
 
 		return uuid.Nil, err

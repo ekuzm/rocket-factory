@@ -32,9 +32,9 @@ func main() {
 	logger.Init(config.App().Logger.Level(), config.App().Logger.AsJSON())
 
 	baseLog := logger.WithFields(logrus.Fields{
-		"service":        "inventory-service",
-		"grpc_address":   config.App().GRPC.Address(),
-		"mongo_database": config.App().Mongo.Name(),
+		"service":       "inventory-service",
+		"grpcAddress":   config.App().GRPC.Address(),
+		"mongoDatabase": config.App().Mongo.Name(),
 	})
 
 	baseLog.Debug("Loaded inventory service configuration")
@@ -46,10 +46,10 @@ func main() {
 	defer func() {
 		if cerr := lis.Close(); cerr != nil && !errors.Is(cerr, net.ErrClosed) {
 			logger.WithFields(logrus.Fields{
-				"service":        "inventory-service",
-				"grpc_address":   config.App().GRPC.Address(),
-				"mongo_database": config.App().Mongo.Name(),
-				"error":          cerr,
+				"service":       "inventory-service",
+				"grpcAddress":   config.App().GRPC.Address(),
+				"mongoDatabase": config.App().Mongo.Name(),
+				"error":         cerr,
 			}).Warn("Failed to close inventory service listener")
 		}
 	}()

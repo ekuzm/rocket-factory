@@ -27,17 +27,17 @@ func main() {
 	lis, err := net.Listen("tcp", config.App().GRPC.Address())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"service":      "payment-service",
-			"grpc_address": config.App().GRPC.Address(),
-			"error":        err,
+			"service":     "payment-service",
+			"grpcAddress": config.App().GRPC.Address(),
+			"error":       err,
 		}).Fatal("Failed to listen payment service")
 	}
 	defer func() {
 		if cerr := lis.Close(); cerr != nil && !errors.Is(cerr, net.ErrClosed) {
 			logger.WithFields(logrus.Fields{
-				"service":      "payment-service",
-				"grpc_address": config.App().GRPC.Address(),
-				"error":        cerr,
+				"service":     "payment-service",
+				"grpcAddress": config.App().GRPC.Address(),
+				"error":       cerr,
 			}).Warn("Failed to close payment service listener")
 		}
 	}()
@@ -52,15 +52,15 @@ func main() {
 
 	go func() {
 		logger.WithFields(logrus.Fields{
-			"service":      "payment-service",
-			"grpc_address": config.App().GRPC.Address(),
+			"service":     "payment-service",
+			"grpcAddress": config.App().GRPC.Address(),
 		}).Debug("Starting gRPC server...")
 
 		if err := server.Serve(lis); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
 			logger.WithFields(logrus.Fields{
-				"service":      "payment-service",
-				"grpc_address": config.App().GRPC.Address(),
-				"error":        err,
+				"service":     "payment-service",
+				"grpcAddress": config.App().GRPC.Address(),
+				"error":       err,
 			}).Error("Failed to serve gRPC server")
 		}
 	}()
@@ -70,15 +70,15 @@ func main() {
 	shutdownSignal := <-quit
 
 	logger.WithFields(logrus.Fields{
-		"service":      "payment-service",
-		"grpc_address": config.App().GRPC.Address(),
-		"signal":       shutdownSignal.String(),
+		"service":     "payment-service",
+		"grpcAddress": config.App().GRPC.Address(),
+		"signal":      shutdownSignal.String(),
 	}).Warn("Shutting down the gRPC server")
 
 	server.GracefulStop()
 
 	logger.WithFields(logrus.Fields{
-		"service":      "payment-service",
-		"grpc_address": config.App().GRPC.Address(),
+		"service":     "payment-service",
+		"grpcAddress": config.App().GRPC.Address(),
 	}).Debug("gRPC server successfully stopped")
 }

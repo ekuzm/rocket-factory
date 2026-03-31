@@ -28,7 +28,7 @@ func (a *adapter) ListParts(ctx context.Context, filter supplier.Filter) ([]supp
 	resp, err := a.grpcClient.ListParts(ctx, req)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Filter": filter,
+			"filter": filter,
 			"error":  err,
 		}).Error("Failed to list parts in inventory service")
 
@@ -38,9 +38,9 @@ func (a *adapter) ListParts(ctx context.Context, filter supplier.Filter) ([]supp
 	parts, err := partsToModel(resp.Parts)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Filter":     filter,
-			"Part Count": len(resp.Parts),
-			"error":      err,
+			"filter":    filter,
+			"partCount": len(resp.Parts),
+			"error":     err,
 		}).Error("Failed to convert inventory parts response")
 
 		return nil, fmt.Errorf("parts to model: %w", err)

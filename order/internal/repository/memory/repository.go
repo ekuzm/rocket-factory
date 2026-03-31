@@ -41,10 +41,10 @@ func (r *repository) Save(_ context.Context, order model.Order) error {
 	}
 
 	logger.WithFields(logrus.Fields{
-		"Order UUID":   order.UUID,
-		"User UUID":    order.Info.UserUUID,
-		"Part Count":   len(order.Info.PartUUIDs),
-		"Order Status": order.Info.Status,
+		"orderUUID":   order.UUID,
+		"userUUID":    order.Info.UserUUID,
+		"partCount":   len(order.Info.PartUUIDs),
+		"orderStatus": order.Info.Status,
 	}).Debug("Saved order in memory repository")
 
 	return nil
@@ -57,7 +57,7 @@ func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Order, 
 	order, ok := r.orders[uuid]
 	if !ok {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": uuid,
+			"orderUUID": uuid,
 		}).Warn("Failed to get order by UUID, not found")
 
 		return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
@@ -73,7 +73,7 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 	order, ok := r.orders[uuid]
 	if !ok {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": uuid,
+			"orderUUID": uuid,
 		}).Warn("Failed to update order, not found")
 
 		return fmt.Errorf("order: %w", errs.ErrNotFound)
@@ -85,11 +85,11 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 	r.orders[uuid] = order
 
 	logger.WithFields(logrus.Fields{
-		"Order UUID":       uuid,
-		"User UUID":        info.UserUUID,
-		"Order Status":     info.Status,
-		"Payment Method":   info.PaymentMethod,
-		"Transaction UUID": info.TransactionUUID,
+		"orderUUID":       uuid,
+		"userUUID":        info.UserUUID,
+		"orderStatus":     info.Status,
+		"paymentMethod":   info.PaymentMethod,
+		"transactionUUID": info.TransactionUUID,
 	}).Debug("Updated order in memory repository")
 
 	return nil

@@ -40,12 +40,12 @@ func main() {
 	inventoryConn, err := grpc.NewClient(config.App().HTTP.InventoryAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
-			"component":         "inventory-client",
-			"error":             err,
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
+			"component":        "inventory-client",
+			"error":            err,
 		}).Error("Failed to create client connection to inventory service")
 
 		return
@@ -53,12 +53,12 @@ func main() {
 	defer func() {
 		if cerr := inventoryConn.Close(); cerr != nil {
 			logger.WithFields(logrus.Fields{
-				"service":           "order-service",
-				"http_address":      config.App().HTTP.OrderAddress(),
-				"inventory_address": config.App().HTTP.InventoryAddress(),
-				"payment_address":   config.App().HTTP.PaymentAddress(),
-				"component":         "inventory-client",
-				"error":             err,
+				"service":          "order-service",
+				"httpAddress":      config.App().HTTP.OrderAddress(),
+				"inventoryAddress": config.App().HTTP.InventoryAddress(),
+				"paymentAddress":   config.App().HTTP.PaymentAddress(),
+				"component":        "inventory-client",
+				"error":            err,
 			}).Warn("Failed to close client connection to inventory service")
 		}
 	}()
@@ -66,12 +66,12 @@ func main() {
 	paymentConn, err := grpc.NewClient(config.App().HTTP.PaymentAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
-			"component":         "payment-client",
-			"error":             err,
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
+			"component":        "payment-client",
+			"error":            err,
 		}).Error("Failed to create client connection to payment service")
 
 		return
@@ -79,12 +79,12 @@ func main() {
 	defer func() {
 		if cerr := paymentConn.Close(); cerr != nil {
 			logger.WithFields(logrus.Fields{
-				"service":           "order-service",
-				"http_address":      config.App().HTTP.OrderAddress(),
-				"inventory_address": config.App().HTTP.InventoryAddress(),
-				"payment_address":   config.App().HTTP.PaymentAddress(),
-				"component":         "payment-client",
-				"error":             err,
+				"service":          "order-service",
+				"httpAddress":      config.App().HTTP.OrderAddress(),
+				"inventoryAddress": config.App().HTTP.InventoryAddress(),
+				"paymentAddress":   config.App().HTTP.PaymentAddress(),
+				"component":        "payment-client",
+				"error":            err,
 			}).Warn("Failed to close client connection to payment service")
 		}
 	}()
@@ -95,12 +95,12 @@ func main() {
 	pool, err := pgxpool.New(ctx, config.App().Postgres.URI())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
-			"component":         "postgres",
-			"error":             err,
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
+			"component":        "postgres",
+			"error":            err,
 		}).Error("Failed to initialize pgx pool")
 
 		return
@@ -108,12 +108,12 @@ func main() {
 	defer func() {
 		pool.Close()
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
-			"component":         "postgres",
-			"error":             err,
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
+			"component":        "postgres",
+			"error":            err,
 		}).Debug("Closed pgx pool")
 	}()
 
@@ -128,12 +128,12 @@ func main() {
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
-			"component":         "payment-client",
-			"error":             err,
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
+			"component":        "payment-client",
+			"error":            err,
 		}).Error("Failed to create order service server")
 
 		return
@@ -155,18 +155,18 @@ func main() {
 
 	go func() {
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
 		}).Debug("Starting order HTTP server...")
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.WithFields(logrus.Fields{
-				"service":           "order-service",
-				"http_address":      config.App().HTTP.OrderAddress(),
-				"inventory_address": config.App().HTTP.InventoryAddress(),
-				"payment_address":   config.App().HTTP.PaymentAddress(),
-				"error":             err,
+				"service":          "order-service",
+				"httpAddress":      config.App().HTTP.OrderAddress(),
+				"inventoryAddress": config.App().HTTP.InventoryAddress(),
+				"paymentAddress":   config.App().HTTP.PaymentAddress(),
+				"error":            err,
 			}).Error("Failed to listen and serve order HTTP server")
 		}
 	}()
@@ -176,12 +176,12 @@ func main() {
 	shutdownSignal := <-quit
 
 	logger.WithFields(logrus.Fields{
-		"service":           "order-service",
-		"http_address":      config.App().HTTP.OrderAddress(),
-		"inventory_address": config.App().HTTP.InventoryAddress(),
-		"payment_address":   config.App().HTTP.PaymentAddress(),
-		"signal":            shutdownSignal.String(),
-		"error":             err,
+		"service":          "order-service",
+		"httpAddress":      config.App().HTTP.OrderAddress(),
+		"inventoryAddress": config.App().HTTP.InventoryAddress(),
+		"paymentAddress":   config.App().HTTP.PaymentAddress(),
+		"signal":           shutdownSignal.String(),
+		"error":            err,
 	}).Warn("Shutting down the HTTP server")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -189,20 +189,20 @@ func main() {
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		logger.WithFields(logrus.Fields{
-			"service":           "order-service",
-			"http_address":      config.App().HTTP.OrderAddress(),
-			"inventory_address": config.App().HTTP.InventoryAddress(),
-			"payment_address":   config.App().HTTP.PaymentAddress(),
-			"error":             err,
+			"service":          "order-service",
+			"httpAddress":      config.App().HTTP.OrderAddress(),
+			"inventoryAddress": config.App().HTTP.InventoryAddress(),
+			"paymentAddress":   config.App().HTTP.PaymentAddress(),
+			"error":            err,
 		}).Error("Failed to shutdown the HTTP server")
 
 		return
 	}
 
 	logger.WithFields(logrus.Fields{
-		"service":           "order-service",
-		"http_address":      config.App().HTTP.OrderAddress(),
-		"inventory_address": config.App().HTTP.InventoryAddress(),
-		"payment_address":   config.App().HTTP.PaymentAddress(),
+		"service":          "order-service",
+		"httpAddress":      config.App().HTTP.OrderAddress(),
+		"inventoryAddress": config.App().HTTP.InventoryAddress(),
+		"paymentAddress":   config.App().HTTP.PaymentAddress(),
 	}).Debug("HTTP server successfully stopped")
 }

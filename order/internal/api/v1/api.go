@@ -42,8 +42,8 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 	userUUID, err := uuid.Parse(req.UserUUID)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"User UUID": req.UserUUID,
-			"error":     err,
+			"userUUID": req.UserUUID,
+			"error":    err,
 		}).Warn("Failed to parse user UUID")
 
 		return nil, fmt.Errorf("user UUID: %w", errs.ErrInvalid)
@@ -51,8 +51,8 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 	partUUIDs, err := uuidx.Parse(req.PartUuids)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Part UUIDs": req.PartUuids,
-			"error":      err,
+			"partUUIDs": req.PartUuids,
+			"error":     err,
 		}).Warn("Failed to parse part UUIDs")
 
 		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalid)
@@ -70,8 +70,8 @@ func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*ord
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": params.OrderUUID,
-			"error":      err,
+			"orderUUID": params.OrderUUID,
+			"error":     err,
 		}).Warn("Failed to parse order UUID")
 
 		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
@@ -89,8 +89,8 @@ func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams)
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": params.OrderUUID,
-			"error":      err,
+			"orderUUID": params.OrderUUID,
+			"error":     err,
 		}).Warn("Failed to parse order UUID")
 
 		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
@@ -108,8 +108,8 @@ func (a *api) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": params.OrderUUID,
-			"error":      err,
+			"orderUUID": params.OrderUUID,
+			"error":     err,
 		}).Warn("Failed to parse order UUID")
 
 		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)

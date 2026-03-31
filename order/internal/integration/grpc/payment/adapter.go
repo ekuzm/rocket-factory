@@ -33,10 +33,10 @@ func (a *adapter) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, p
 	resp, err := a.grpcClient.PayOrder(ctx, req)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID":     orderUUID,
-			"User UUID":      userUUID,
-			"Payment Method": paymentMethod,
-			"error":          err,
+			"orderUUID":     orderUUID,
+			"userUUID":      userUUID,
+			"paymentMethod": paymentMethod,
+			"error":         err,
 		}).Error("Failed to pay order in payment service")
 
 		return uuid.Nil, fmt.Errorf("pay order: %w", err)
@@ -45,11 +45,11 @@ func (a *adapter) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, p
 	transactionUUID, err := uuid.Parse(resp.TransactionUuid)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID":       orderUUID,
-			"User UUID":        userUUID,
-			"Payment Method":   paymentMethod,
-			"Transaction UUID": resp.TransactionUuid,
-			"error":            err,
+			"orderUUID":       orderUUID,
+			"userUUID":        userUUID,
+			"paymentMethod":   paymentMethod,
+			"transactionUUID": resp.TransactionUuid,
+			"error":           err,
 		}).Error("Failed to parse transaction UUID")
 
 		return uuid.Nil, fmt.Errorf("transaction UUID: %w", errs.ErrInvalid)

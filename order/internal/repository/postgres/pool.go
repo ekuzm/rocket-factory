@@ -25,7 +25,7 @@ func (p *Pool) Get(ctx context.Context, dst any, sqlizer Sqlizer) error {
 	query, args, err := sqlizer.ToSql()
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Operation": "Get",
+			"operation": "Get",
 			"error":     err,
 		}).Error("Failed to build SQL query")
 
@@ -34,10 +34,10 @@ func (p *Pool) Get(ctx context.Context, dst any, sqlizer Sqlizer) error {
 
 	tx := transaction.Extract(ctx)
 	logger.WithFields(logrus.Fields{
-		"Operation":       "Get",
-		"Query":           query,
-		"Args":            args,
-		"Has Transaction": tx != nil,
+		"operation":      "Get",
+		"query":          query,
+		"args":           args,
+		"hasTransaction": tx != nil,
 	}).Debug("Execute SQL query")
 
 	if tx != nil {
@@ -51,7 +51,7 @@ func (p *Pool) Select(ctx context.Context, dst any, sqlizer Sqlizer) error {
 	query, args, err := sqlizer.ToSql()
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Operation": "Select",
+			"operation": "Select",
 			"error":     err,
 		}).Error("Failed to build SQL query")
 
@@ -60,10 +60,10 @@ func (p *Pool) Select(ctx context.Context, dst any, sqlizer Sqlizer) error {
 
 	tx := transaction.Extract(ctx)
 	logger.WithFields(logrus.Fields{
-		"Operation":       "Select",
-		"Query":           query,
-		"Args":            args,
-		"Has Transaction": tx != nil,
+		"operation":      "Select",
+		"query":          query,
+		"args":           args,
+		"hasTransaction": tx != nil,
 	}).Debug("Execute SQL query")
 
 	if tx != nil {
@@ -77,7 +77,7 @@ func (p *Pool) Exec(ctx context.Context, sqlizer Sqlizer) (pgconn.CommandTag, er
 	query, args, err := sqlizer.ToSql()
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Operation": "Exec",
+			"operation": "Exec",
 			"error":     err,
 		}).Error("Failed to build SQL query")
 
@@ -86,10 +86,10 @@ func (p *Pool) Exec(ctx context.Context, sqlizer Sqlizer) (pgconn.CommandTag, er
 
 	tx := transaction.Extract(ctx)
 	logger.WithFields(logrus.Fields{
-		"Operation":       "Exec",
-		"Query":           query,
-		"Args":            args,
-		"Has Transaction": tx != nil,
+		"operation":      "Exec",
+		"query":          query,
+		"args":           args,
+		"hasTransaction": tx != nil,
 	}).Debug("Execute SQL query")
 
 	if tx != nil {

@@ -37,11 +37,11 @@ func (r *repository) Save(ctx context.Context, order model.Order) error {
 
 	if _, err := r.pool.Exec(ctx, insertBuilder); err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID":   order.UUID,
-			"User UUID":    order.Info.UserUUID,
-			"Part Count":   len(order.Info.PartUUIDs),
-			"Order Status": order.Info.Status,
-			"error":        err,
+			"orderUUID":   order.UUID,
+			"userUUID":    order.Info.UserUUID,
+			"partCount":   len(order.Info.PartUUIDs),
+			"orderStatus": order.Info.Status,
+			"error":       err,
 		}).Error("Failed to save order")
 
 		return fmt.Errorf("execute insert query into orders table: %w", err)
@@ -61,15 +61,15 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Order
 	if err := r.pool.Get(ctx, &row, selectBuilder); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			logger.WithFields(logrus.Fields{
-				"Order UUID": uuid,
+				"orderUUID": uuid,
 			}).Warn("Failed to get order by UUID, not found")
 
 			return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
 		}
 
 		logger.WithFields(logrus.Fields{
-			"Order UUID": uuid,
-			"error":      err,
+			"orderUUID": uuid,
+			"error":     err,
 		}).Error("Failed to get order by UUID")
 
 		return model.Order{}, fmt.Errorf("execute select query from orders table: %w", err)
@@ -78,8 +78,8 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Order
 	order, err := entity.OrderToModel(row)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": uuid,
-			"error":      err,
+			"orderUUID": uuid,
+			"error":     err,
 		}).Error("Failed to convert order entity to model")
 
 		return model.Order{}, fmt.Errorf("entity to model: %w", err)
@@ -104,12 +104,12 @@ func (r *repository) Update(ctx context.Context, uuid uuid.UUID, info model.Orde
 	res, err := r.pool.Exec(ctx, updateBuilder)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID":       uuid,
-			"User UUID":        info.UserUUID,
-			"Order Status":     info.Status,
-			"Payment Method":   info.PaymentMethod,
-			"Transaction UUID": info.TransactionUUID,
-			"error":            err,
+			"orderUUID":       uuid,
+			"userUUID":        info.UserUUID,
+			"orderStatus":     info.Status,
+			"paymentMethod":   info.PaymentMethod,
+			"transactionUUID": info.TransactionUUID,
+			"error":           err,
 		}).Error("Failed to update order")
 
 		return fmt.Errorf("execute update orders table: %w", err)
@@ -117,7 +117,7 @@ func (r *repository) Update(ctx context.Context, uuid uuid.UUID, info model.Orde
 
 	if res.RowsAffected() == 0 {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": uuid,
+			"orderUUID": uuid,
 		}).Warn("Failed to update order, not found")
 
 		return fmt.Errorf("order: %w", errs.ErrNotFound)

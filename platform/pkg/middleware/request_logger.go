@@ -11,8 +11,8 @@ import (
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.WithFields(logrus.Fields{
-			"URL":         r.URL,
-			"HTTP Method": r.Method,
+			"url":        r.URL,
+			"httpMethod": r.Method,
 		}).Debug("Starting HTTP handler...")
 
 		start := time.Now()
@@ -20,8 +20,8 @@ func RequestLogger(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 		logger.WithFields(logrus.Fields{
-			"URL":         r.URL,
-			"HTTP Method": r.Method,
+			"url":        r.URL,
+			"httpMethod": r.Method,
 		}).Debug("Handler has worked for ", time.Since(start))
 	})
 }

@@ -33,8 +33,8 @@ func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*pa
 	orderUUID, err := uuid.Parse(req.Uuid)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": req.Uuid,
-			"error":      err,
+			"orderUUID": req.Uuid,
+			"error":     err,
 		}).Warn("Failed to parse order UUID")
 
 		return nil, fmt.Errorf("parse order UUID: %w", errs.ErrInvalid)
@@ -42,9 +42,9 @@ func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*pa
 	userUUID, err := uuid.Parse(req.UserUuid)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Order UUID": req.Uuid,
-			"User UUID":  req.UserUuid,
-			"error":      err,
+			"orderUUID": req.Uuid,
+			"userUUID":  req.UserUuid,
+			"error":     err,
 		}).Warn("Failed to parse user UUID")
 
 		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalid)

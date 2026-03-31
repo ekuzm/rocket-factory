@@ -34,8 +34,8 @@ func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (model.Part, erro
 	part, err := s.repository.GetByUUID(ctx, uuid)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Part UUID": uuid,
-			"error":     err,
+			"partUUID": uuid,
+			"error":    err,
 		}).Warn("Failed to get part by UUID")
 
 		return model.Part{}, fmt.Errorf("get part: %w", err)
@@ -48,7 +48,7 @@ func (s *service) ListParts(ctx context.Context, filter model.Filter) ([]model.P
 	parts, err := s.repository.GetAllByFilter(ctx, filter)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"Filter": filter,
+			"filter": filter,
 			"error":  err,
 		}).Error("Failed to list parts by filter")
 
@@ -57,9 +57,9 @@ func (s *service) ListParts(ctx context.Context, filter model.Filter) ([]model.P
 
 	if len(parts) != len(filter.UUIDs) && len(filter.UUIDs) > 0 {
 		logger.WithFields(logrus.Fields{
-			"Filter": filter,
-			"Requested Part Count": len(filter.UUIDs),
-			"Found Part Count":     len(parts),
+			"filter":             filter,
+			"requestedPartCount": len(filter.UUIDs),
+			"foundPartCount":     len(parts),
 		}).Warn("Failed to list parts by UUID filter")
 
 		return nil, errs.ErrNotFound

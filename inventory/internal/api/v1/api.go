@@ -35,7 +35,7 @@ func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*in
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"error": err,
-			"UUID":  uuid,
+			"uuid":  uuid,
 		}).Warn("Failed to parse part UUID")
 
 		return nil, fmt.Errorf("parse part uuid: %w", errs.ErrInvalid)
