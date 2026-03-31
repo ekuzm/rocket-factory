@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -49,12 +48,18 @@ func New(db *mongo.Database) *repository {
 	indexName, err := collection.Indexes().CreateOne(ctx, indexModel)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"error": err,
-		}).Error("Failed to create index with name ", indexName)
+			"collection": entity.PartsCollection,
+			"error":      err,
+			"index_name": indexName,
+		}).Error("Failed to create parts collection index")
+		
 		panic("failed to create index" + err.Error())
 	}
 
-	logger.Debug("Create index with name ", indexName)
+	logger.WithFields(logrus.Fields{
+		"collection": entity.PartsCollection,
+		"index_name": indexName,
+	}).Debug("Created parts collection index")
 
 	repository := &repository{
 		collection: collection,
@@ -76,14 +81,16 @@ func (r *repository) Init() {
 	ids, err := r.Save(ctx, parts)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"parts": parts,
-			"err":   err,
+			"error":      err,
+			"part_count": len(parts),
 		}).Error("Failed to save parts")
 
 		panic("failed to save parts in mongodb " + err.Error())
 	}
 
-	logger.Debug("Count of inserted parts: ", len(ids))
+	logger.WithFields(logrus.Fields{
+		"inserted_count": len(ids),
+	}).Debug("Initialized parts collection with fixtures")
 }
 
 func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.ObjectID, error) {
@@ -98,8 +105,9 @@ func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.
 	res, err := r.collection.InsertMany(ctx, docs)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"docs": docs,
-			"err":  err,
+			"collection":     entity.PartsCollection,
+			"document_count": len(docs),
+			"error":          err,
 		}).Error("Failed to insert parts into collection")
 
 		return nil, fmt.Errorf("insert parts into collection: %w", err)
@@ -122,6 +130,12 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Part,
 			return model.Part{}, errs.ErrNotFound
 		}
 
+		logger.WithFields(logrus.Fields{
+			"collection": entity.PartsCollection,
+			"error":      err,
+			"part_uuid":  uuid,
+		}).Error("Failed to decode part from MongoDB")
+
 		return model.Part{}, fmt.Errorf("decode mongodb document into part model: %w", err)
 	}
 
@@ -133,16 +147,32 @@ func (r *repository) GetAllByFilter(ctx context.Context, filter model.Filter) ([
 
 	cursor, err := r.collection.Find(ctx, mongoFilter)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"collection":   entity.PartsCollection,
+			"error":        err,
+			"mongo_filter": mongoFilter,
+		}).Error("Failed to find parts by filter")
+
 		return nil, fmt.Errorf("find parts by filter: %w", err)
 	}
 	defer func() {
 		if cerr := cursor.Close(ctx); cerr != nil {
-			log.Printf("Failed to close cursor: %v", cerr)
+			logger.WithFields(logrus.Fields{
+				"collection":   entity.PartsCollection,
+				"error":        cerr,
+				"mongo_filter": mongoFilter,
+			}).Warn("Failed to close MongoDB cursor")
 		}
 	}()
 
 	var parts []entity.PartDocument
 	if err = cursor.All(ctx, &parts); err != nil {
+		logger.WithFields(logrus.Fields{
+			"collection":   entity.PartsCollection,
+			"error":        err,
+			"mongo_filter": mongoFilter,
+		}).Error("Failed to decode parts from MongoDB cursor")
+
 		return nil, fmt.Errorf("maps documents with part objects: %w", err)
 	}
 

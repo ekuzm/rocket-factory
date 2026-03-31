@@ -9,10 +9,10 @@ import (
 
 	"github.com/google/uuid"
 
-	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/internal/service"
 	"github.com/ekuzm/rocket-factory/inventory/pkg/fixtures"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 )
 
 var _ service.InventoryRepository = (*repository)(nil)
@@ -47,7 +47,7 @@ func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Part, e
 
 	part, ok := r.parts[uuid]
 	if !ok {
-		return model.Part{}, fmt.Errorf("part: %w", uuid, errs.ErrNotFound)
+		return model.Part{}, fmt.Errorf("part %s: %w", uuid, errs.ErrNotFound)
 	}
 
 	return part, nil
