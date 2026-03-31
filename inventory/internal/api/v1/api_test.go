@@ -11,7 +11,7 @@ import (
 	api "github.com/ekuzm/rocket-factory/inventory/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/inventory/internal/api/v1/dto"
 	mockInventory "github.com/ekuzm/rocket-factory/inventory/internal/api/v1/mock"
-	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/pkg/testutil"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
@@ -57,7 +57,7 @@ func TestGetPart(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUIDFormat,
+			err:  errs.ErrInvalid,
 			mockInventory: func(service *mockInventory.InventoryService, args args) {
 				service.AssertNotCalled(t, mock.Anything, mock.Anything)
 			},
@@ -147,7 +147,7 @@ func TestListParts(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUIDFormat,
+			err:  errs.ErrInvalid,
 			mockInventory: func(service *mockInventory.InventoryService, args args) {
 				service.AssertNotCalled(t, "ListParts", mock.Anything, mock.Anything)
 			},

@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	api "github.com/ekuzm/rocket-factory/inventory/internal/api/v1"
-	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 )
 
@@ -44,7 +44,7 @@ func (s *service) ListParts(ctx context.Context, filter model.Filter) ([]model.P
 	}
 
 	if len(parts) != len(filter.UUIDs) && len(filter.UUIDs) > 0 {
-		return nil, errs.ErrPartsNotFound
+		return nil, errs.ErrNotFound
 	}
 
 	return parts, nil

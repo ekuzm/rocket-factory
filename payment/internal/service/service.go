@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
-	errs "github.com/ekuzm/rocket-factory/payment/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
 )
 
@@ -22,7 +22,7 @@ func New() *service {
 
 func (s *service) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	if paymentMethod == model.PaymentMethodUnknown {
-		return uuid.Nil, fmt.Errorf("pay order: %w", errs.ErrInvalidPaymentMethod)
+		return uuid.Nil, fmt.Errorf("pay order: %w", errs.ErrInvalid)
 	}
 
 	transactionUUID := uuid.New()

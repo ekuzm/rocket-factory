@@ -10,7 +10,7 @@ import (
 
 	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
 	mockPayment "github.com/ekuzm/rocket-factory/payment/internal/api/v1/mock"
-	errs "github.com/ekuzm/rocket-factory/payment/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	"github.com/ekuzm/rocket-factory/payment/pkg/testutil"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
@@ -58,7 +58,7 @@ func TestPayOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUID,
+			err:  errs.ErrInvalid,
 			mock: func(service *mockPayment.PaymentService, args args) {
 				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 			},
@@ -74,7 +74,7 @@ func TestPayOrder(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  errs.ErrInvalidUUID,
+			err:  errs.ErrInvalid,
 			mock: func(service *mockPayment.PaymentService, args args) {
 				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 			},

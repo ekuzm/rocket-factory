@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/ekuzm/rocket-factory/payment/internal/api/v1/dto"
-	errs "github.com/ekuzm/rocket-factory/payment/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
@@ -30,11 +30,11 @@ func New(service PaymentService) *api {
 func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
 	orderUUID, err := uuid.Parse(req.Uuid)
 	if err != nil {
-		return nil, fmt.Errorf("parse order UUID: %w", errs.ErrInvalidUUID)
+		return nil, fmt.Errorf("parse order UUID: %w", errs.ErrInvalid)
 	}
 	userUUID, err := uuid.Parse(req.UserUuid)
 	if err != nil {
-		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalidUUID)
+		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalid)
 	}
 
 	transactionUUID, err := a.service.PayOrder(ctx, orderUUID, userUUID, dto.PaymentMethodToModel[req.PaymentMethod])

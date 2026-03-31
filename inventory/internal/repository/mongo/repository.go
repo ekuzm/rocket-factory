@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ekuzm/rocket-factory/inventory/internal/config"
-	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/ekuzm/rocket-factory/inventory/internal/repository/mongo/entity"
 	"github.com/ekuzm/rocket-factory/inventory/internal/service"
@@ -104,7 +104,7 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Part,
 	err := r.collection.FindOne(ctx, bson.M{entity.PartsCollectionFieldUUID: uuid}).Decode(&part)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return model.Part{}, errs.ErrPartNotFound
+			return model.Part{}, errs.ErrNotFound
 		}
 
 		return model.Part{}, fmt.Errorf("decode mongodb document into part model: %w", err)

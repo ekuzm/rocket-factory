@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
@@ -77,7 +77,7 @@ func metadataToAPI(metadata map[string]*model.Value) map[string]*inventoryV1.Val
 
 func FilterToModel(filter *inventoryV1.PartsFilter) (model.Filter, error) {
 	if filter == nil {
-		return model.Filter{}, errs.ErrInvalidFilter
+		return model.Filter{}, fmt.Errorf("filter is nil: %w", errs.ErrInvalid)
 	}
 
 	uuids := make(uuid.UUIDs, len(filter.Uuids))
@@ -85,7 +85,7 @@ func FilterToModel(filter *inventoryV1.PartsFilter) (model.Filter, error) {
 	for i, partUUID := range filter.Uuids {
 		uuid, err := uuid.Parse(partUUID)
 		if err != nil {
-			return model.Filter{}, fmt.Errorf("parse part UUIDs: %w", errs.ErrInvalidUUIDFormat)
+			return model.Filter{}, fmt.Errorf("parse part UUIDs: %w", errs.ErrInvalid)
 		}
 
 		uuids[i] = uuid

@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/ekuzm/rocket-factory/inventory/internal/api/v1/dto"
-	errs "github.com/ekuzm/rocket-factory/inventory/internal/error"
+	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
@@ -31,7 +31,7 @@ func New(service InventoryService) *api {
 func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	uuid, err := uuid.Parse(req.Uuid)
 	if err != nil {
-		return nil, fmt.Errorf("parse part uuid: %w", errs.ErrInvalidUUIDFormat)
+		return nil, fmt.Errorf("parse part uuid: %w", errs.ErrInvalid)
 	}
 
 	part, err := a.service.GetPart(ctx, uuid)
