@@ -39,7 +39,7 @@ func (r *repository) Save(_ context.Context, order model.Order) error {
 		UpdatedAt: nil,
 	}
 
-	slog.Debug("order saved", "orderUUID", order.UUID, "partCount", len(order.Info.PartUUIDs), "orderStatus", order.Info.Status)
+	slog.Debug("order saved", "orderUUID", order.UUID)
 
 	return nil
 }
@@ -74,7 +74,7 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 
 	r.orders[uuid] = order
 
-	slog.Debug("order updated", "orderUUID", uuid, "orderStatus", info.Status)
+	slog.Debug("order updated", "orderUUID", uuid)
 
 	return nil
 }

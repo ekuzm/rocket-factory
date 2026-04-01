@@ -13,9 +13,7 @@ type serviceConfig struct {
 }
 
 type httpEnvConfig struct {
-	Order     serviceConfig `envPrefix:"ORDER_"`
-	Inventory serviceConfig `envPrefix:"INVENTORY_"`
-	Payment   serviceConfig `envPrefix:"PAYMENT_"`
+	Order serviceConfig `envPrefix:"ORDER_"`
 }
 
 type httpConfig struct {
@@ -24,14 +22,6 @@ type httpConfig struct {
 
 func (hc *httpConfig) OrderAddress() string {
 	return net.JoinHostPort(hc.raw.Order.Host, hc.raw.Order.Port)
-}
-
-func (hc *httpConfig) InventoryAddress() string {
-	return net.JoinHostPort(hc.raw.Inventory.Host, hc.raw.Inventory.Port)
-}
-
-func (hc *httpConfig) PaymentAddress() string {
-	return net.JoinHostPort(hc.raw.Payment.Host, hc.raw.Payment.Port)
 }
 
 func NewHTTPConfig() (*httpConfig, error) {

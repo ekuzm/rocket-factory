@@ -59,7 +59,7 @@ func (a *app) Run(ctx context.Context) error {
 	errCh := make(chan error, 1)
 
 	go func() {
-		slog.Debug("order service starting", "service", "order-service", "addr", config.App().HTTP.OrderAddress)
+		slog.Debug("order service starting", "addr", config.App().HTTP.OrderAddress())
 
 		errCh <- a.runHTTPServer()
 	}()
@@ -73,7 +73,7 @@ func (a *app) Run(ctx context.Context) error {
 			return err
 		}
 
-		slog.Debug("http server stopped", "service", "order-service")
+		slog.Debug("http server stopped")
 
 		return nil
 	case err := <-errCh:

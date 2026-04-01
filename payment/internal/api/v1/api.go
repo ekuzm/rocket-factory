@@ -37,7 +37,7 @@ func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*pa
 	}
 	userUUID, err := uuid.Parse(req.UserUuid)
 	if err != nil {
-		slog.Warn("user uuid parse failed", "orderUUID", req.Uuid, "userUUID", req.UserUuid, "error", err)
+		slog.Warn("user uuid parse failed", "userUUID", req.UserUuid, "error", err)
 
 		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalid)
 	}

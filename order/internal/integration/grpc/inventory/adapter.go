@@ -26,14 +26,14 @@ func (a *adapter) ListParts(ctx context.Context, filter supplier.Filter) ([]supp
 
 	resp, err := a.grpcClient.ListParts(ctx, req)
 	if err != nil {
-		slog.Error("inventory parts list failed", "uuidCount", len(filter.UUIDs), "error", err)
+		slog.Error("inventory parts list failed", "error", err)
 
 		return nil, fmt.Errorf("list parts: %w", err)
 	}
 
 	parts, err := partsToModel(resp.Parts)
 	if err != nil {
-		slog.Error("inventory response convert failed", "partCount", len(resp.Parts), "error", err)
+		slog.Error("inventory response convert failed", "error", err)
 
 		return nil, fmt.Errorf("parts to model: %w", err)
 	}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/ekuzm/rocket-factory/payment/internal/config/env"
-	platformLogger "github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 type GRPC interface {
@@ -42,8 +41,6 @@ func Setup() error {
 		GRPC:   grpc,
 		Logger: logger,
 	}
-
-	platformLogger.Init(logger.Level(), logger.AsJSON())
 
 	return nil
 }

@@ -15,11 +15,11 @@ func main() {
 
 	a, err := app.New(ctx)
 	if err != nil {
-		slog.Error("Failed to create app", "service", "inventory-service", "error", err)
+		slog.Error("inventory app create failed", "error", err)
 		return
 	}
 
 	if err := a.Run(ctx); err != nil {
-		slog.Error("Failed to run app", "service", "inventory-service", "error", err)
+		slog.Error("inventory app run failed", "error", err)
 	}
 }

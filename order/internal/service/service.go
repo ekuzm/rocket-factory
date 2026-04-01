@@ -59,7 +59,7 @@ func New(
 func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs uuid.UUIDs) (dto.Summary, error) {
 	parts, err := s.inventoryPort.ListParts(ctx, supplier.Filter{UUIDs: partUUIDs})
 	if err != nil {
-		slog.Error("order parts list failed", "userUUID", userUUID, "partCount", len(partUUIDs), "error", err)
+		slog.Error("order parts list failed", "error", err)
 
 		return dto.Summary{}, fmt.Errorf("inventory port: %w", err)
 	}
@@ -83,7 +83,7 @@ func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs
 
 	err = s.manager.Wrap(ctx, func(ctx context.Context) error {
 		if err := s.repository.Save(ctx, order); err != nil {
-			slog.Error("order save failed", "orderUUID", order.UUID, "userUUID", userUUID, "partCount", len(partUUIDs), "error", err)
+			slog.Error("order save failed", "orderUUID", order.UUID, "error", err)
 
 			return fmt.Errorf("repository: %w", err)
 		}
@@ -118,13 +118,13 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 		}
 
 		if order.Info.Status == model.StatusCancelled {
-			slog.Warn("order cancel rejected", "orderUUID", uuid, "orderStatus", order.Info.Status)
+			slog.Warn("order already cancelled", "orderUUID", uuid)
 
 			return fmt.Errorf("order already cancelled: %w", errs.ErrConflict)
 		}
 
 		if order.Info.Status == model.StatusPaid {
-			slog.Warn("order cancel rejected", "orderUUID", uuid, "orderStatus", order.Info.Status)
+			slog.Warn("order already paid", "orderUUID", uuid)
 
 			return fmt.Errorf("order already paid: %w", errs.ErrConflict)
 		}
@@ -132,7 +132,7 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 		order.Info.Status = model.StatusCancelled
 
 		if err = s.repository.Update(ctx, uuid, order.Info); err != nil {
-			slog.Warn("order status update failed", "orderUUID", uuid, "orderStatus", order.Info.Status, "error", err)
+			slog.Warn("order status update failed", "orderUUID", uuid, "error", err)
 
 			return fmt.Errorf("repository: %w", err)
 		}
@@ -158,20 +158,20 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 		}
 
 		if order.Info.Status == model.StatusCancelled {
-			slog.Warn("order payment rejected", "orderUUID", orderUUID, "paymentMethod", paymentMethod, "orderStatus", order.Info.Status)
+			slog.Warn("order already cancelled", "orderUUID", orderUUID)
 
 			return fmt.Errorf("order already cancelled: %w", errs.ErrConflict)
 		}
 
 		if order.Info.Status == model.StatusPaid {
-			slog.Warn("order payment rejected", "orderUUID", orderUUID, "paymentMethod", paymentMethod, "orderStatus", order.Info.Status)
+			slog.Warn("order already paid", "orderUUID", orderUUID)
 
 			return fmt.Errorf("order already paid: %w", errs.ErrConflict)
 		}
 
 		transactionUUID, err = s.paymentPort.PayOrder(ctx, orderUUID, order.Info.UserUUID, paymentMethod)
 		if err != nil {
-			slog.Error("payment call failed", "orderUUID", orderUUID, "paymentMethod", paymentMethod, "error", err)
+			slog.Error("payment call failed", "orderUUID", orderUUID, "error", err)
 
 			return fmt.Errorf("payment port: %w", err)
 		}
@@ -181,14 +181,7 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 		order.Info.TransactionUUID = transactionUUID
 
 		if err = s.repository.Update(ctx, orderUUID, order.Info); err != nil {
-			slog.Warn(
-				"order status update failed",
-				"orderUUID", orderUUID,
-				"paymentMethod", paymentMethod,
-				"transactionUUID", transactionUUID,
-				"orderStatus", order.Info.Status,
-				"error", err,
-			)
+			slog.Warn("order status update failed", "orderUUID", orderUUID, "error", err)
 
 			return fmt.Errorf("repository: %w", err)
 		}

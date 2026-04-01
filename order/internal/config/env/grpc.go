@@ -13,8 +13,8 @@ type adapterConfig struct {
 }
 
 type grpcEnvConfig struct {
-	Inventory serviceConfig `envPrefix:"INVENTORY_"`
-	Payment   serviceConfig `envPrefix:"PAYMENT_"`
+	Inventory adapterConfig `envPrefix:"INVENTORY_"`
+	Payment   adapterConfig `envPrefix:"PAYMENT_"`
 }
 
 type grpcConfig struct {

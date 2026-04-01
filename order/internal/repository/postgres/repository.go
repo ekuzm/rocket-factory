@@ -35,7 +35,7 @@ func (r *repository) Save(ctx context.Context, order model.Order) error {
 		Values(row.Values()...)
 
 	if _, err := r.pool.Exec(ctx, insertBuilder); err != nil {
-		slog.Error("order save failed", "orderUUID", order.UUID, "partCount", len(order.Info.PartUUIDs), "orderStatus", order.Info.Status, "error", err)
+		slog.Error("order save failed", "orderUUID", order.UUID, "error", err)
 
 		return fmt.Errorf("execute insert query into orders table: %w", err)
 	}
@@ -88,7 +88,7 @@ func (r *repository) Update(ctx context.Context, uuid uuid.UUID, info model.Orde
 
 	res, err := r.pool.Exec(ctx, updateBuilder)
 	if err != nil {
-		slog.Error("order update failed", "orderUUID", uuid, "orderStatus", info.Status, "error", err)
+		slog.Error("order update failed", "orderUUID", uuid, "error", err)
 
 		return fmt.Errorf("execute update orders table: %w", err)
 	}

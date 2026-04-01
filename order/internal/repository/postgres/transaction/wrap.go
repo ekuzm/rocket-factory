@@ -17,7 +17,7 @@ func (m *manager) Wrap(ctx context.Context, callback func(ctx context.Context) e
 	inject(ctx, tx)
 	if err = callback(ctx); err != nil {
 		if rollbackErr := tx.Rollback(ctx); rollbackErr != nil {
-			slog.Error("tx rollback failed", "callbackError", err, "error", rollbackErr)
+			slog.Error("tx rollback failed", "error", rollbackErr)
 
 			return fmt.Errorf("rollback transaction: %w", rollbackErr)
 		}

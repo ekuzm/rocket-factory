@@ -43,7 +43,7 @@ func CloseAll(ctx context.Context) error {
 		var errs []string
 		done := make(chan struct{})
 
-		slog.Debug("closer started", "closerCount", len(funcs))
+		slog.Debug("closer started")
 
 		go func() {
 			defer func() {
@@ -70,7 +70,7 @@ func CloseAll(ctx context.Context) error {
 		case <-ctx.Done():
 			out = ctx.Err()
 		case <-done:
-			slog.Debug("closer finished", "closerCount", len(funcs), "errorCount", len(errs))
+			slog.Debug("closer finished")
 
 			if len(errs) > 0 {
 				out = fmt.Errorf("closed funcs: %v", strings.Join(errs, " | "))

@@ -31,21 +31,14 @@ func (a *adapter) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, p
 
 	resp, err := a.grpcClient.PayOrder(ctx, req)
 	if err != nil {
-		slog.Error("payment call failed", "orderUUID", orderUUID, "userUUID", userUUID, "paymentMethod", paymentMethod, "error", err)
+		slog.Error("payment call failed", "orderUUID", orderUUID, "error", err)
 
 		return uuid.Nil, fmt.Errorf("pay order: %w", err)
 	}
 
 	transactionUUID, err := uuid.Parse(resp.TransactionUuid)
 	if err != nil {
-		slog.Error(
-			"transaction uuid parse failed",
-			"orderUUID", orderUUID,
-			"userUUID", userUUID,
-			"paymentMethod", paymentMethod,
-			"transactionUUID", resp.TransactionUuid,
-			"error", err,
-		)
+		slog.Error("transaction uuid parse failed", "transactionUUID", resp.TransactionUuid, "error", err)
 
 		return uuid.Nil, fmt.Errorf("transaction UUID: %w", errs.ErrInvalid)
 	}

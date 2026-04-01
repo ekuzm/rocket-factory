@@ -43,25 +43,13 @@ func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (model.Part, erro
 func (s *service) ListParts(ctx context.Context, filter model.Filter) ([]model.Part, error) {
 	parts, err := s.repository.GetAllByFilter(ctx, filter)
 	if err != nil {
-		slog.Error(
-			"parts list failed",
-			"uuidCount", len(filter.UUIDs),
-			"nameCount", len(filter.Names),
-			"categoryCount", len(filter.Categories),
-			"countryCount", len(filter.ManufacturerCountries),
-			"tagCount", len(filter.Tags),
-			"error", err,
-		)
+		slog.Error("parts list failed", "error", err)
 
 		return nil, fmt.Errorf("list parts: %w", err)
 	}
 
 	if len(parts) != len(filter.UUIDs) && len(filter.UUIDs) > 0 {
-		slog.Warn(
-			"parts filter mismatch",
-			"requestedPartCount", len(filter.UUIDs),
-			"foundPartCount", len(parts),
-		)
+		slog.Warn("parts filter mismatch")
 
 		return nil, errs.ErrNotFound
 	}

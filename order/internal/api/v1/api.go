@@ -46,7 +46,7 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 	}
 	partUUIDs, err := uuidx.Parse(req.PartUuids)
 	if err != nil {
-		slog.Warn("part uuids parse failed", "partCount", len(req.PartUuids), "error", err)
+		slog.Warn("part uuids parse failed", "error", err)
 
 		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalid)
 	}

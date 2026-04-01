@@ -44,14 +44,13 @@ func New(db *mongo.Database) *repository {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	indexName, err := collection.Indexes().CreateOne(ctx, indexModel)
-	if err != nil {
-		slog.Error("parts index create failed", "indexName", indexName, "error", err)
+	if _, err := collection.Indexes().CreateOne(ctx, indexModel); err != nil {
+		slog.Error("parts index create failed", "error", err)
 
 		panic("failed to create index" + err.Error())
 	}
 
-	slog.Debug("parts index created", "indexName", indexName)
+	slog.Debug("parts index created")
 
 	repository := &repository{
 		collection: collection,
@@ -70,14 +69,13 @@ func (r *repository) Init() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	ids, err := r.Save(ctx, parts)
-	if err != nil {
-		slog.Error("parts seed failed", "partCount", len(parts), "error", err)
+	if _, err := r.Save(ctx, parts); err != nil {
+		slog.Error("parts seed failed", "error", err)
 
 		panic("failed to save parts in mongodb " + err.Error())
 	}
 
-	slog.Debug("parts seeded", "insertedCount", len(ids))
+	slog.Debug("parts seeded")
 }
 
 func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.ObjectID, error) {
@@ -91,7 +89,7 @@ func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.
 
 	res, err := r.collection.InsertMany(ctx, docs)
 	if err != nil {
-		slog.Error("parts insert failed", "documentCount", len(docs), "error", err)
+		slog.Error("parts insert failed", "error", err)
 
 		return nil, fmt.Errorf("insert parts into collection: %w", err)
 	}
@@ -126,19 +124,19 @@ func (r *repository) GetAllByFilter(ctx context.Context, filter model.Filter) ([
 
 	cursor, err := r.collection.Find(ctx, mongoFilter)
 	if err != nil {
-		slog.Error("parts find failed", "filterClauses", mongoFilterClauseCount(mongoFilter), "error", err)
+		slog.Error("parts find failed", "error", err)
 
 		return nil, fmt.Errorf("find parts by filter: %w", err)
 	}
 	defer func() {
 		if cerr := cursor.Close(ctx); cerr != nil {
-			slog.Warn("cursor close failed", "filterClauses", mongoFilterClauseCount(mongoFilter), "error", cerr)
+			slog.Warn("cursor close failed", "error", cerr)
 		}
 	}()
 
 	var parts []entity.PartDocument
 	if err = cursor.All(ctx, &parts); err != nil {
-		slog.Error("parts decode failed", "filterClauses", mongoFilterClauseCount(mongoFilter), "error", err)
+		slog.Error("parts decode failed", "error", err)
 
 		return nil, fmt.Errorf("maps documents with part objects: %w", err)
 	}
@@ -170,17 +168,4 @@ func buildMongoFilter(filter model.Filter) bson.M {
 	}
 
 	return bson.M{"$and": mongoFilter}
-}
-
-func mongoFilterClauseCount(filter bson.M) int {
-	if len(filter) == 0 {
-		return 0
-	}
-
-	clauses, ok := filter["$and"].(bson.A)
-	if !ok {
-		return len(filter)
-	}
-
-	return len(clauses)
 }

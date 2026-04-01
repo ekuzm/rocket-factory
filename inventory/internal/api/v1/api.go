@@ -32,7 +32,7 @@ func New(service InventoryService) *api {
 func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	uuid, err := uuid.Parse(req.Uuid)
 	if err != nil {
-		slog.Warn("part uuid parse failed", "uuid", req.Uuid, "error", err)
+		slog.Warn("part uuid parse failed", "partUUID", req.Uuid, "error", err)
 
 		return nil, fmt.Errorf("parse part uuid: %w", errs.ErrInvalid)
 	}
@@ -48,15 +48,7 @@ func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*in
 func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
 	filter, err := dto.FilterToModel(req.Filter)
 	if err != nil {
-		slog.Warn(
-			"api filter convert failed",
-			"uuidCount", len(filter.UUIDs),
-			"nameCount", len(filter.Names),
-			"categoryCount", len(filter.Categories),
-			"countryCount", len(filter.ManufacturerCountries),
-			"tagCount", len(filter.Tags),
-			"error", err,
-		)
+		slog.Warn("api filter convert failed", "error", err)
 
 		return nil, fmt.Errorf("convert filter to model: %w", err)
 	}
