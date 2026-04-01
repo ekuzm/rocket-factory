@@ -3,14 +3,13 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/transaction"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 type Pool struct {
@@ -24,21 +23,13 @@ type Sqlizer interface {
 func (p *Pool) Get(ctx context.Context, dst any, sqlizer Sqlizer) error {
 	query, args, err := sqlizer.ToSql()
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"operation": "Get",
-			"error":     err,
-		}).Error("Failed to build SQL query")
+		slog.Error("sql build failed", "operation", "get", "error", err)
 
 		return fmt.Errorf("sqlizer.ToSql: %w", err)
 	}
 
 	tx := transaction.Extract(ctx)
-	logger.WithFields(logrus.Fields{
-		"operation":      "Get",
-		"query":          query,
-		"args":           args,
-		"hasTransaction": tx != nil,
-	}).Debug("Execute SQL query")
+	slog.Debug("sql execute", "operation", "get", "argCount", len(args), "hasTransaction", tx != nil)
 
 	if tx != nil {
 		return pgxscan.Get(ctx, tx, dst, query, args...)
@@ -50,21 +41,13 @@ func (p *Pool) Get(ctx context.Context, dst any, sqlizer Sqlizer) error {
 func (p *Pool) Select(ctx context.Context, dst any, sqlizer Sqlizer) error {
 	query, args, err := sqlizer.ToSql()
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"operation": "Select",
-			"error":     err,
-		}).Error("Failed to build SQL query")
+		slog.Error("sql build failed", "operation", "select", "error", err)
 
 		return fmt.Errorf("sqlizer.ToSql: %w", err)
 	}
 
 	tx := transaction.Extract(ctx)
-	logger.WithFields(logrus.Fields{
-		"operation":      "Select",
-		"query":          query,
-		"args":           args,
-		"hasTransaction": tx != nil,
-	}).Debug("Execute SQL query")
+	slog.Debug("sql execute", "operation", "select", "argCount", len(args), "hasTransaction", tx != nil)
 
 	if tx != nil {
 		return pgxscan.Select(ctx, tx, dst, query, args...)
@@ -76,21 +59,13 @@ func (p *Pool) Select(ctx context.Context, dst any, sqlizer Sqlizer) error {
 func (p *Pool) Exec(ctx context.Context, sqlizer Sqlizer) (pgconn.CommandTag, error) {
 	query, args, err := sqlizer.ToSql()
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"operation": "Exec",
-			"error":     err,
-		}).Error("Failed to build SQL query")
+		slog.Error("sql build failed", "operation", "exec", "error", err)
 
 		return pgconn.CommandTag{}, fmt.Errorf("sqlizer.ToSql: %w", err)
 	}
 
 	tx := transaction.Extract(ctx)
-	logger.WithFields(logrus.Fields{
-		"operation":      "Exec",
-		"query":          query,
-		"args":           args,
-		"hasTransaction": tx != nil,
-	}).Debug("Execute SQL query")
+	slog.Debug("sql execute", "operation", "exec", "argCount", len(args), "hasTransaction", tx != nil)
 
 	if tx != nil {
 		return tx.Exec(ctx, query, args...)

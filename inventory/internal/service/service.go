@@ -3,14 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 
 	api "github.com/ekuzm/rocket-factory/inventory/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 type InventoryRepository interface {
@@ -33,10 +32,7 @@ func New(repository InventoryRepository) *service {
 func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (model.Part, error) {
 	part, err := s.repository.GetByUUID(ctx, uuid)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"partUUID": uuid,
-			"error":    err,
-		}).Warn("Failed to get part by UUID")
+		slog.Warn("part load failed", "partUUID", uuid, "error", err)
 
 		return model.Part{}, fmt.Errorf("get part: %w", err)
 	}
@@ -47,20 +43,25 @@ func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (model.Part, erro
 func (s *service) ListParts(ctx context.Context, filter model.Filter) ([]model.Part, error) {
 	parts, err := s.repository.GetAllByFilter(ctx, filter)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"filter": filter,
-			"error":  err,
-		}).Error("Failed to list parts by filter")
+		slog.Error(
+			"parts list failed",
+			"uuidCount", len(filter.UUIDs),
+			"nameCount", len(filter.Names),
+			"categoryCount", len(filter.Categories),
+			"countryCount", len(filter.ManufacturerCountries),
+			"tagCount", len(filter.Tags),
+			"error", err,
+		)
 
 		return nil, fmt.Errorf("list parts: %w", err)
 	}
 
 	if len(parts) != len(filter.UUIDs) && len(filter.UUIDs) > 0 {
-		logger.WithFields(logrus.Fields{
-			"filter":             filter,
-			"requestedPartCount": len(filter.UUIDs),
-			"foundPartCount":     len(parts),
-		}).Warn("Failed to list parts by UUID filter")
+		slog.Warn(
+			"parts filter mismatch",
+			"requestedPartCount", len(filter.UUIDs),
+			"foundPartCount", len(parts),
+		)
 
 		return nil, errs.ErrNotFound
 	}

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,7 +19,6 @@ import (
 	"github.com/ekuzm/rocket-factory/inventory/internal/service"
 	"github.com/ekuzm/rocket-factory/inventory/pkg/fixtures"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 var _ service.InventoryRepository = (*repository)(nil)
@@ -47,19 +46,12 @@ func New(db *mongo.Database) *repository {
 
 	indexName, err := collection.Indexes().CreateOne(ctx, indexModel)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"collection": entity.PartsCollection,
-			"error":      err,
-			"indexName":  indexName,
-		}).Error("Failed to create parts collection index")
+		slog.Error("parts index create failed", "indexName", indexName, "error", err)
 
 		panic("failed to create index" + err.Error())
 	}
 
-	logger.WithFields(logrus.Fields{
-		"collection": entity.PartsCollection,
-		"indexName":  indexName,
-	}).Debug("Created parts collection index")
+	slog.Debug("parts index created", "indexName", indexName)
 
 	repository := &repository{
 		collection: collection,
@@ -80,17 +72,12 @@ func (r *repository) Init() {
 
 	ids, err := r.Save(ctx, parts)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"error":     err,
-			"partCount": len(parts),
-		}).Error("Failed to save parts")
+		slog.Error("parts seed failed", "partCount", len(parts), "error", err)
 
 		panic("failed to save parts in mongodb " + err.Error())
 	}
 
-	logger.WithFields(logrus.Fields{
-		"insertedCount": len(ids),
-	}).Debug("Initialized parts collection with fixtures")
+	slog.Debug("parts seeded", "insertedCount", len(ids))
 }
 
 func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.ObjectID, error) {
@@ -104,11 +91,7 @@ func (r *repository) Save(ctx context.Context, parts []model.Part) ([]primitive.
 
 	res, err := r.collection.InsertMany(ctx, docs)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"collection":    entity.PartsCollection,
-			"documentCount": len(docs),
-			"error":         err,
-		}).Error("Failed to insert parts into collection")
+		slog.Error("parts insert failed", "documentCount", len(docs), "error", err)
 
 		return nil, fmt.Errorf("insert parts into collection: %w", err)
 	}
@@ -130,11 +113,7 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Part,
 			return model.Part{}, errs.ErrNotFound
 		}
 
-		logger.WithFields(logrus.Fields{
-			"collection": entity.PartsCollection,
-			"error":      err,
-			"partUUID":   uuid,
-		}).Error("Failed to decode part from MongoDB")
+		slog.Error("part decode failed", "partUUID", uuid, "error", err)
 
 		return model.Part{}, fmt.Errorf("decode mongodb document into part model: %w", err)
 	}
@@ -147,31 +126,19 @@ func (r *repository) GetAllByFilter(ctx context.Context, filter model.Filter) ([
 
 	cursor, err := r.collection.Find(ctx, mongoFilter)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"collection":  entity.PartsCollection,
-			"error":       err,
-			"mongoFilter": mongoFilter,
-		}).Error("Failed to find parts by filter")
+		slog.Error("parts find failed", "filterClauses", mongoFilterClauseCount(mongoFilter), "error", err)
 
 		return nil, fmt.Errorf("find parts by filter: %w", err)
 	}
 	defer func() {
 		if cerr := cursor.Close(ctx); cerr != nil {
-			logger.WithFields(logrus.Fields{
-				"collection":  entity.PartsCollection,
-				"error":       cerr,
-				"mongoFilter": mongoFilter,
-			}).Warn("Failed to close MongoDB cursor")
+			slog.Warn("cursor close failed", "filterClauses", mongoFilterClauseCount(mongoFilter), "error", cerr)
 		}
 	}()
 
 	var parts []entity.PartDocument
 	if err = cursor.All(ctx, &parts); err != nil {
-		logger.WithFields(logrus.Fields{
-			"collection":  entity.PartsCollection,
-			"error":       err,
-			"mongoFilter": mongoFilter,
-		}).Error("Failed to decode parts from MongoDB cursor")
+		slog.Error("parts decode failed", "filterClauses", mongoFilterClauseCount(mongoFilter), "error", err)
 
 		return nil, fmt.Errorf("maps documents with part objects: %w", err)
 	}
@@ -203,4 +170,17 @@ func buildMongoFilter(filter model.Filter) bson.M {
 	}
 
 	return bson.M{"$and": mongoFilter}
+}
+
+func mongoFilterClauseCount(filter bson.M) int {
+	if len(filter) == 0 {
+		return 0
+	}
+
+	clauses, ok := filter["$and"].(bson.A)
+	if !ok {
+		return len(filter)
+	}
+
+	return len(clauses)
 }

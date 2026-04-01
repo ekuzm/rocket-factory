@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	mng "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
@@ -31,56 +31,46 @@ func main() {
 
 	logger.Init(config.App().Logger.Level(), config.App().Logger.AsJSON())
 
-	baseLog := logger.WithFields(logrus.Fields{
-		"service":       "inventory-service",
-		"grpcAddress":   config.App().GRPC.Address(),
-		"mongoDatabase": config.App().Mongo.Name(),
-	})
-
-	baseLog.Debug("Loaded inventory service configuration")
+	slog.Debug("inventory service configured", "service", "inventory-service")
 
 	lis, err := net.Listen("tcp", config.App().GRPC.Address())
 	if err != nil {
-		baseLog.WithField("error", err).Fatal("Failed to listen inventory service")
+		slog.Error("inventory service listen failed", "service", "inventory-service", "addr", config.App().GRPC.Address(), "error", err)
+		os.Exit(1)
 	}
 	defer func() {
 		if cerr := lis.Close(); cerr != nil && !errors.Is(cerr, net.ErrClosed) {
-			logger.WithFields(logrus.Fields{
-				"service":       "inventory-service",
-				"grpcAddress":   config.App().GRPC.Address(),
-				"mongoDatabase": config.App().Mongo.Name(),
-				"error":         cerr,
-			}).Warn("Failed to close inventory service listener")
+			slog.Warn("inventory listener close failed", "service", "inventory-service", "error", cerr)
 		}
 	}()
 
-	baseLog.Debug("Started inventory service listener")
+	slog.Debug("inventory listener started", "service", "inventory-service", "addr", config.App().GRPC.Address())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	mongoLog := baseLog.WithField("component", "mongo")
-
 	client, err := mng.Connect(ctx, options.Client().ApplyURI(config.App().Mongo.URI()))
 	if err != nil {
-		mongoLog.WithField("error", err).Fatal("Failed to create MongoDB client")
+		slog.Error("mongo client create failed", "service", "inventory-service", "component", "mongo", "db", config.App().Mongo.Name(), "error", err)
+		os.Exit(1)
 	}
 	defer func() {
 		disconnectCtx, disconnectCancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer disconnectCancel()
 
 		if cerr := client.Disconnect(disconnectCtx); cerr != nil {
-			mongoLog.WithField("error", cerr).Warn("Failed to disconnect from MongoDB")
+			slog.Warn("mongo disconnect failed", "service", "inventory-service", "component", "mongo", "error", cerr)
 		}
 	}()
 
-	mongoLog.Debug("Created MongoDB client")
+	slog.Debug("mongo client created", "service", "inventory-service", "component", "mongo")
 
 	if err = client.Ping(ctx, nil); err != nil {
-		mongoLog.WithField("error", err).Fatal("Failed to ping MongoDB")
+		slog.Error("mongo ping failed", "service", "inventory-service", "component", "mongo", "error", err)
+		os.Exit(1)
 	}
 
-	mongoLog.Debug("Successfully pinged MongoDB")
+	slog.Debug("mongo ping ok", "service", "inventory-service", "component", "mongo")
 
 	db := client.Database(config.App().Mongo.Name())
 
@@ -88,7 +78,7 @@ func main() {
 	service := service.New(repository)
 	api := api.New(service)
 
-	logger.Debug("Inventory service dependencies initialized")
+	slog.Debug("inventory deps ready", "service", "inventory-service")
 
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.RequestLogger(), interceptor.MappingErrors()))
 
@@ -96,9 +86,9 @@ func main() {
 	reflection.Register(server)
 
 	go func() {
-		baseLog.Debug("Starting gRPC server")
+		slog.Debug("grpc server starting", "service", "inventory-service", "addr", config.App().GRPC.Address())
 		if serveErr := server.Serve(lis); serveErr != nil && !errors.Is(serveErr, grpc.ErrServerStopped) {
-			baseLog.WithField("error", serveErr).Error("Failed to serve gRPC server")
+			slog.Error("grpc server serve failed", "service", "inventory-service", "error", serveErr)
 		}
 	}()
 
@@ -106,9 +96,9 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	shutdownSignal := <-quit
 
-	baseLog.WithField("signal", shutdownSignal.String()).Warn("Shutting down the gRPC server")
+	slog.Warn("grpc server stopping", "service", "inventory-service", "signal", shutdownSignal.String())
 
 	server.GracefulStop()
 
-	baseLog.Debug("gRPC server successfully stopped")
+	slog.Debug("grpc server stopped", "service", "inventory-service")
 }

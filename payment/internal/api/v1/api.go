@@ -3,14 +3,13 @@ package v1
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ekuzm/rocket-factory/payment/internal/api/v1/dto"
 	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
@@ -32,20 +31,13 @@ func New(service PaymentService) *api {
 func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
 	orderUUID, err := uuid.Parse(req.Uuid)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": req.Uuid,
-			"error":     err,
-		}).Warn("Failed to parse order UUID")
+		slog.Warn("order uuid parse failed", "orderUUID", req.Uuid, "error", err)
 
 		return nil, fmt.Errorf("parse order UUID: %w", errs.ErrInvalid)
 	}
 	userUUID, err := uuid.Parse(req.UserUuid)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": req.Uuid,
-			"userUUID":  req.UserUuid,
-			"error":     err,
-		}).Warn("Failed to parse user UUID")
+		slog.Warn("user uuid parse failed", "orderUUID", req.Uuid, "userUUID", req.UserUuid, "error", err)
 
 		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalid)
 	}

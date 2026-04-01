@@ -5,23 +5,22 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/repository/postgres/entity"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 type repository struct {
 	pool Pool
 }
 
-func New(ctx context.Context, pool *pgxpool.Pool) *repository {
+func New(pool *pgxpool.Pool) *repository {
 	return &repository{
 		pool: Pool{pool},
 	}
@@ -36,13 +35,7 @@ func (r *repository) Save(ctx context.Context, order model.Order) error {
 		Values(row.Values()...)
 
 	if _, err := r.pool.Exec(ctx, insertBuilder); err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID":   order.UUID,
-			"userUUID":    order.Info.UserUUID,
-			"partCount":   len(order.Info.PartUUIDs),
-			"orderStatus": order.Info.Status,
-			"error":       err,
-		}).Error("Failed to save order")
+		slog.Error("order save failed", "orderUUID", order.UUID, "partCount", len(order.Info.PartUUIDs), "orderStatus", order.Info.Status, "error", err)
 
 		return fmt.Errorf("execute insert query into orders table: %w", err)
 	}
@@ -60,27 +53,19 @@ func (r *repository) GetByUUID(ctx context.Context, uuid uuid.UUID) (model.Order
 
 	if err := r.pool.Get(ctx, &row, selectBuilder); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			logger.WithFields(logrus.Fields{
-				"orderUUID": uuid,
-			}).Warn("Failed to get order by UUID, not found")
+			slog.Warn("order load missed", "orderUUID", uuid)
 
 			return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
 		}
 
-		logger.WithFields(logrus.Fields{
-			"orderUUID": uuid,
-			"error":     err,
-		}).Error("Failed to get order by UUID")
+		slog.Error("order load failed", "orderUUID", uuid, "error", err)
 
 		return model.Order{}, fmt.Errorf("execute select query from orders table: %w", err)
 	}
 
 	order, err := entity.OrderToModel(row)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": uuid,
-			"error":     err,
-		}).Error("Failed to convert order entity to model")
+		slog.Error("order convert failed", "orderUUID", uuid, "error", err)
 
 		return model.Order{}, fmt.Errorf("entity to model: %w", err)
 	}
@@ -103,22 +88,13 @@ func (r *repository) Update(ctx context.Context, uuid uuid.UUID, info model.Orde
 
 	res, err := r.pool.Exec(ctx, updateBuilder)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID":       uuid,
-			"userUUID":        info.UserUUID,
-			"orderStatus":     info.Status,
-			"paymentMethod":   info.PaymentMethod,
-			"transactionUUID": info.TransactionUUID,
-			"error":           err,
-		}).Error("Failed to update order")
+		slog.Error("order update failed", "orderUUID", uuid, "orderStatus", info.Status, "error", err)
 
 		return fmt.Errorf("execute update orders table: %w", err)
 	}
 
 	if res.RowsAffected() == 0 {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": uuid,
-		}).Warn("Failed to update order, not found")
+		slog.Warn("order update missed", "orderUUID", uuid)
 
 		return fmt.Errorf("order: %w", errs.ErrNotFound)
 	}

@@ -3,14 +3,13 @@ package v1
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ekuzm/rocket-factory/inventory/internal/api/v1/dto"
 	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
 
@@ -33,10 +32,7 @@ func New(service InventoryService) *api {
 func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	uuid, err := uuid.Parse(req.Uuid)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"error": err,
-			"uuid":  uuid,
-		}).Warn("Failed to parse part UUID")
+		slog.Warn("part uuid parse failed", "uuid", req.Uuid, "error", err)
 
 		return nil, fmt.Errorf("parse part uuid: %w", errs.ErrInvalid)
 	}
@@ -52,10 +48,15 @@ func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*in
 func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
 	filter, err := dto.FilterToModel(req.Filter)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"error":  err,
-			"filter": filter,
-		}).Warn("Failed to convert API filter to model filter")
+		slog.Warn(
+			"api filter convert failed",
+			"uuidCount", len(filter.UUIDs),
+			"nameCount", len(filter.Names),
+			"categoryCount", len(filter.Categories),
+			"countryCount", len(filter.ManufacturerCountries),
+			"tagCount", len(filter.Tags),
+			"error", err,
+		)
 
 		return nil, fmt.Errorf("convert filter to model: %w", err)
 	}

@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -15,7 +15,6 @@ import (
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	orderDto "github.com/ekuzm/rocket-factory/order/internal/service/dto"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	"github.com/ekuzm/rocket-factory/platform/pkg/uuidx"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 )
@@ -41,19 +40,13 @@ func New(service OrderService) *api {
 func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) (*orderV1.CreateOrderResponse, error) {
 	userUUID, err := uuid.Parse(req.UserUUID)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"userUUID": req.UserUUID,
-			"error":    err,
-		}).Warn("Failed to parse user UUID")
+		slog.Warn("user uuid parse failed", "userUUID", req.UserUUID, "error", err)
 
 		return nil, fmt.Errorf("user UUID: %w", errs.ErrInvalid)
 	}
 	partUUIDs, err := uuidx.Parse(req.PartUuids)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"partUUIDs": req.PartUuids,
-			"error":     err,
-		}).Warn("Failed to parse part UUIDs")
+		slog.Warn("part uuids parse failed", "partCount", len(req.PartUuids), "error", err)
 
 		return nil, fmt.Errorf("part UUIDs: %w", errs.ErrInvalid)
 	}
@@ -69,10 +62,7 @@ func (a *api) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequest) 
 func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*orderV1.Order, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": params.OrderUUID,
-			"error":     err,
-		}).Warn("Failed to parse order UUID")
+		slog.Warn("order uuid parse failed", "orderUUID", params.OrderUUID, "error", err)
 
 		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
 	}
@@ -88,10 +78,7 @@ func (a *api) GetOrder(ctx context.Context, params orderV1.GetOrderParams) (*ord
 func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams) (*orderV1.NoContent, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": params.OrderUUID,
-			"error":     err,
-		}).Warn("Failed to parse order UUID")
+		slog.Warn("order uuid parse failed", "orderUUID", params.OrderUUID, "error", err)
 
 		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
 	}
@@ -107,10 +94,7 @@ func (a *api) CancelOrder(ctx context.Context, params orderV1.CancelOrderParams)
 func (a *api) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (*orderV1.PayOrderResponse, error) {
 	uuid, err := uuid.Parse(params.OrderUUID)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": params.OrderUUID,
-			"error":     err,
-		}).Warn("Failed to parse order UUID")
+		slog.Warn("order uuid parse failed", "orderUUID", params.OrderUUID, "error", err)
 
 		return nil, fmt.Errorf("order UUID: %w", errs.ErrInvalid)
 	}

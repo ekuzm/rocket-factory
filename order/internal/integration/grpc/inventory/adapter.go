@@ -3,11 +3,9 @@ package inventory
 import (
 	"context"
 	"fmt"
-
-	"github.com/sirupsen/logrus"
+	"log/slog"
 
 	"github.com/ekuzm/rocket-factory/order/internal/model/supplier"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 )
 
@@ -28,21 +26,14 @@ func (a *adapter) ListParts(ctx context.Context, filter supplier.Filter) ([]supp
 
 	resp, err := a.grpcClient.ListParts(ctx, req)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"filter": filter,
-			"error":  err,
-		}).Error("Failed to list parts in inventory service")
+		slog.Error("inventory parts list failed", "uuidCount", len(filter.UUIDs), "error", err)
 
 		return nil, fmt.Errorf("list parts: %w", err)
 	}
 
 	parts, err := partsToModel(resp.Parts)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"filter":    filter,
-			"partCount": len(resp.Parts),
-			"error":     err,
-		}).Error("Failed to convert inventory parts response")
+		slog.Error("inventory response convert failed", "partCount", len(resp.Parts), "error", err)
 
 		return nil, fmt.Errorf("parts to model: %w", err)
 	}

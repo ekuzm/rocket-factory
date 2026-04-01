@@ -1,77 +1,37 @@
 package logger
 
 import (
+	"log/slog"
 	"os"
-	"path/filepath"
-	"runtime"
-	"strconv"
 	"strings"
-	"sync"
-
-	"github.com/sirupsen/logrus"
-)
-
-var (
-	logger   = logrus.New()
-	initOnce sync.Once
 )
 
 func Init(level string, asJSON bool) {
-	initOnce.Do(func() {
-		logger = logrus.New()
-
-		logger.SetReportCaller(true)
-
-		var formatter logrus.Formatter
-		if asJSON {
-			formatter = &logrus.JSONFormatter{
-				TimestampFormat: "02-01-2006 15:04:05",
-				CallerPrettyfier: func(f *runtime.Frame) (function string, file string) {
-					return "", filepath.Base(f.File) + ":" + strconv.Itoa(f.Line)
-				},
-				PrettyPrint: true,
-			}
-		} else {
-			formatter = &logrus.TextFormatter{
-				TimestampFormat:        "02-01-2006 15:04:05",
-				FullTimestamp:          true,
-				DisableLevelTruncation: true,
-				CallerPrettyfier: func(f *runtime.Frame) (function string, file string) {
-					return "", filepath.Base(f.File)
-				},
-			}
-		}
-
-		logger.SetFormatter(formatter)
-
-		logger.SetLevel(parseLevel(level))
-		logger.SetOutput(os.Stdout)
-	})
+	slog.SetDefault(slog.New(newHandler(parseLevel(level), asJSON)))
 }
 
-func WithFields(fields logrus.Fields) *logrus.Entry {
-	return logger.WithFields(fields)
+func newHandler(level slog.Level, asJSON bool) slog.Handler {
+	options := &slog.HandlerOptions{
+		AddSource: true,
+		Level:     level,
+	}
+
+	if asJSON {
+		return slog.NewJSONHandler(os.Stdout, options)
+	}
+
+	return slog.NewTextHandler(os.Stdout, options)
 }
 
-func Debug(args ...any) {
-	logger.Debug(args...)
-}
-
-func Warn(args ...any) {
-	logger.Warn(args...)
-}
-
-func parseLevel(level string) logrus.Level {
-	switch strings.ToUpper(level) {
+func parseLevel(level string) slog.Level {
+	switch strings.ToUpper(strings.TrimSpace(level)) {
 	case "INFO":
-		return logrus.InfoLevel
+		return slog.LevelInfo
 	case "ERROR":
-		return logrus.ErrorLevel
+		return slog.LevelError
 	case "WARNING", "WARN":
-		return logrus.WarnLevel
-	case "FATAL":
-		return logrus.FatalLevel
+		return slog.LevelWarn
 	default:
-		return logrus.DebugLevel
+		return slog.LevelDebug
 	}
 }

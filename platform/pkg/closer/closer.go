@@ -3,11 +3,9 @@ package closer
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"sync"
-
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
-	"github.com/sirupsen/logrus"
 )
 
 type Func func(context.Context) error
@@ -37,7 +35,7 @@ func CloseAll(ctx context.Context) error {
 		closer.mtx.Unlock()
 
 		if len(funcs) == 0 {
-			logger.Debug("No closer functions registered")
+			slog.Debug("closer empty")
 
 			return
 		}
@@ -45,9 +43,7 @@ func CloseAll(ctx context.Context) error {
 		var errs []string
 		done := make(chan struct{})
 
-		logger.WithFields(logrus.Fields{
-			"closerCount": len(funcs),
-		}).Debug("Starting closer")
+		slog.Debug("closer started", "closerCount", len(funcs))
 
 		go func() {
 			defer func() {
@@ -62,6 +58,8 @@ func CloseAll(ctx context.Context) error {
 						}
 					}()
 					if err := funcs[i](ctx); err != nil {
+						slog.Error("close failed", "error", err)
+
 						errs = append(errs, err.Error())
 					}
 				}()
@@ -72,10 +70,7 @@ func CloseAll(ctx context.Context) error {
 		case <-ctx.Done():
 			out = ctx.Err()
 		case <-done:
-			logger.WithFields(logrus.Fields{
-				"closerCount": len(funcs),
-				"errorCount":  len(errs),
-			}).Debug("Finished closer")
+			slog.Debug("closer finished", "closerCount", len(funcs), "errorCount", len(errs))
 
 			if len(errs) > 0 {
 				out = fmt.Errorf("closed funcs: %v", strings.Join(errs, " | "))

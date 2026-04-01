@@ -3,17 +3,16 @@ package memory
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/samber/lo"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ekuzm/rocket-factory/order/internal/model"
 	"github.com/ekuzm/rocket-factory/order/internal/service"
 	errs "github.com/ekuzm/rocket-factory/platform/pkg/error"
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 )
 
 var _ service.OrderRepository = (*repository)(nil)
@@ -40,12 +39,7 @@ func (r *repository) Save(_ context.Context, order model.Order) error {
 		UpdatedAt: nil,
 	}
 
-	logger.WithFields(logrus.Fields{
-		"orderUUID":   order.UUID,
-		"userUUID":    order.Info.UserUUID,
-		"partCount":   len(order.Info.PartUUIDs),
-		"orderStatus": order.Info.Status,
-	}).Debug("Saved order in memory repository")
+	slog.Debug("order saved", "orderUUID", order.UUID, "partCount", len(order.Info.PartUUIDs), "orderStatus", order.Info.Status)
 
 	return nil
 }
@@ -56,9 +50,7 @@ func (r *repository) GetByUUID(_ context.Context, uuid uuid.UUID) (model.Order, 
 
 	order, ok := r.orders[uuid]
 	if !ok {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": uuid,
-		}).Warn("Failed to get order by UUID, not found")
+		slog.Warn("order load missed", "orderUUID", uuid)
 
 		return model.Order{}, fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
@@ -72,9 +64,7 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 
 	order, ok := r.orders[uuid]
 	if !ok {
-		logger.WithFields(logrus.Fields{
-			"orderUUID": uuid,
-		}).Warn("Failed to update order, not found")
+		slog.Warn("order update missed", "orderUUID", uuid)
 
 		return fmt.Errorf("order: %w", errs.ErrNotFound)
 	}
@@ -84,13 +74,7 @@ func (r *repository) Update(_ context.Context, uuid uuid.UUID, info model.OrderI
 
 	r.orders[uuid] = order
 
-	logger.WithFields(logrus.Fields{
-		"orderUUID":       uuid,
-		"userUUID":        info.UserUUID,
-		"orderStatus":     info.Status,
-		"paymentMethod":   info.PaymentMethod,
-		"transactionUUID": info.TransactionUUID,
-	}).Debug("Updated order in memory repository")
+	slog.Debug("order updated", "orderUUID", uuid, "orderStatus", info.Status)
 
 	return nil
 }

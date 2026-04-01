@@ -2,10 +2,9 @@ package interceptor
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
-	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -16,19 +15,17 @@ func RequestLogger() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (any, error) {
-		logger.WithFields(logrus.Fields{
-			"server": info.Server,
-			"method": info.FullMethod,
-		}).Debug("Running gRPC method...")
-
 		start := time.Now()
+		resp, err := handler(ctx, req)
+		duration := time.Since(start)
 
-		resp, _ := handler(ctx, req)
+		if err != nil {
+			slog.Warn("grpc request finished", "method", info.FullMethod, "duration", duration, "error", err)
 
-		logger.WithFields(logrus.Fields{
-			"server": info.Server,
-			"method": info.FullMethod,
-		}).Debug("Finished gRPC method and had worked for ", time.Since(start))
+			return resp, err
+		}
+
+		slog.Debug("grpc request finished", "method", info.FullMethod, "duration", duration)
 
 		return resp, nil
 	}
