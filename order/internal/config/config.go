@@ -17,12 +17,16 @@ type Postgres interface {
 
 type HTTP interface {
 	OrderAddress() string
+}
+
+type GRPC interface {
 	InventoryAddress() string
 	PaymentAddress() string
 }
 
 type config struct {
 	HTTP     HTTP
+	GRPC     GRPC
 	Logger   Logger
 	Postgres Postgres
 }
@@ -39,6 +43,11 @@ func Setup() error {
 		return fmt.Errorf("create http config: %w", err)
 	}
 
+	grpc, err := env.NewGRPCConfig()
+	if err != nil {
+		return fmt.Errorf("create adapter config: %w", err)
+	}
+
 	logger, err := env.NewLoggerConfig()
 	if err != nil {
 		return fmt.Errorf("create logger config: %w", err)
@@ -51,6 +60,7 @@ func Setup() error {
 
 	app = &config{
 		HTTP:     http,
+		GRPC:     grpc,
 		Logger:   logger,
 		Postgres: postgres,
 	}
