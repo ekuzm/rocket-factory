@@ -7,6 +7,7 @@ COPY ./order/go.mod ./order/go.sum ./order/
 COPY ./inventory/go.mod ./inventory/go.sum ./inventory/
 COPY ./payment/go.mod ./payment/go.sum ./payment/
 COPY ./shared/go.mod ./shared/go.sum ./shared/
+COPY ./platform/go.mod ./platform/go.sum ./platform/
 
 RUN go mod download
 
