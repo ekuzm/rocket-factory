@@ -61,7 +61,7 @@ func (a *app) Run(ctx context.Context) error {
 	errCh := make(chan error, 1)
 
 	go func() {
-		slog.Debug("inventory service starting", "service", "inventory-service", "addr", config.App().GRPC.Address())
+		slog.Debug("inventory service starting", "addr", config.App().GRPC.Address())
 
 		errCh <- a.runGRPCServer()
 	}()
@@ -75,7 +75,7 @@ func (a *app) Run(ctx context.Context) error {
 			return err
 		}
 
-		slog.Debug("grpc server stopped", "service", "inventory-service")
+		slog.Debug("grpc server stopped")
 
 		return nil
 	case err := <-errCh:
