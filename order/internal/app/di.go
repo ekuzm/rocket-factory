@@ -89,9 +89,9 @@ func (d *di) Repository(ctx context.Context) (service.OrderRepository, error) {
 
 func (d *di) InventoryClient(ctx context.Context) (service.InventoryPort, error) {
 	if d.inventoryClient == nil {
-		inventoryConn, err := grpc.NewClient(config.App().HTTP.InventoryAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		inventoryConn, err := grpc.NewClient(config.App().GRPC.InventoryAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
-			return nil, fmt.Errorf("create client connection to inventory service: " + err.Error())
+			return nil, fmt.Errorf("create client connection to inventory service: %w", err)
 		}
 
 		closer.Add(func(ctx context.Context) error {
@@ -106,7 +106,7 @@ func (d *di) InventoryClient(ctx context.Context) (service.InventoryPort, error)
 
 func (d *di) PaymentClient(ctx context.Context) (service.PaymentPort, error) {
 	if d.paymentClient == nil {
-		paymentConn, err := grpc.NewClient(config.App().HTTP.PaymentAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		paymentConn, err := grpc.NewClient(config.App().GRPC.PaymentAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return nil, fmt.Errorf("create client connection to payment service: %w", err)
 		}
@@ -146,6 +146,8 @@ func (d *di) Pool(ctx context.Context) (*pgxpool.Pool, error) {
 
 			return nil
 		})
+
+		d.pool = pool
 	}
 
 	return d.pool, nil
