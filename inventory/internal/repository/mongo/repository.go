@@ -27,7 +27,7 @@ type repository struct {
 	collection *mongo.Collection
 }
 
-func New(db *mongo.Database) *repository {
+func New(ctx context.Context, db *mongo.Database) *repository {
 	collection := db.Collection(entity.PartsCollection)
 
 	indexModel := mongo.IndexModel{
@@ -41,7 +41,7 @@ func New(db *mongo.Database) *repository {
 		Options: options.Index().SetUnique(true),
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 	defer cancel()
 
 	if _, err := collection.Indexes().CreateOne(ctx, indexModel); err != nil {
@@ -57,16 +57,16 @@ func New(db *mongo.Database) *repository {
 	}
 
 	if !config.App().Mongo.IsInit() {
-		repository.Init()
+		repository.Init(ctx)
 	}
 
 	return repository
 }
 
-func (r *repository) Init() {
+func (r *repository) Init(ctx context.Context) {
 	parts := fixtures.GenerateParts()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 	defer cancel()
 
 	if _, err := r.Save(ctx, parts); err != nil {

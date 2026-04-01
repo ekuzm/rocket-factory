@@ -4,14 +4,15 @@ import (
 	"context"
 	"fmt"
 
+	mng "go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+
 	api "github.com/ekuzm/rocket-factory/inventory/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/inventory/internal/config"
 	"github.com/ekuzm/rocket-factory/inventory/internal/repository/mongo"
 	"github.com/ekuzm/rocket-factory/inventory/internal/service"
 	"github.com/ekuzm/rocket-factory/platform/pkg/closer"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
-	mng "go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type di struct {
@@ -53,19 +54,19 @@ func (d *di) Service(ctx context.Context) (api.InventoryService, error) {
 	return d.service, nil
 }
 
-func (d *di) Repository(ctx context.Context) (service.InventoryRepository, error) {
+func (d *di) Repository(ctx context.Context) (_ service.InventoryRepository, err error) {
 	if d.repository == nil {
-		database, err := d.Database(ctx)
+		db, err := d.Database(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("create mongo database: %w", err)
 		}
 
-		repository, err := d.newRepository(database)
-		if err != nil {
-			return nil, fmt.Errorf("create mongo repository: %w", err)
-		}
-
-		d.repository = repository
+		d.repository = mongo.New(ctx, db)
+		defer func() {
+			if r := recover(); r != nil {
+				err = fmt.Errorf("panic: %v", r)
+			}
+		}()
 	}
 
 	return d.repository, nil
@@ -106,14 +107,4 @@ func (d *di) MongoClient(ctx context.Context) (*mng.Client, error) {
 	}
 
 	return d.client, nil
-}
-
-func (d *di) newRepository(db *mng.Database) (_ service.InventoryRepository, err error) {
-	defer func() {
-		if recovered := recover(); recovered != nil {
-			err = fmt.Errorf("init mongo repository: %v", recovered)
-		}
-	}()
-
-	return mongo.New(db), nil
 }

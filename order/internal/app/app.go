@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/ekuzm/rocket-factory/order/internal/config"
 	"github.com/ekuzm/rocket-factory/platform/pkg/closer"
 	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	customMiddleware "github.com/ekuzm/rocket-factory/platform/pkg/middleware"
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -66,7 +67,7 @@ func (a *app) Run(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.WithoutCancel(ctx), shutdownTimeout)
 		defer shutdownCancel()
 
 		if err := closer.CloseAll(shutdownCtx); err != nil {

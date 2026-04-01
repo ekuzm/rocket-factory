@@ -8,14 +8,15 @@ import (
 	"net"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/ekuzm/rocket-factory/inventory/internal/config"
 	"github.com/ekuzm/rocket-factory/platform/pkg/closer"
 	"github.com/ekuzm/rocket-factory/platform/pkg/grpc/health"
 	"github.com/ekuzm/rocket-factory/platform/pkg/interceptor"
 	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -68,7 +69,7 @@ func (a *app) Run(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.WithoutCancel(ctx), shutdownTimeout)
 		defer shutdownCancel()
 
 		if err := closer.CloseAll(shutdownCtx); err != nil {

@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	api "github.com/ekuzm/rocket-factory/order/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/order/internal/config"
 	"github.com/ekuzm/rocket-factory/order/internal/integration/grpc/inventory"
@@ -15,9 +19,6 @@ import (
 	orderV1 "github.com/ekuzm/rocket-factory/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type di struct {
