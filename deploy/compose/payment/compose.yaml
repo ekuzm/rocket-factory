@@ -7,6 +7,11 @@ services:
             dockerfile: ./deploy/docker/payment/Dockerfile
         ports:
             - ${SERVICE_PORT}:50052
+        healthcheck:
+            test: /grpc_health_probe -port=${SERVICE_PORT} -addr=payment.PaymentService
+            interval: 10s
+            timeout: 5s
+            retries: 3
         restart: unless-stopped
         networks:
             - rocket-factory-net
