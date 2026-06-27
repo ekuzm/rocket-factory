@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: order-service:latest
+          image: ekuzm/order:latest
           ports:
             - containerPort: 80
           env:
@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
         - name: migrator
-          image: migrator:latest
+          image: ekuzm/order-migrate:latest
           env:
             - name: DB_HOST
               value: "pg"
@@ -144,7 +144,7 @@ spec:
     spec:
       containers:
         - name: inventory-service
-          image: inventory-service:latest
+          image: ekuzm/inventory:latest
           ports:
             - containerPort: 50051
           env:
@@ -225,7 +225,7 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: payment-service:latest
+          image: ekuzm/payment:latest
           ports:
             - containerPort: 50052
           env:

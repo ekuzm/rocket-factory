@@ -4,4 +4,4 @@ metadata:
   name: rocket-factory-config
 data:
   LOGGER_LEVEL: DEBUG
-  LOGGER_AS_JSON: true
+  LOGGER_AS_JSON: "true"
