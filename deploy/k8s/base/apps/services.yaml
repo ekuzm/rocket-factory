@@ -46,11 +46,11 @@ spec:
             - name: ORDER_SERVICE_PORT
               value: "80"
             - name: INVENTORY_ADAPTER_HOST
-              value: "inventory-service"
+              value: inventory-service
             - name: INVENTORY_ADAPTER_PORT
               value: "50051"
             - name: PAYMENT_ADAPTER_HOST
-              value: "payment-service"
+              value: payment-service
             - name: PAYMENT_ADAPTER_PORT
               value: "50052"
             - name: LOGGER_LEVEL
@@ -149,7 +149,7 @@ spec:
             - containerPort: 50051
           env:
             - name: DB_HOST
-              value: "mongodb"
+              value: mongodb
             - name: DB_PORT
               value: "27017"
             - name: DB_USER
