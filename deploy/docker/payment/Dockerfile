@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build ./payment/cmd/payment-service/
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build ./payment/cmd/payment-service/
 
 FROM alpine:3.23
 
