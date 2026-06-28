@@ -5,6 +5,7 @@ resources:
   - apps/gateway.yaml
   - infrastructure/mongodb.yaml
   - infrastructure/postgres.yaml
+  - secret.yaml
 
 configMapGenerator:
   - name: rocket-factory-config
