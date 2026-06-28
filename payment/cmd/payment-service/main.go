@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "go.uber.org/automaxprocs"
+
 	"github.com/ekuzm/rocket-factory/payment/internal/app"
 )
 
