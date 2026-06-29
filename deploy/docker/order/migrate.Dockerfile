@@ -3,6 +3,8 @@ FROM alpine:3.23
 WORKDIR /migrate
 
 RUN wget https://github.com/pressly/goose/releases/download/v3.27.0/goose_linux_x86_64 && \
+    wget https://github.com/pressly/goose/releases/download/v3.27.0/checksums.txt && \
+    grep "goose_linux_x86_64" checksums.txt | sha256sum -c - && \
     mv ./goose_linux_x86_64 ./goose && \
     chmod +x ./goose && \
     addgroup -S migrategroup && \
