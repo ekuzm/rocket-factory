@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS build
+FROM golang:1.26 AS builder
 
 WORKDIR /app
 
@@ -13,19 +13,13 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build ./inventory/cmd/inventory-service/
+RUN CGO_ENABLED=0 GOOS=linux go build ./inventory/cmd/inventory-service/
 
-FROM alpine:3.23
+FROM gcr.io/distroless/static-debian13:nonroot
 
 WORKDIR /app
 
-COPY --from=build /app/inventory-service .
-
-RUN addgroup -S appgroup && \
-    adduser -S appuser -G appgroup && \
-    chown appuser:appgroup ./inventory-service
-
-USER appuser
+COPY --from=builder /app/inventory-service .
 
 EXPOSE 50051
 

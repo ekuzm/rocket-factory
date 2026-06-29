@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS builder
+FROM golang:1.26 AS builder
 
 WORKDIR /app
 
@@ -15,17 +15,11 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build ./payment/cmd/payment-service/
 
-FROM alpine:3.23
+FROM gcr.io/distroless/static-debian12:nonroot
 
 WORKDIR /app
 
 COPY --from=builder /app/payment-service .
-
-RUN addgroup -S appgroup && \
-    adduser -S appuser -G appgroup && \
-    chown appuser:appgroup ./payment-service
-
-USER appuser
 
 EXPOSE 50052
 
