@@ -1,0 +1,12 @@
+get:
+  summary: Health check
+  operationId: Ping
+  responses:
+    "200":
+      description: Service is healthy
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/errors/generic_error.yaml

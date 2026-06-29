@@ -32,6 +32,12 @@ type Handler interface {
 	//
 	// POST /api/v1/orders/{order_uuid}/pay
 	PayOrder(ctx context.Context, req *PayOrderRequest, params PayOrderParams) (*PayOrderResponse, error)
+	// Ping implements Ping operation.
+	//
+	// Health check.
+	//
+	// GET /api/v1/ping
+	Ping(ctx context.Context) error
 	// NewError creates *GenericErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

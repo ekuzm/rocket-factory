@@ -51,6 +51,12 @@ type Invoker interface {
 	//
 	// POST /api/v1/orders/{order_uuid}/pay
 	PayOrder(ctx context.Context, request *PayOrderRequest, params PayOrderParams) (*PayOrderResponse, error)
+	// Ping invokes Ping operation.
+	//
+	// Health check.
+	//
+	// GET /api/v1/ping
+	Ping(ctx context.Context) error
 }
 
 // Client implements OAS client.
@@ -447,6 +453,79 @@ func (c *Client) sendPayOrder(ctx context.Context, request *PayOrderRequest, par
 
 	stage = "DecodeResponse"
 	result, err := decodePayOrderResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// Ping invokes Ping operation.
+//
+// Health check.
+//
+// GET /api/v1/ping
+func (c *Client) Ping(ctx context.Context) error {
+	_, err := c.sendPing(ctx)
+	return err
+}
+
+func (c *Client) sendPing(ctx context.Context) (res *PingOK, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("Ping"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/ping"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, PingOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/api/v1/ping"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodePingResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

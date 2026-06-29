@@ -589,3 +589,6 @@ func (s *PaymentMethod) UnmarshalText(data []byte) error {
 		return errors.Errorf("invalid value: %q", data)
 	}
 }
+
+// PingOK is response for Ping operation.
+type PingOK struct{}
