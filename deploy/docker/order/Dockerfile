@@ -11,7 +11,7 @@ COPY ./platform/go.mod ./platform/go.sum ./platform/
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build ./order/cmd/order-service/
+RUN CGO_ENABLED=0 GOOS=linux go build ./order/cmd/order-service/
 
 FROM gcr.io/distroless/static-debian13:nonroot
 

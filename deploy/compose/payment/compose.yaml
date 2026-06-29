@@ -1,21 +1,25 @@
 services:
-    payment-service:
-        container_name: payment-service
-        env_file: ../../env/payment/.env
-        build:
-            context: ../../..
-            dockerfile: ./deploy/docker/payment/Dockerfile
-        ports:
-            - ${SERVICE_PORT}:50052
-        healthcheck:
-            test: /grpc_health_probe -port=${SERVICE_PORT} -addr=payment.PaymentService
-            interval: 10s
-            timeout: 5s
-            retries: 3
-        restart: unless-stopped
-        networks:
-            - rocket-factory-net
+  payment-service:
+    container_name: payment-service
+    env_file: ../../env/payment/.env
+    build:
+      context: ../../..
+      dockerfile: ./deploy/docker/payment/Dockerfile
+    ports:
+      - 50052:50052
+    healthcheck:
+      test:
+        - CMD
+        - /app/grpc_health_probe
+        - -addr=:${SERVICE_PORT}
+        - -service=inventory.PaymentService
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - rocket-factory-net
 
 networks:
-    rocket-factory-net:
-        external: true
+  rocket-factory-net:
+    external: true

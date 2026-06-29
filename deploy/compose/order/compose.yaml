@@ -1,58 +1,65 @@
 services:
-    pg:
-        image: postgres:18-alpine
-        container_name: order-service-postgres
-        environment:
-            - POSTGRES_USER=${DB_USER}
-            - POSTGRES_PASSWORD=${DB_PASSWORD}
-            - POSTGRES_DB=${DB_NAME}
-        ports:
-            - ${DB_PORT}:5432
-        volumes:
-            - order-service-data:/var/lib/postgresql
-        healthcheck:
-            test: pg_isready -U ${DB_USER} -d ${DB_NAME}
-            interval: 10s
-            timeout: 5s
-            retries: 5
-        restart: unless-stopped
-        networks:
-            - rocket-factory-net
+  pg:
+    image: postgres:18-alpine3.22
+    container_name: order-service-postgres
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - 5432:5432
+    volumes:
+      - order-service-data:/var/lib/postgresql
+    healthcheck:
+      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - rocket-factory-net
 
-    migrate:
-        container_name: order-service-migrate
-        build:
-            context: ../../..
-            dockerfile: ./deploy/docker/order/migrate.Dockerfile
-        environment:
-            - GOOSE_DRIVER=${GOOSE_DRIVER}
-            - GOOSE_DBSTRING=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
-            - GOOSE_MIGRATION_DIR=${GOOSE_MIGRATION_DIR}
-        depends_on:
-            pg:
-                condition: service_healthy
-        restart: on-failure
-        networks:
-            - rocket-factory-net
+  migrate:
+    container_name: order-service-migrate
+    build:
+      context: ../../..
+      dockerfile: ./deploy/docker/order/migrate.Dockerfile
+    environment:
+      - GOOSE_DRIVER=${GOOSE_DRIVER}
+      - GOOSE_DBSTRING=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - GOOSE_MIGRATION_DIR=${GOOSE_MIGRATION_DIR}
+    depends_on:
+      pg:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - rocket-factory-net
 
-    order-service:
-        container_name: order-service
-        build:
-            context: ../../..
-            dockerfile: ./deploy/docker/order/Dockerfile
-        env_file: ../../env/order/.env
-        ports:
-            - "${ORDER_SERVICE_PORT}:80"
-        depends_on:
-            migrate:
-                condition: service_completed_successfully
-        restart: unless-stopped
-        networks:
-            - rocket-factory-net
+  order-service:
+    container_name: order-service
+    build:
+      context: ../../..
+      dockerfile: ./deploy/docker/order/Dockerfile
+    env_file: ../../env/order/.env
+    ports:
+      - 80:80
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      - rocket-factory-net
+
+  order-service-health:
+    image: busybox:1.38.0
+    command: ["sleep", "infinity"]
+    healthcheck:
+      test: wget -O - http://localhost:80/api/v1/ping
+    network_mode: "service:order-service"
 
 networks:
-    rocket-factory-net:
-        external: true
+  rocket-factory-net:
+    external: true
 
 volumes:
-    order-service-data:
+  order-service-data:

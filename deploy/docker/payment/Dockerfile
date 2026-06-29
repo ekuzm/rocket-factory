@@ -13,13 +13,18 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build ./payment/cmd/payment-service/
+RUN CGO_ENABLED=0 GOOS=linux go build ./payment/cmd/payment-service/
+
+RUN wget https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.52/grpc_health_probe-linux-amd64 && \
+    mv grpc_health_probe-linux-amd64 grpc_health_probe && \
+    chmod +x grpc_health_probe
 
 FROM gcr.io/distroless/static-debian12:nonroot
 
 WORKDIR /app
 
 COPY --from=builder /app/payment-service .
+COPY --from=builder /app/grpc_health_probe  .
 
 EXPOSE 50052
 
