@@ -10,8 +10,9 @@ service PaymentService {
 
 // PayOrderRequest contains data required to perform a payment.
 message PayOrderRequest {
+    reserved 2;
+
     string uuid = 1;
-    string user_uuid = 2;
     PaymentMethod payment_method = 3;
 }
 
