@@ -1,0 +1,38 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+        
+processors:
+  batch:
+    
+extensions:
+  jaeger_query:
+    storage:
+      traces: clickhouse
+  jaeger_storage:
+    backends:
+      clickhouse:
+        clickhouse:
+          protocol: native
+          addresses:
+            - "${env:DB_HOST}:${env:DB_PORT}"
+          database: "${env:DB_NAME}"
+          auth:
+            basic:
+              username: "${env:DB_USERNAME}"
+              password: "${env:DB_PASSWORD}"
+          create_schema: true
+
+exporters:
+  jaeger_storage_exporter:
+    trace_storage: clickhouse
+
+service:
+  extensions: [jaeger_storage, jaeger_query]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [jaeger_storage_exporter]

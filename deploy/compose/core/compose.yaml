@@ -1,11 +1,72 @@
 services:
-    placeholder:
-        image: alpine:3.23
-        command: sh -c "echo 'Placeholder'"
-        networks:
-            - rocket-factory-net
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.4-alpine
+    container_name: jaeger-clickhouse
+    environment:
+      CLICKHOUSE_DB: ${DB_NAME}
+      CLICKHOUSE_USER: ${DB_USERNAME}
+      CLICKHOUSE_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - jaeger-clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test: clickhouse-client --user ${DB_USERNAME} --password ${DB_PASSWORD} --query 'SELECT 1'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - rocket-factory-net
+
+  jaeger:
+    image: jaegertracing/jaeger:2.19.0
+    container_name: jaeger
+    command:
+      ["--config=/etc/jaeger/config.yaml", "--feature-gates=storage.clickhouse"]
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "16686:16686"
+    volumes:
+      - ./jaeger.yaml:/etc/jaeger/config.yaml
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: wget --spider -q http://localhost:16686/ || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - rocket-factory-net
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.156.0
+    container_name: otel-collector
+    environment:
+      JAEGER_HOST: ${JAEGER_HOST}
+      JAEGER_PORT: ${JAEGER_PORT}
+    ports:
+      - "8888:8888"
+      - "4317:4317"
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol/config.yaml
+    depends_on:
+      jaeger:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - rocket-factory-net
+
+volumes:
+  jaeger-clickhouse-data:
 
 networks:
-    rocket-factory-net:
-        name: rocket-factory-net
-        external: false
+  rocket-factory-net:
+    name: rocket-factory-net
+    external: false
