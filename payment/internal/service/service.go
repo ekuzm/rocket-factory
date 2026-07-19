@@ -20,7 +20,7 @@ func New() *service {
 	return &service{}
 }
 
-func (s *service) PayOrder(ctx context.Context, orderUUID, _ uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
+func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	if paymentMethod == model.PaymentMethodUnknown {
 		err := fmt.Errorf("pay order: %w", errs.ErrInvalid)
 		slog.Warn("payment rejected", "orderUUID", orderUUID, "error", err)

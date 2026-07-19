@@ -54,7 +54,7 @@ func TestPayOrder(t *testing.T) {
 
 			service := service.New()
 
-			transactionUUID, err := service.PayOrder(test.args.ctx, test.args.orderUUID, test.args.userUUID, test.args.paymentMethod)
+			transactionUUID, err := service.PayOrder(test.args.ctx, test.args.orderUUID, test.args.paymentMethod)
 			if err != nil {
 				require.Error(t, err)
 				require.ErrorIs(t, err, test.err)

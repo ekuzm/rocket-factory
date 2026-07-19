@@ -35,7 +35,6 @@ func TestPayOrder(t *testing.T) {
 				ctx: context.Background(),
 				req: &paymentV1.PayOrderRequest{
 					Uuid:          testutil.TestOrderUUID.String(),
-					UserUuid:      testutil.TestUserUUID.String(),
 					PaymentMethod: paymentV1.PaymentMethod_PAYMENT_METHOD_CARD,
 				},
 			},
@@ -44,7 +43,7 @@ func TestPayOrder(t *testing.T) {
 			},
 			err: nil,
 			mock: func(service *mockPayment.PaymentService, args args) {
-				service.On("PayOrder", args.ctx, testutil.TestOrderUUID, testutil.TestUserUUID, model.PaymentMethodCard).Once().Return(testutil.TestTransactionUUID, nil)
+				service.On("PayOrder", args.ctx, testutil.TestOrderUUID, model.PaymentMethodCard).Once().Return(testutil.TestTransactionUUID, nil)
 			},
 		},
 		{
@@ -53,14 +52,13 @@ func TestPayOrder(t *testing.T) {
 				ctx: context.Background(),
 				req: &paymentV1.PayOrderRequest{
 					Uuid:          uuid.Invalid.String(),
-					UserUuid:      testutil.TestUserUUID.String(),
 					PaymentMethod: paymentV1.PaymentMethod_PAYMENT_METHOD_CARD,
 				},
 			},
 			want: nil,
 			err:  errs.ErrInvalid,
 			mock: func(service *mockPayment.PaymentService, args args) {
-				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything)
 			},
 		},
 		{
@@ -69,14 +67,13 @@ func TestPayOrder(t *testing.T) {
 				ctx: context.Background(),
 				req: &paymentV1.PayOrderRequest{
 					Uuid:          testutil.TestOrderUUID.String(),
-					UserUuid:      uuid.Invalid.String(),
 					PaymentMethod: paymentV1.PaymentMethod_PAYMENT_METHOD_CARD,
 				},
 			},
 			want: nil,
 			err:  errs.ErrInvalid,
 			mock: func(service *mockPayment.PaymentService, args args) {
-				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything, mock.Anything)
+				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything)
 			},
 		},
 		{
@@ -85,14 +82,13 @@ func TestPayOrder(t *testing.T) {
 				ctx: context.Background(),
 				req: &paymentV1.PayOrderRequest{
 					Uuid:          testutil.TestOrderUUID.String(),
-					UserUuid:      testutil.TestUserUUID.String(),
 					PaymentMethod: paymentV1.PaymentMethod_PAYMENT_METHOD_UNSPECIFIED,
 				},
 			},
 			want: nil,
 			err:  testutil.ErrService,
 			mock: func(service *mockPayment.PaymentService, args args) {
-				service.On("PayOrder", args.ctx, testutil.TestOrderUUID, testutil.TestUserUUID, model.PaymentMethodUnknown).Once().Return(uuid.Nil, testutil.ErrService)
+				service.On("PayOrder", args.ctx, testutil.TestOrderUUID, model.PaymentMethodUnknown).Once().Return(uuid.Nil, testutil.ErrService)
 			},
 		},
 	}

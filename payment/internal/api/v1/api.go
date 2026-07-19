@@ -14,7 +14,7 @@ import (
 )
 
 type PaymentService interface {
-	PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)
+	PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)
 }
 
 type api struct {
@@ -35,14 +35,8 @@ func (a *api) PayOrder(ctx context.Context, req *paymentV1.PayOrderRequest) (*pa
 
 		return nil, fmt.Errorf("parse order UUID: %w", errs.ErrInvalid)
 	}
-	userUUID, err := uuid.Parse(req.UserUuid)
-	if err != nil {
-		slog.Warn("user uuid parse failed", "userUUID", req.UserUuid, "error", err)
 
-		return nil, fmt.Errorf("parse user UUID: %w", errs.ErrInvalid)
-	}
-
-	transactionUUID, err := a.service.PayOrder(ctx, orderUUID, userUUID, dto.PaymentMethodToModel[req.PaymentMethod])
+	transactionUUID, err := a.service.PayOrder(ctx, orderUUID, dto.PaymentMethodToModel[req.PaymentMethod])
 	if err != nil {
 		return nil, fmt.Errorf("payment service: %w", err)
 	}
