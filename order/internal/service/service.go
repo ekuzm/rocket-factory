@@ -56,7 +56,7 @@ func New(
 	}
 }
 
-func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs uuid.UUIDs) (dto.Summary, error) {
+func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs uuid.UUIDs) (summary dto.Summary, err error) {
 	parts, err := s.inventoryPort.ListParts(ctx, supplier.Filter{UUIDs: partUUIDs})
 	if err != nil {
 		slog.Error("order parts list failed", "error", err)
@@ -97,8 +97,8 @@ func (s *service) CreateOrder(ctx context.Context, userUUID uuid.UUID, partUUIDs
 	return dto.Summary{OrderUUID: order.UUID, TotalPrice: order.Info.TotalPrice}, nil
 }
 
-func (s *service) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, error) {
-	order, err := s.repository.GetByUUID(ctx, uuid)
+func (s *service) GetOrder(ctx context.Context, uuid uuid.UUID) (order model.Order, err error) {
+	order, err = s.repository.GetByUUID(ctx, uuid)
 	if err != nil {
 		slog.Warn("order load failed", "orderUUID", uuid, "error", err)
 
@@ -108,8 +108,8 @@ func (s *service) GetOrder(ctx context.Context, uuid uuid.UUID) (model.Order, er
 	return order, nil
 }
 
-func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
-	err := s.manager.Wrap(ctx, func(ctx context.Context) error {
+func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) (err error) {
+	err = s.manager.Wrap(ctx, func(ctx context.Context) error {
 		order, err := s.repository.GetByUUID(ctx, uuid)
 		if err != nil {
 			slog.Warn("order load failed", "orderUUID", uuid, "error", err)
@@ -146,10 +146,8 @@ func (s *service) CancelOrder(ctx context.Context, uuid uuid.UUID) error {
 	return nil
 }
 
-func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
-	var transactionUUID uuid.UUID
-
-	err := s.manager.Wrap(ctx, func(ctx context.Context) error {
+func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (transactionUUID uuid.UUID, err error) {
+	err = s.manager.Wrap(ctx, func(ctx context.Context) error {
 		order, err := s.repository.GetByUUID(ctx, orderUUID)
 		if err != nil {
 			slog.Warn("order load failed", "orderUUID", orderUUID, "error", err)

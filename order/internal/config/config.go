@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ekuzm/rocket-factory/order/internal/config/env"
 )
@@ -17,6 +18,9 @@ type Postgres interface {
 
 type HTTP interface {
 	OrderAddress() string
+	RequestTimeout() time.Duration
+	ReadHeaderTimeout() time.Duration
+	ShutdownTimeout() time.Duration
 }
 
 type GRPC interface {
@@ -24,11 +28,25 @@ type GRPC interface {
 	PaymentAddress() string
 }
 
+type Tracer interface {
+	ServiceName() string
+	Endpoint() string
+	ServiceVersion() string
+	DeploymentEnvironment() string
+	Compressor() string
+	RetryEnabled() bool
+	RetryInitialInterval() time.Duration
+	RetryMaxInterval() time.Duration
+	RetryMaxElapsedTime() time.Duration
+	Timeout() time.Duration
+}
+
 type config struct {
 	HTTP     HTTP
 	GRPC     GRPC
 	Logger   Logger
 	Postgres Postgres
+	Tracer   Tracer
 }
 
 var app *config
@@ -58,11 +76,17 @@ func Setup() error {
 		return fmt.Errorf("create postgres config: %w", err)
 	}
 
+	tracer, err := env.NewTracerConfig()
+	if err != nil {
+		return fmt.Errorf("create tracer config: %w", err)
+	}
+
 	app = &config{
 		HTTP:     http,
 		GRPC:     grpc,
 		Logger:   logger,
 		Postgres: postgres,
+		Tracer:   tracer,
 	}
 
 	return nil
