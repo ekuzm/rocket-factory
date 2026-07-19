@@ -432,7 +432,7 @@ tasks:
         desc: "Container with core up"
         cmds:
             - echo "Core container up..."
-            - docker compose -f ./deploy/compose/core/compose.yaml up -d --build
+            - docker compose --env-file ./deploy/env/core/.env -f ./deploy/compose/core/compose.yaml up -d --build
 
     order-service-up:
         desc: "Container with order service up"
@@ -456,7 +456,7 @@ tasks:
         desc: "Container with core down"
         cmds:
             - echo "Core container down..."
-            - docker compose -f ./deploy/compose/core/compose.yaml down
+            - docker compose --env-file ./deploy/env/core/.env -f ./deploy/compose/core/compose.yaml down
 
     order-service-down:
         desc: "Container with order service down"
