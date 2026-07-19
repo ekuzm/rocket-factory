@@ -7,10 +7,9 @@ package mock
 import (
 	"context"
 
+	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
-
-	"github.com/ekuzm/rocket-factory/inventory/internal/model"
 )
 
 // NewInventoryRepository creates a new instance of InventoryRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -18,8 +17,7 @@ import (
 func NewInventoryRepository(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *InventoryRepository {
+}) *InventoryRepository {
 	mock := &InventoryRepository{}
 	mock.Mock.Test(t)
 
@@ -77,7 +75,7 @@ type InventoryRepository_GetAllByFilter_Call struct {
 // GetAllByFilter is a helper method to define mock.On call
 //   - ctx context.Context
 //   - filter model.Filter
-func (_e *InventoryRepository_Expecter) GetAllByFilter(ctx, filter interface{}) *InventoryRepository_GetAllByFilter_Call {
+func (_e *InventoryRepository_Expecter) GetAllByFilter(ctx interface{}, filter interface{}) *InventoryRepository_GetAllByFilter_Call {
 	return &InventoryRepository_GetAllByFilter_Call{Call: _e.mock.On("GetAllByFilter", ctx, filter)}
 }
 
@@ -143,7 +141,7 @@ type InventoryRepository_GetByUUID_Call struct {
 // GetByUUID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - uuid1 uuid.UUID
-func (_e *InventoryRepository_Expecter) GetByUUID(ctx, uuid1 interface{}) *InventoryRepository_GetByUUID_Call {
+func (_e *InventoryRepository_Expecter) GetByUUID(ctx interface{}, uuid1 interface{}) *InventoryRepository_GetByUUID_Call {
 	return &InventoryRepository_GetByUUID_Call{Call: _e.mock.On("GetByUUID", ctx, uuid1)}
 }
 

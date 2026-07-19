@@ -29,8 +29,8 @@ func New(repository InventoryRepository) *service {
 	}
 }
 
-func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (model.Part, error) {
-	part, err := s.repository.GetByUUID(ctx, uuid)
+func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (part model.Part, err error) {
+	part, err = s.repository.GetByUUID(ctx, uuid)
 	if err != nil {
 		slog.Warn("part load failed", "partUUID", uuid, "error", err)
 
@@ -40,8 +40,8 @@ func (s *service) GetPart(ctx context.Context, uuid uuid.UUID) (model.Part, erro
 	return part, nil
 }
 
-func (s *service) ListParts(ctx context.Context, filter model.Filter) ([]model.Part, error) {
-	parts, err := s.repository.GetAllByFilter(ctx, filter)
+func (s *service) ListParts(ctx context.Context, filter model.Filter) (parts []model.Part, err error) {
+	parts, err = s.repository.GetAllByFilter(ctx, filter)
 	if err != nil {
 		slog.Error("parts list failed", "error", err)
 

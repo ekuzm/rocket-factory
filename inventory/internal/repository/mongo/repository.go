@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,7 +40,7 @@ func New(ctx context.Context, db *mongo.Database) *repository {
 		Options: options.Index().SetUnique(true),
 	}
 
-	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), config.App().Mongo.OperationTimeout())
 	defer cancel()
 
 	if _, err := collection.Indexes().CreateOne(ctx, indexModel); err != nil {
@@ -66,7 +65,7 @@ func New(ctx context.Context, db *mongo.Database) *repository {
 func (r *repository) Init(ctx context.Context) {
 	parts := fixtures.GenerateParts()
 
-	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), config.App().Mongo.OperationTimeout())
 	defer cancel()
 
 	if _, err := r.Save(ctx, parts); err != nil {
