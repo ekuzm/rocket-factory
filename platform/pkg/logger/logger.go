@@ -6,8 +6,19 @@ import (
 	"strings"
 )
 
-func Init(level string, asJSON bool) {
-	slog.SetDefault(slog.New(newHandler(parseLevel(level), asJSON)))
+type Config interface {
+	Level() string
+	AsJSON() bool
+}
+
+const (
+	LoggerLevelInfo    = "INFO"
+	LoggerLevelError   = "ERROR"
+	LoggerLevelWarning = "WARNING"
+)
+
+func Init(cfg Config) {
+	slog.SetDefault(slog.New(newHandler(parseLevel(cfg.Level()), cfg.AsJSON())))
 }
 
 func newHandler(level slog.Level, asJSON bool) slog.Handler {
@@ -25,11 +36,11 @@ func newHandler(level slog.Level, asJSON bool) slog.Handler {
 
 func parseLevel(level string) slog.Level {
 	switch strings.ToUpper(strings.TrimSpace(level)) {
-	case "INFO":
+	case LoggerLevelInfo:
 		return slog.LevelInfo
-	case "ERROR":
+	case LoggerLevelError:
 		return slog.LevelError
-	case "WARNING", "WARN":
+	case LoggerLevelWarning:
 		return slog.LevelWarn
 	default:
 		return slog.LevelDebug
