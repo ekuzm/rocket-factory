@@ -2,18 +2,21 @@ package env
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 )
 
 type mongoEnvConfig struct {
-	User     string `env:"DB_USER,required"`
-	Password string `env:"DB_PASSWORD,required"`
-	Host     string `env:"DB_HOST,required"`
-	Port     string `env:"DB_PORT,required"`
-	Name     string `env:"DB_NAME,required"`
-	Auth     string `env:"DB_AUTH,required"`
-	IsInit   bool   `env:"DB_IS_INIT,required"`
+	User             string        `env:"DB_USER,required"`
+	Password         string        `env:"DB_PASSWORD,required"`
+	Host             string        `env:"DB_HOST,required"`
+	Port             string        `env:"DB_PORT,required"`
+	Name             string        `env:"DB_NAME,required"`
+	Auth             string        `env:"DB_AUTH,required"`
+	IsInit           bool          `env:"DB_IS_INIT,required"`
+	ConnectTimeout   time.Duration `env:"MONGO_CONNECT_TIMEOUT,required"`
+	OperationTimeout time.Duration `env:"MONGO_OPERATION_TIMEOUT,required"`
 }
 
 type mongoConfig struct {
@@ -30,6 +33,14 @@ func (mc *mongoConfig) URI() string {
 
 func (mc *mongoConfig) IsInit() bool {
 	return mc.raw.IsInit
+}
+
+func (mc *mongoConfig) ConnectTimeout() time.Duration {
+	return mc.raw.ConnectTimeout
+}
+
+func (mc *mongoConfig) OperationTimeout() time.Duration {
+	return mc.raw.OperationTimeout
 }
 
 func NewMongoConfig() (*mongoConfig, error) {
