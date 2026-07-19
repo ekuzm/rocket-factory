@@ -2,81 +2,51 @@ package closer
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log/slog"
-	"strings"
-	"sync"
 )
 
-type Func func(context.Context) error
-
-var closer = &Closer{}
+func New() *Closer {
+	return &Closer{}
+}
 
 type Closer struct {
-	mtx   sync.Mutex
-	once  sync.Once
-	funcs []Func
+	funcs []func() error
 }
 
-func Add(fn Func) {
-	closer.mtx.Lock()
-	defer closer.mtx.Unlock()
-
-	closer.funcs = append(closer.funcs, fn)
+func (c *Closer) Add(fn func() error) {
+	c.funcs = append(c.funcs, fn)
 }
 
-func CloseAll(ctx context.Context) error {
+func (c *Closer) Close(ctx context.Context) error {
 	var out error
 
-	closer.once.Do(func() {
-		closer.mtx.Lock()
-		funcs := append([]Func{}, closer.funcs...)
-		closer.funcs = nil
-		closer.mtx.Unlock()
-
-		if len(funcs) == 0 {
-			slog.Debug("closer empty")
-
-			return
-		}
-
-		var errs []string
-		done := make(chan struct{})
-
-		slog.Debug("closer started")
-
-		go func() {
-			defer func() {
-				close(done)
-			}()
-
-			for i := len(funcs) - 1; i >= 0; i-- {
-				func() {
-					defer func() {
-						if r := recover(); r != nil {
-							errs = append(errs, fmt.Sprintf("panic: %v", r))
-						}
-					}()
-					if err := funcs[i](ctx); err != nil {
-						slog.Error("close failed", "error", err)
-
-						errs = append(errs, err.Error())
-					}
-				}()
-			}
-		}()
-
+	for len(c.funcs) > 0 {
 		select {
 		case <-ctx.Done():
-			out = ctx.Err()
-		case <-done:
-			slog.Debug("closer finished")
-
-			if len(errs) > 0 {
-				out = fmt.Errorf("closed funcs: %v", strings.Join(errs, " | "))
-			}
+			return errors.Join(ctx.Err(), out)
+		default:
 		}
-	})
+
+		curr := c.funcs[len(c.funcs)-1]
+		c.funcs = c.funcs[:len(c.funcs)-1]
+
+		out = errors.Join(out, safety(curr))
+	}
 
 	return out
+}
+
+func safety(fn func() error) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("panic during close: %v", r)
+		}
+	}()
+
+	return fn()
+}
+
+func (c *Closer) IsEmpty() bool {
+	return len(c.funcs) == 0
 }
