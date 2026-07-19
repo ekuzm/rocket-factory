@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	_ "go.uber.org/automaxprocs"
+
 	"github.com/ekuzm/rocket-factory/order/internal/app"
 )
 

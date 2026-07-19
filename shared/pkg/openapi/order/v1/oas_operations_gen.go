@@ -10,4 +10,5 @@ const (
 	CreateOrderOperation OperationName = "CreateOrder"
 	GetOrderOperation    OperationName = "GetOrder"
 	PayOrderOperation    OperationName = "PayOrder"
+	PingOperation        OperationName = "Ping"
 )

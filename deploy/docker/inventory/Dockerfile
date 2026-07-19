@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS build
+FROM golang:1.26-alpine3.22 AS builder
 
 WORKDIR /app
 
@@ -15,17 +15,16 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build ./inventory/cmd/inventory-service/
 
-FROM alpine:3.23
+RUN wget https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.52/grpc_health_probe-linux-amd64 && \
+    mv grpc_health_probe-linux-amd64 grpc_health_probe && \
+    chmod +x grpc_health_probe
+
+FROM gcr.io/distroless/static-debian13:nonroot
 
 WORKDIR /app
 
-COPY --from=build /app/inventory-service .
-
-RUN addgroup -S appgroup && \
-    adduser -S appuser -G appgroup && \
-    chown appuser:appgroup ./inventory-service
-
-USER appuser
+COPY --from=builder /app/inventory-service .
+COPY --from=builder /app/grpc_health_probe .
 
 EXPOSE 50051
 

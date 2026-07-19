@@ -1,0 +1,263 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      name: order-service-pod
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: ekuzm/order:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_HOST
+              value: "pg"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rocket-factory-secrets
+                  key: ORDER_DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rocket-factory-secrets
+                  key: ORDER_DB_PASSWORD
+            - name: DB_NAME
+              value: order-service
+            - name: ORDER_SERVICE_HOST
+              value: ""
+            - name: ORDER_SERVICE_PORT
+              value: "80"
+            - name: INVENTORY_ADAPTER_HOST
+              value: inventory-service
+            - name: INVENTORY_ADAPTER_PORT
+              value: "50051"
+            - name: PAYMENT_ADAPTER_HOST
+              value: payment-service
+            - name: PAYMENT_ADAPTER_PORT
+              value: "50052"
+            - name: LOGGER_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: rocket-factory-config
+                  key: LOGGER_LEVEL
+            - name: LOGGER_AS_JSON
+              valueFrom:
+                configMapKeyRef:
+                  name: rocket-factory-config
+                  key: LOGGER_AS_JSON
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 80
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 10
+...
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrator
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrator
+          image: ekuzm/order-migrate:latest
+          env:
+            - name: DB_HOST
+              value: "pg"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rocket-factory-secrets
+                  key: ORDER_DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rocket-factory-secrets
+                  key: ORDER_DB_PASSWORD
+            - name: DB_NAME
+              value: order-service
+            - name: GOOSE_DRIVER
+              value: postgres
+            - name: GOOSE_DBSTRING
+              value: postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)
+            - name: GOOSE_MIGRATION_DIR
+              value: ./migrations
+      restartPolicy: Never
+  ttlSecondsAfterFinished: 5
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      name: inventory-service-pod
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+        - name: inventory-service
+          image: ekuzm/inventory:latest
+          ports:
+            - containerPort: 50051
+          env:
+            - name: DB_HOST
+              value: mongodb
+            - name: DB_PORT
+              value: "27017"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rocket-factory-secrets
+                  key: INVENTORY_DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rocket-factory-secrets
+                  key: INVENTORY_DB_PASSWORD
+            - name: DB_NAME
+              value: inventory-service
+            - name: DB_AUTH
+              value: admin
+            - name: DB_IS_INIT
+              value: "false"
+            - name: SERVICE_HOST
+              value: ""
+            - name: SERVICE_PORT
+              value: "50051"
+            - name: LOGGER_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: rocket-factory-config
+                  key: LOGGER_LEVEL
+            - name: LOGGER_AS_JSON
+              valueFrom:
+                configMapKeyRef:
+                  name: rocket-factory-config
+                  key: LOGGER_AS_JSON
+          readinessProbe:
+            grpc:
+              port: 50051
+            initialDelaySeconds: 5
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+spec:
+  selector:
+    app: inventory-service
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051
+...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      name: payment-service-pod
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: ekuzm/payment:latest
+          ports:
+            - containerPort: 50052
+          env:
+            - name: SERVICE_HOST
+              value: ""
+            - name: SERVICE_PORT
+              value: "50052"
+            - name: LOGGER_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: rocket-factory-config
+                  key: LOGGER_LEVEL
+            - name: LOGGER_AS_JSON
+              valueFrom:
+                configMapKeyRef:
+                  name: rocket-factory-config
+                  key: LOGGER_AS_JSON
+          readinessProbe:
+            grpc:
+              port: 50052
+            initialDelaySeconds: 5
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 50052
+      targetPort: 50052
+...

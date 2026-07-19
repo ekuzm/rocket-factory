@@ -49,50 +49,32 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/orders"
+		case '/': // Prefix: "/api/v1/"
 
-			if l := len("/api/v1/orders"); len(elem) >= l && elem[0:l] == "/api/v1/orders" {
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch r.Method {
-				case "POST":
-					s.handleCreateOrderRequest([0]string{}, elemIsEscaped, w, r)
-				default:
-					s.notAllowed(w, r, "POST")
-				}
-
-				return
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'o': // Prefix: "orders"
 
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				// Param: "order_uuid"
-				// Match until "/"
-				idx := strings.IndexByte(elem, '/')
-				if idx < 0 {
-					idx = len(elem)
-				}
-				args[0] = elem[:idx]
-				elem = elem[idx:]
-
 				if len(elem) == 0 {
 					switch r.Method {
-					case "GET":
-						s.handleGetOrderRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateOrderRequest([0]string{}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "GET")
+						s.notAllowed(w, r, "POST")
 					}
 
 					return
@@ -106,56 +88,108 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 
+					// Param: "order_uuid"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
 					if len(elem) == 0 {
-						break
+						switch r.Method {
+						case "GET":
+							s.handleGetOrderRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
 					}
 					switch elem[0] {
-					case 'c': // Prefix: "cancel"
+					case '/': // Prefix: "/"
 
-						if l := len("cancel"); len(elem) >= l && elem[0:l] == "cancel" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "POST":
-								s.handleCancelOrderRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "POST")
-							}
-
-							return
-						}
-
-					case 'p': // Prefix: "pay"
-
-						if l := len("pay"); len(elem) >= l && elem[0:l] == "pay" {
-							elem = elem[l:]
-						} else {
 							break
 						}
+						switch elem[0] {
+						case 'c': // Prefix: "cancel"
 
-						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "POST":
-								s.handlePayOrderRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "POST")
+							if l := len("cancel"); len(elem) >= l && elem[0:l] == "cancel" {
+								elem = elem[l:]
+							} else {
+								break
 							}
 
-							return
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "POST":
+									s.handleCancelOrderRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "POST")
+								}
+
+								return
+							}
+
+						case 'p': // Prefix: "pay"
+
+							if l := len("pay"); len(elem) >= l && elem[0:l] == "pay" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "POST":
+									s.handlePayOrderRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "POST")
+								}
+
+								return
+							}
+
 						}
 
 					}
 
+				}
+
+			case 'p': // Prefix: "ping"
+
+				if l := len("ping"); len(elem) >= l && elem[0:l] == "ping" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handlePingRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET")
+					}
+
+					return
 				}
 
 			}
@@ -246,57 +280,36 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/v1/orders"
+		case '/': // Prefix: "/api/v1/"
 
-			if l := len("/api/v1/orders"); len(elem) >= l && elem[0:l] == "/api/v1/orders" {
+			if l := len("/api/v1/"); len(elem) >= l && elem[0:l] == "/api/v1/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch method {
-				case "POST":
-					r.name = CreateOrderOperation
-					r.summary = "Create a new order based on the parts selected by the user"
-					r.operationID = "CreateOrder"
-					r.operationGroup = ""
-					r.pathPattern = "/api/v1/orders"
-					r.args = args
-					r.count = 0
-					return r, true
-				default:
-					return
-				}
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'o': // Prefix: "orders"
 
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("orders"); len(elem) >= l && elem[0:l] == "orders" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				// Param: "order_uuid"
-				// Match until "/"
-				idx := strings.IndexByte(elem, '/')
-				if idx < 0 {
-					idx = len(elem)
-				}
-				args[0] = elem[:idx]
-				elem = elem[idx:]
-
 				if len(elem) == 0 {
 					switch method {
-					case "GET":
-						r.name = GetOrderOperation
-						r.summary = "Returns information about the order."
-						r.operationID = "GetOrder"
+					case "POST":
+						r.name = CreateOrderOperation
+						r.summary = "Create a new order based on the parts selected by the user"
+						r.operationID = "CreateOrder"
 						r.operationGroup = ""
-						r.pathPattern = "/api/v1/orders/{order_uuid}"
+						r.pathPattern = "/api/v1/orders"
 						r.args = args
-						r.count = 1
+						r.count = 0
 						return r, true
 					default:
 						return
@@ -311,62 +324,122 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 
+					// Param: "order_uuid"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
 					if len(elem) == 0 {
-						break
+						switch method {
+						case "GET":
+							r.name = GetOrderOperation
+							r.summary = "Returns information about the order."
+							r.operationID = "GetOrder"
+							r.operationGroup = ""
+							r.pathPattern = "/api/v1/orders/{order_uuid}"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
 					}
 					switch elem[0] {
-					case 'c': // Prefix: "cancel"
+					case '/': // Prefix: "/"
 
-						if l := len("cancel"); len(elem) >= l && elem[0:l] == "cancel" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "POST":
-								r.name = CancelOrderOperation
-								r.summary = "Canceled order"
-								r.operationID = "CancelOrder"
-								r.operationGroup = ""
-								r.pathPattern = "/api/v1/orders/{order_uuid}/cancel"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
-							}
-						}
-
-					case 'p': // Prefix: "pay"
-
-						if l := len("pay"); len(elem) >= l && elem[0:l] == "pay" {
-							elem = elem[l:]
-						} else {
 							break
 						}
+						switch elem[0] {
+						case 'c': // Prefix: "cancel"
 
-						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "POST":
-								r.name = PayOrderOperation
-								r.summary = "Performs payment for a previously created order"
-								r.operationID = "PayOrder"
-								r.operationGroup = ""
-								r.pathPattern = "/api/v1/orders/{order_uuid}/pay"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
+							if l := len("cancel"); len(elem) >= l && elem[0:l] == "cancel" {
+								elem = elem[l:]
+							} else {
+								break
 							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "POST":
+									r.name = CancelOrderOperation
+									r.summary = "Canceled order"
+									r.operationID = "CancelOrder"
+									r.operationGroup = ""
+									r.pathPattern = "/api/v1/orders/{order_uuid}/cancel"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
+						case 'p': // Prefix: "pay"
+
+							if l := len("pay"); len(elem) >= l && elem[0:l] == "pay" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "POST":
+									r.name = PayOrderOperation
+									r.summary = "Performs payment for a previously created order"
+									r.operationID = "PayOrder"
+									r.operationGroup = ""
+									r.pathPattern = "/api/v1/orders/{order_uuid}/pay"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
 						}
 
 					}
 
+				}
+
+			case 'p': // Prefix: "ping"
+
+				if l := len("ping"); len(elem) >= l && elem[0:l] == "ping" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "GET":
+						r.name = PingOperation
+						r.summary = "Health check"
+						r.operationID = "Ping"
+						r.operationGroup = ""
+						r.pathPattern = "/api/v1/ping"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
 				}
 
 			}

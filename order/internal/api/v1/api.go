@@ -107,6 +107,10 @@ func (a *api) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params
 	return &orderV1.PayOrderResponse{TransactionUUID: transactionUUID.String()}, nil
 }
 
+func (a *api) Ping(ctx context.Context) error {
+	return nil
+}
+
 func (a *api) NewError(ctx context.Context, err error) *orderV1.GenericErrorStatusCode {
 	if err == nil {
 		return nil

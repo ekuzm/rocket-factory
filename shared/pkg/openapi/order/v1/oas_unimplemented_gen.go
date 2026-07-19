@@ -49,6 +49,15 @@ func (UnimplementedHandler) PayOrder(ctx context.Context, req *PayOrderRequest, 
 	return r, ht.ErrNotImplemented
 }
 
+// Ping implements Ping operation.
+//
+// Health check.
+//
+// GET /api/v1/ping
+func (UnimplementedHandler) Ping(ctx context.Context) error {
+	return ht.ErrNotImplemented
+}
+
 // NewError creates *GenericErrorStatusCode from error returned by handler.
 //
 // Used for common default response.

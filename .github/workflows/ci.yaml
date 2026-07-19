@@ -1,13 +1,20 @@
 name: CI
 
 on:
-    push:
-    pull_request:
+  push:
+  pull_request:
 
 jobs:
-    call-workflow-lint:
-        uses: ./.github/workflows/lint.yaml
+  call-workflow-lint:
+    uses: ./.github/workflows/lint.yaml
 
-    call-workflow-test:
-        needs: [call-workflow-lint]
-        uses: ./.github/workflows/test.yaml
+  call-workflow-test:
+    needs: [call-workflow-lint]
+    uses: ./.github/workflows/test.yaml
+
+  call-workflow-publish:
+    needs: [call-workflow-test]
+    uses: ./.github/workflows/publish.yaml
+    with:
+      tag: ${{ github.sha }}
+    secrets: inherit

@@ -68,6 +68,13 @@ func encodePayOrderResponse(response *PayOrderResponse, w http.ResponseWriter, s
 	return nil
 }
 
+func encodePingResponse(response *PingOK, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	return nil
+}
+
 func encodeErrorResponse(response *GenericErrorStatusCode, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	code := response.StatusCode
