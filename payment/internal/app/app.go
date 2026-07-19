@@ -6,48 +6,60 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
-	"time"
+	"os/signal"
+	"syscall"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	api "github.com/ekuzm/rocket-factory/payment/internal/api/v1"
 	"github.com/ekuzm/rocket-factory/payment/internal/config"
+	"github.com/ekuzm/rocket-factory/payment/internal/service"
 	"github.com/ekuzm/rocket-factory/platform/pkg/closer"
 	"github.com/ekuzm/rocket-factory/platform/pkg/grpc/health"
 	"github.com/ekuzm/rocket-factory/platform/pkg/interceptor"
 	"github.com/ekuzm/rocket-factory/platform/pkg/logger"
+	"github.com/ekuzm/rocket-factory/platform/pkg/tracer"
 	paymentV1 "github.com/ekuzm/rocket-factory/shared/pkg/proto/payment/v1"
 )
 
-const shutdownTimeout = 5 * time.Second
-
 type app struct {
-	di       *di
 	listener net.Listener
 	server   *grpc.Server
+	closer   *closer.Closer
 }
 
-func New(ctx context.Context) (*app, error) {
+func Run() (err error) {
 	app := &app{}
 
-	if err := app.initDeps(ctx); err != nil {
-		return nil, err
+	defer func() {
+		err = errors.Join(err, app.closeDeps())
+	}()
+
+	if err = app.initDeps(); err != nil {
+		return fmt.Errorf("init deps: %w", err)
 	}
 
-	return app, nil
+	if err = app.runServer(); err != nil {
+		return fmt.Errorf("run server: %w", err)
+	}
+
+	return
 }
 
-func (a *app) initDeps(ctx context.Context) error {
-	inits := []func(ctx context.Context) error{
+func (a *app) initDeps() error {
+	inits := []func() error{
 		a.initConfig,
+		a.initCloser,
 		a.initLogger,
-		a.initDI,
+		a.initTracer,
 		a.initListener,
 		a.initServer,
 	}
 
 	for _, fn := range inits {
-		if err := fn(ctx); err != nil {
+		if err := fn(); err != nil {
 			return err
 		}
 	}
@@ -55,87 +67,118 @@ func (a *app) initDeps(ctx context.Context) error {
 	return nil
 }
 
-func (a *app) Run(ctx context.Context) error {
-	errCh := make(chan error, 1)
-
-	go func() {
-		slog.Debug("payment service starting", "addr", config.App().GRPC.Address())
-
-		errCh <- a.runGRPCServer()
-	}()
-
-	select {
-	case <-ctx.Done():
-		shutdownCtx, shutdownCancel := context.WithTimeout(context.WithoutCancel(ctx), shutdownTimeout)
-		defer shutdownCancel()
-
-		if err := closer.CloseAll(shutdownCtx); err != nil {
-			return err
-		}
-
-		slog.Debug("grpc server stopped")
-
-		return nil
-	case err := <-errCh:
-		return err
-	}
-}
-
-func (a *app) runGRPCServer() error {
-	if err := a.server.Serve(a.listener); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
-		return fmt.Errorf("serve payment grpc server: %w", err)
-	}
-
-	return nil
-}
-
-func (a *app) initConfig(_ context.Context) error {
+func (a *app) initConfig() error {
 	return config.Setup()
 }
 
-func (a *app) initLogger(_ context.Context) error {
-	logger.Init(config.App().Logger.Level(), config.App().Logger.AsJSON())
+func (a *app) initCloser() error {
+	a.closer = closer.New()
 
 	return nil
 }
 
-func (a *app) initDI(_ context.Context) error {
-	a.di = NewDI()
+func (a *app) initLogger() error {
+	logger.Init(config.App().Logger)
 
 	return nil
 }
 
-func (a *app) initListener(_ context.Context) error {
-	listener, err := net.Listen("tcp", config.App().GRPC.Address())
+func (a *app) initTracer() error {
+	if err := tracer.Init(context.Background(), config.App().Tracer); err != nil {
+		return fmt.Errorf("initialize tracer: %w", err)
+	}
+
+	a.closer.Add(func() error {
+		ctx, cancel := context.WithTimeout(context.Background(), config.App().GRPC.ShutdownTimeout())
+		defer cancel()
+
+		return tracer.Shutdown(ctx)
+	})
+
+	return nil
+}
+
+func (a *app) initListener() error {
+	cfg := config.App().GRPC
+
+	listener, err := net.Listen("tcp", cfg.Address())
 	if err != nil {
 		return fmt.Errorf("create listener: %w", err)
 	}
 
 	a.listener = listener
 
+	a.closer.Add(listener.Close)
+
 	return nil
 }
 
-func (a *app) initServer(ctx context.Context) error {
-	api, err := a.di.API(ctx)
-	if err != nil {
-		return fmt.Errorf("create payment api: %w", err)
-	}
+func (a *app) initServer() error {
+	service := service.New()
 
-	server := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.RequestLogger(), interceptor.MappingErrors()))
+	api := api.New(service)
+
+	server := grpc.NewServer(
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+		grpc.ChainUnaryInterceptor(interceptor.RequestLogger(), interceptor.MappingErrors()),
+	)
 
 	paymentV1.RegisterPaymentServiceServer(server, api)
 	reflection.Register(server)
 
-	health.RegisterService(server)
+	health.RegisterService(server, paymentV1.PaymentService_ServiceDesc.ServiceName)
 
 	a.server = server
 
-	closer.Add(func(ctx context.Context) error {
-		server.GetServiceInfo()
+	a.closer.Add(func() error {
+		server.GracefulStop()
 
 		return nil
 	})
+
+	return nil
+}
+
+func (a *app) runServer() error {
+	cfg := config.App().GRPC
+
+	errCh := make(chan error, 1)
+
+	go func() {
+		slog.Debug(
+			"Start gRPC server",
+			slog.String("address", cfg.Address()),
+		)
+		err := a.server.Serve(a.listener)
+		if err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			errCh <- err
+		}
+	}()
+
+	quit, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer cancel()
+
+	select {
+	case <-quit.Done():
+		return nil
+	case err := <-errCh:
+		return err
+	}
+}
+
+func (a *app) closeDeps() error {
+	if a.closer == nil || a.closer.IsEmpty() {
+		return nil
+	}
+
+	cfg := config.App().GRPC
+
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout())
+	defer cancel()
+
+	if err := a.closer.Close(ctx); err != nil {
+		return fmt.Errorf("close deps: %w", err)
+	}
 
 	return nil
 }
