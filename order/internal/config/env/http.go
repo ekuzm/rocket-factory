@@ -3,6 +3,7 @@ package env
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 )
@@ -13,7 +14,10 @@ type serviceConfig struct {
 }
 
 type httpEnvConfig struct {
-	Order serviceConfig `envPrefix:"ORDER_"`
+	Order             serviceConfig `envPrefix:"ORDER_"`
+	RequestTimeout    time.Duration `env:"REQUEST_TIMEOUT,required"`
+	ReadHeaderTimeout time.Duration `env:"READ_HEADER_TIMEOUT,required"`
+	ShutdownTimeout   time.Duration `env:"SHUTDOWN_TIMEOUT,required"`
 }
 
 type httpConfig struct {
@@ -22,6 +26,18 @@ type httpConfig struct {
 
 func (hc *httpConfig) OrderAddress() string {
 	return net.JoinHostPort(hc.raw.Order.Host, hc.raw.Order.Port)
+}
+
+func (hc *httpConfig) ShutdownTimeout() time.Duration {
+	return hc.raw.ShutdownTimeout
+}
+
+func (hc *httpConfig) RequestTimeout() time.Duration {
+	return hc.raw.RequestTimeout
+}
+
+func (hc *httpConfig) ReadHeaderTimeout() time.Duration {
+	return hc.raw.ReadHeaderTimeout
 }
 
 func NewHTTPConfig() (*httpConfig, error) {
