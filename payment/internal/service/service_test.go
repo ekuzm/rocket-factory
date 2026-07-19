@@ -17,7 +17,6 @@ func TestPayOrder(t *testing.T) {
 	type args struct {
 		ctx           context.Context
 		orderUUID     uuid.UUID
-		userUUID      uuid.UUID
 		paymentMethod model.PaymentMethod
 	}
 
@@ -31,7 +30,6 @@ func TestPayOrder(t *testing.T) {
 			args: args{
 				ctx:           context.Background(),
 				orderUUID:     testutil.TestOrderUUID,
-				userUUID:      testutil.TestUserUUID,
 				paymentMethod: model.PaymentMethodCard,
 			},
 			err: nil,
@@ -41,7 +39,6 @@ func TestPayOrder(t *testing.T) {
 			args: args{
 				ctx:           context.Background(),
 				orderUUID:     testutil.TestOrderUUID,
-				userUUID:      testutil.TestUserUUID,
 				paymentMethod: model.PaymentMethodUnknown,
 			},
 			err: errs.ErrInvalid,

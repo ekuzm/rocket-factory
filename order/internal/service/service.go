@@ -26,7 +26,7 @@ type InventoryPort interface {
 }
 
 type PaymentPort interface {
-	PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)
+	PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error)
 }
 
 type TransactionManager interface {
@@ -167,7 +167,7 @@ func (s *service) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMeth
 			return fmt.Errorf("order already paid: %w", errs.ErrConflict)
 		}
 
-		transactionUUID, err = s.paymentPort.PayOrder(ctx, orderUUID, order.Info.UserUUID, paymentMethod)
+		transactionUUID, err = s.paymentPort.PayOrder(ctx, orderUUID, paymentMethod)
 		if err != nil {
 			slog.Error("payment call failed", "orderUUID", orderUUID, "error", err)
 

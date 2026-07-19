@@ -49,7 +49,7 @@ func Run() (err error) {
 		return fmt.Errorf("run server: %w", err)
 	}
 
-	return
+	return err
 }
 
 func (a *app) initDeps() error {

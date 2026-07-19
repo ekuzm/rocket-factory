@@ -7,9 +7,10 @@ package mock
 import (
 	"context"
 
-	"github.com/ekuzm/rocket-factory/payment/internal/model"
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"
+
+	"github.com/ekuzm/rocket-factory/payment/internal/model"
 )
 
 // NewPaymentService creates a new instance of PaymentService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -17,7 +18,8 @@ import (
 func NewPaymentService(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *PaymentService {
+},
+) *PaymentService {
 	mock := &PaymentService{}
 	mock.Mock.Test(t)
 
@@ -76,7 +78,7 @@ type PaymentService_PayOrder_Call struct {
 //   - ctx context.Context
 //   - orderUUID uuid.UUID
 //   - paymentMethod model.PaymentMethod
-func (_e *PaymentService_Expecter) PayOrder(ctx interface{}, orderUUID interface{}, paymentMethod interface{}) *PaymentService_PayOrder_Call {
+func (_e *PaymentService_Expecter) PayOrder(ctx, orderUUID, paymentMethod interface{}) *PaymentService_PayOrder_Call {
 	return &PaymentService_PayOrder_Call{Call: _e.mock.On("PayOrder", ctx, orderUUID, paymentMethod)}
 }
 

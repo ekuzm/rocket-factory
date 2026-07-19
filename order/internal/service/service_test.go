@@ -246,7 +246,8 @@ func TestCancelOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
 
 				order.Info.Status = model.StatusCancelled
@@ -265,7 +266,8 @@ func TestCancelOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(model.Order{}, testutil.ErrRepository)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything, mock.Anything)
 			},
@@ -284,7 +286,8 @@ func TestCancelOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything, mock.Anything)
 			},
@@ -303,7 +306,8 @@ func TestCancelOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything, mock.Anything)
 			},
@@ -321,7 +325,8 @@ func TestCancelOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
 
 				order.Info.Status = model.StatusCancelled
@@ -386,9 +391,10 @@ func TestPayOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
-				port.On("PayOrder", args.ctx, args.orderUUID, order.Info.UserUUID, args.paymentMethod).Once().Return(testutil.TestTransactionUUID, nil)
+				port.On("PayOrder", args.ctx, args.orderUUID, args.paymentMethod).Once().Return(testutil.TestTransactionUUID, nil)
 
 				order.Info.Status = model.StatusPaid
 				order.Info.TransactionUUID = testutil.TestTransactionUUID
@@ -409,7 +415,8 @@ func TestPayOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(model.Order{}, testutil.ErrRepository)
 				port.AssertNotCalled(t, "PayOrder", mock.Anything, mock.Anything)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything)
@@ -431,7 +438,8 @@ func TestPayOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
 				port.AssertNotCalled(t, "PayOrder", mock.Anything, mock.Anything)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything)
@@ -453,7 +461,8 @@ func TestPayOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
 				port.AssertNotCalled(t, "PayOrder", mock.Anything, mock.Anything)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything)
@@ -474,9 +483,10 @@ func TestPayOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
-				port.On("PayOrder", args.ctx, args.orderUUID, order.Info.UserUUID, args.paymentMethod).Once().Return(uuid.Nil, testutil.ErrPaymentPort)
+				port.On("PayOrder", args.ctx, args.orderUUID, args.paymentMethod).Once().Return(uuid.Nil, testutil.ErrPaymentPort)
 				repo.AssertNotCalled(t, "Update", mock.Anything, mock.Anything)
 			},
 		},
@@ -495,9 +505,10 @@ func TestPayOrder(t *testing.T) {
 				manager.On("Wrap", args.ctx, mock.AnythingOfType("func(context.Context) error")).Once().Return(
 					func(ctx context.Context, callback func(ctx context.Context) error) error {
 						return callback(ctx)
-					})
+					},
+				)
 				repo.On("GetByUUID", args.ctx, args.orderUUID).Once().Return(order, nil)
-				port.On("PayOrder", args.ctx, args.orderUUID, order.Info.UserUUID, args.paymentMethod).Once().Return(testutil.TestTransactionUUID, nil)
+				port.On("PayOrder", args.ctx, args.orderUUID, args.paymentMethod).Once().Return(testutil.TestTransactionUUID, nil)
 
 				order.Info.Status = model.StatusPaid
 				order.Info.TransactionUUID = testutil.TestTransactionUUID

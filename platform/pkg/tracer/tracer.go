@@ -27,11 +27,7 @@ type Config interface {
 	Timeout() time.Duration
 }
 
-var service string
-
 func Init(ctx context.Context, cfg Config) error {
-	service = cfg.ServiceName()
-
 	exporter, err := otlptracegrpc.New(
 		ctx,
 		otlptracegrpc.WithEndpoint(cfg.Endpoint()),

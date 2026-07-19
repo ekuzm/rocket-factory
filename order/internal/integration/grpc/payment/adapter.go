@@ -22,10 +22,9 @@ func New(grpcClient paymentV1.PaymentServiceClient) *adapter {
 	}
 }
 
-func (a *adapter) PayOrder(ctx context.Context, orderUUID, userUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
+func (a *adapter) PayOrder(ctx context.Context, orderUUID uuid.UUID, paymentMethod model.PaymentMethod) (uuid.UUID, error) {
 	req := &paymentV1.PayOrderRequest{
 		Uuid:          orderUUID.String(),
-		UserUuid:      userUUID.String(),
 		PaymentMethod: paymentMethodToGRPC[paymentMethod],
 	}
 

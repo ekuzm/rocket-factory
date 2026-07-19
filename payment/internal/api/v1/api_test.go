@@ -62,21 +62,6 @@ func TestPayOrder(t *testing.T) {
 			},
 		},
 		{
-			name: "returns error for invalid user uuid",
-			args: args{
-				ctx: context.Background(),
-				req: &paymentV1.PayOrderRequest{
-					Uuid:          testutil.TestOrderUUID.String(),
-					PaymentMethod: paymentV1.PaymentMethod_PAYMENT_METHOD_CARD,
-				},
-			},
-			want: nil,
-			err:  errs.ErrInvalid,
-			mock: func(service *mockPayment.PaymentService, args args) {
-				service.AssertNotCalled(t, mock.Anything, mock.Anything, mock.Anything)
-			},
-		},
-		{
 			name: "returns service error from pay order method",
 			args: args{
 				ctx: context.Background(),
